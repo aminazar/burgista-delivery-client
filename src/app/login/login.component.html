@@ -1,0 +1,16 @@
+<md-card style="width:400px">
+  <md-card-title>Login</md-card-title>
+  <md-card-content>
+    <md-input-container>
+      <input md-input placeholder="Username" [(ngModel)]="username" (change)="onChange()">
+    </md-input-container>
+    <md-input-container>
+      <input md-input placeholder="Password" type="password" [(ngModel)]="password" (change)="onChange()">
+    </md-input-container>
+  </md-card-content>
+  <md-card-actions>
+    <button md-icon-button [disabled]="!loginEnabled" (click)="userLogin()" color="primary" title="Login">
+      <md-icon fontSet="fa" fontIcon="fa-arrow-down"></md-icon>
+    </button>
+  </md-card-actions>
+</md-card>
