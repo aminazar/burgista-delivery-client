@@ -6,14 +6,11 @@ import {CanActivate, Router, RouterStateSnapshot, ActivatedRouteSnapshot} from '
 import {AuthService} from "../auth.service";
 
 @Injectable()
-export class LoggedInGuard implements CanActivate, OnInit {
+export class LoggedInGuard implements CanActivate{
   //public isLoggedIn=false;
   private isLoggedIn = false;
 
   constructor(private authService: AuthService, private router: Router) {
-  }
-
-  ngOnInit() {
     this.authService.auth$.subscribe(
       (val: boolean) => {
         this.isLoggedIn = val;
