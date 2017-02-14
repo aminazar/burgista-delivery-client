@@ -1,7 +1,7 @@
-<div style="background-color: #728653; width: 500px; padding: 10px; border-radius: 7px; text-align: left; margin-left: 3px">
-  <span style="font-size: x-large; font-weight: bold ; margin-left: 10px;">Branches and Preparation Units</span>
-  <div style="background-color: white; width: 90%; padding: 10px; margin-left: 2%;">
-    <app-sub-form [isAdd]="true" (action)="doClickedAction($event)"></app-sub-form>
+<div class="OuterDivStyle">
+  <span class="SpanStyle">Branches and Preparation Units</span>
+  <div class="InnerDivStyle">
+    <app-sub-form [isAdd]="true" [isAdding]=""  (action)="doClickedAction($event)"></app-sub-form>
     <app-sub-form *ngFor="let um of unitModels" [isAdd]="false" [unitModel]="um" (action)="doClickedAction($event)"></app-sub-form>
   </div>
 </div>

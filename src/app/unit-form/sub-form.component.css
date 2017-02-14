@@ -1,3 +1,55 @@
-.c1{
+.InputStyle{
+  width: 35%;
+  margin-top: 8px;
+  border-style: solid;
+  border-color:#728653;
+  border-width: 1.5px;
+  text-indent: 2%;
+}
+
+.FormTitleStyle{
+  margin-left: 20px;
+  font-weight: bold;
+}
+
+.DivStyle{
+  width: 90%;
+  border-style: solid;
+  border-color:#728653;
+  border-width: 2px;
+  direction: ltr;
+  margin-left: 20px;
+}
+
+.TopSpanStyle{
+  width:18%;
+  display:inline-block;
+  margin-top: 8px;
+  text-align: right;
   font-size: small;
+  font-weight: bold;
+}
+
+.SpanStyle{
+  width:18%;
+  display:inline-block;
+  margin-top: 4px;
+  text-align: right;
+  font-size: small;
+  font-weight: bold;
+}
+
+
+.ButtonStyle{
+  margin-left: 11px;
+  margin-top: 20px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  border-width: 5px;
+  border-color:#728653;
+  background-color: #B9C6A6;
+}
+
+.RadioButtonStyle{
+  margin-left: 20px;
 }
