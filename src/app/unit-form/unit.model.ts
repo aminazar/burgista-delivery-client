@@ -5,6 +5,11 @@ import {Unit} from "./unit";
 
 export class UnitModel {
   _unit: Unit;
+  waiting = {
+    updating: false,
+    deleting: false,
+    adding: false
+  };
 
   constructor(unit: Unit) {
     this._unit = new Unit();
@@ -17,7 +22,7 @@ export class UnitModel {
   }
 
   isDifferent(unit: Unit): boolean {
-    if (this._unit.password !== '')
+    if (unit.password !== '')
       return true;
     else if (unit.name !== this._unit.name)
       return true;
@@ -27,5 +32,23 @@ export class UnitModel {
       return true;
     else
       return false;
+  }
+
+  getDifferentValues(unit: Unit){
+    let diffValues = {};
+
+    if(unit.password !== '')
+      diffValues['password'] = unit.password;
+
+    if(unit.name !== this._unit.name)
+      diffValues['name'] = unit.name;
+
+    if(unit.username !== this._unit.username)
+      diffValues['username'] = unit.username;
+
+    if(unit.isBranch !== this._unit.isBranch)
+      diffValues['isBranch'] = unit.isBranch;
+
+    return diffValues;
   }
 }
