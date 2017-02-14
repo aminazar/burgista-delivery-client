@@ -15,7 +15,7 @@ import {HttpModule} from "@angular/http";
 import {AuthService} from "./auth.service";
 import {RestService} from "./rest.service";
 
-describe('App: Ng2Seed', () => {
+describe('App: Burgista Internal Delivery', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [
