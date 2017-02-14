@@ -13,6 +13,8 @@ import {LoggedInGuard} from "./login/logged-in.guard";
 import {RouterModule} from "@angular/router";
 import {MaterialModule} from "@angular/material";
 import 'hammerjs';
+import { UnitFormComponent } from './unit-form/unit-form.component';
+import { SubFormComponent } from './unit-form/sub-form.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +22,9 @@ import 'hammerjs';
     LoginComponent,
     NavbarComponent,
     HomeComponent,
-    UsersComponent
+    UsersComponent,
+    UnitFormComponent,
+    SubFormComponent
   ],
   imports: [
     BrowserModule,
@@ -31,6 +35,7 @@ import 'hammerjs';
       {path: '',      component: HomeComponent, pathMatch: 'full'},
       {path: 'login', component: LoginComponent},
       {path: 'users', component: UsersComponent, canActivate: [LoggedInGuard]},
+      {path: 'units', component: UnitFormComponent, canActivate: [LoggedInGuard]},
     ]),
   ],
   providers: [AuthService, RestService, LoggedInGuard],
