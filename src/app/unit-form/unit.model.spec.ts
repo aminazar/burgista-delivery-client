@@ -11,6 +11,7 @@ describe('Unit Model', () => {
 
   it('should set own unit', () => {
     unit = new Unit();
+    unit.id = 0;
     unit.name = 'CenterBranch';
     unit.username = 'Jack';
     unit.password = '';
@@ -25,8 +26,14 @@ describe('Unit Model', () => {
   });
 
   it('should compare two unit (Different in name)', () => {
-    unitModel._unit.name = 'CountryBranch';
-    expect(unitModel.isDifferent()).toBe(true);
+    let anotherUnit = new Unit();
+    anotherUnit.id = 0;
+    anotherUnit.name = 'CountryBranch';
+    anotherUnit.username = 'Jack';
+    anotherUnit.password = '';
+    anotherUnit.isBranch = true;
+
+    expect(unitModel.isDifferent(anotherUnit)).toBe(true);
   });
 
 });

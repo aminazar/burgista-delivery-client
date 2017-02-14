@@ -6,15 +6,16 @@ import {CanActivate, Router, RouterStateSnapshot, ActivatedRouteSnapshot} from '
 import {AuthService} from "../auth.service";
 
 @Injectable()
-export class LoggedInGuard implements CanActivate{
+
+export class LoggedInGuard implements CanActivate {
   //public isLoggedIn=false;
   private isLoggedIn = false;
 
   constructor(private authService: AuthService, private router: Router) {
     this.authService.auth$.subscribe(
-      (val: boolean) => {
-        this.isLoggedIn = val;
-      });
+    (val: boolean) => {
+      this.isLoggedIn = val;
+    });
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
