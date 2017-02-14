@@ -11,16 +11,12 @@ import {Unit} from "./unit";
   styleUrls: ['./sub-form.component.css']
 })
 export class SubFormComponent implements OnInit {
-  @Input() isAdd;
+  @Input() isAdd = true;
   @Input() unitModel;
 
   @Output() action = new EventEmitter();
 
-  @ViewChild('name') name;
-  @ViewChild('username') username;
-  @ViewChild('password') password;
-  @ViewChild('isBranch') isBranch;
-
+  unit : Unit = new Unit();
   ae = ActionEnum;
 
   shouldUpdate = false;
@@ -29,10 +25,22 @@ export class SubFormComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    if(this.isAdd)
+    if(this.isAdd) {
       this.formTitle = 'New Unit';
+
+      this.unit.id = -1;
+      this.unit.name = '';
+      this.unit.username = '';
+      this.unit.password = '';
+      this.unit.isBranch = true;
+    }
     else {
-      if(this.unitModel._unit.isBranch)
+      this.unit.id = this.unitModel._unit.id;
+      this.unit.name = this.unitModel._unit.name;
+      this.unit.username = this.unitModel._unit.username;
+      this.unit.isBranch = this.unitModel._unit.isBranch;
+
+      if(this.unit.isBranch)
         this.formTitle = 'Main depote';
       else
         this.formTitle = 'Prep Kitchen';
@@ -40,27 +48,13 @@ export class SubFormComponent implements OnInit {
   }
 
   checkDiff(){
-    this.shouldUpdate = this.unitModel.isDifferent();
+    this.shouldUpdate = this.unitModel.isDifferent(this.unit);
   }
 
   actionEmitter(clickType){
-    let data : Unit = null;
-
-    if( clickType === ActionEnum.add ){
-      data = new Unit();
-      data.name = this.name.nativeElement.value;
-      data.username = this.username.nativeElement.value;
-      data.password = this.password.nativeElement.value;
-      data.isBranch = this.isBranch.nativeElement.value;
-
-    }
-    else{
-      data = this.unitModel._unit;
-    }
-
     let value = {
       type : clickType,
-      data : data
+      data : this.unit
     };
 
     this.action.emit(value);

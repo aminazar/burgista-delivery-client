@@ -9,6 +9,7 @@ import {Unit} from "./unit";
 })
 export class UnitFormComponent implements OnInit {
   unitModels: UnitModel[] = [];
+  addedUnitModel: UnitModel;
 
   constructor() { }
 
@@ -23,6 +24,14 @@ export class UnitFormComponent implements OnInit {
 
     let unitModel = new UnitModel(unit);
     this.unitModels.push(unitModel);
+
+    let addedUnit = new Unit();
+    addedUnit.id = 0;
+    addedUnit.isBranch = false;
+    addedUnit.name = 'a';
+    addedUnit.username = 'aa';
+    addedUnit.password = '';
+    this.addedUnitModel = new UnitModel(addedUnit);
   }
 
   doClickedAction(value){

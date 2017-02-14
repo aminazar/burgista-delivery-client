@@ -1,9 +1,12 @@
 /* tslint:disable:no-unused-variable */
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {DebugElement} from '@angular/core';
 
-import { UnitFormComponent } from './unit-form.component';
+import {UnitFormComponent} from './unit-form.component';
+import {SubFormComponent} from "./sub-form.component";
+import {FormsModule} from "@angular/forms";
+import {MaterialModule} from "@angular/material";
 
 describe('UnitFormComponent', () => {
   let component: UnitFormComponent;
@@ -11,9 +14,10 @@ describe('UnitFormComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UnitFormComponent ]
+      declarations: [UnitFormComponent, SubFormComponent],
+      imports: [FormsModule, MaterialModule.forRoot()]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
