@@ -35,6 +35,7 @@ import { SubFormComponent } from './unit-form/sub-form.component';
       {path: '',      component: HomeComponent, pathMatch: 'full'},
       {path: 'login', component: LoginComponent},
       {path: 'users', component: UsersComponent, canActivate: [LoggedInGuard]},
+      {path: 'units', component: UnitFormComponent, canActivate: [LoggedInGuard]},
     ]),
   ],
   providers: [AuthService, RestService, LoggedInGuard],
