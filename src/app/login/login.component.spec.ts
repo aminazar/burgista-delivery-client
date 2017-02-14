@@ -47,7 +47,7 @@ describe('LoginComponent', () => {
 
   it('should should be enabled after entring user/pass', () => {
     component.username = 'amin';
-    component.password = 'test';
+    component.password = 'test123';
     component.onChange();
     expect(component.loginEnabled).toBeTruthy();
   })

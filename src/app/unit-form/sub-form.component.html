@@ -1,21 +1,21 @@
 <span style="margin-left: 20px; font-weight: bold">{{formTitle}}</span>
 <div style="width: 90%; border-style: solid; border-color:#728653; border-width: 2px; direction: ltr;margin-left: 20px; ">
   <span style="width:18%;display:inline-block; margin-top: 8px; text-align: right; font-size: small; font-weight: bold">Name</span>
-  <input type="text" style="width: 35%;margin-top: 8px; border-style: solid; border-color:#728653; border-width: 1.5px;" (keyup)="checkDiff()" [(ngModel)]="unit.name">
-  <md-radio-group  style="margin-left: 20px;" [(ngModel)]="unit.isBranch">
+  <input type="text" style="width: 35%;margin-top: 8px; border-style: solid; border-color:#728653; border-width: 1.5px;" (keyup)="checkDiff()" [(ngModel)]="unit.name" id="name">
+  <md-radio-group  style="margin-left: 20px;" [(ngModel)]="unit.isBranch" id="isBranch">
     <md-radio-button value="true" >Branch</md-radio-button>
     <md-radio-button value="false">Prep Kitchen</md-radio-button>
   </md-radio-group>
   <br>
   <span style="width:18%;display:inline-block; margin-top: 4px;text-align: right; font-size: small; font-weight: bold">Username</span>
-  <input type="text" style="width: 35%;margin-top: 4px; border-style: solid; border-color:#728653; border-width: 1.5px;" (keyup)="checkDiff()" [(ngModel)]="unit.username">
+  <input type="text" style="width: 35%;margin-top: 4px; border-style: solid; border-color:#728653; border-width: 1.5px;" (keyup)="checkDiff()" [(ngModel)]="unit.username" id="username">
   <br>
   <span style="width:18%;display:inline-block; margin-top: 4px;text-align: right; font-size: small; font-weight: bold">Password</span>
-  <input type="password" style="width: 35%;margin-top: 4px; border-style: solid; border-color:#728653; border-width: 1.5px;" (keyup)="checkDiff()" [(ngModel)]="unit.password">
+  <input type="password" style="width: 35%;margin-top: 4px; border-style: solid; border-color:#728653; border-width: 1.5px;" (keyup)="checkDiff()" [(ngModel)]="unit.password" id="password">
   <br>
-  <button md-raised-button *ngIf="isAdd" style="margin-left: 11px;  margin-top: 20px; margin-bottom: 5px;border-radius: 5px;border-width: 5px; border-color:#728653;background-color: #B9C6A6" (click)="actionEmitter(ae.add)">Add</button>
-  <button md-raised-button *ngIf="!isAdd" [(disabled)]="!shouldUpdate" style="margin-left: 11px;  margin-top: 20px; margin-bottom: 5px;border-radius: 5px;border-width: 5px; border-color:#728653;background-color: #B9C6A6" (click)="actionEmitter(ae.update)">Update</button>
-  <button md-raised-button *ngIf="!isAdd" style="margin-left: 11px;  margin-top: 20px; margin-bottom: 5px;border-radius: 5px;border-width: 5px; border-color:#728653;background-color: #B9C6A6" (click)="actionEmitter(ae.delete)">Delete</button>
+  <button md-raised-button *ngIf="isAdd" style="margin-left: 11px;  margin-top: 20px; margin-bottom: 5px;border-radius: 5px;border-width: 5px; border-color:#728653;background-color: #B9C6A6" (click)="actionEmitter(ae.add)" id="addBtn">Add</button>
+  <button md-raised-button *ngIf="!isAdd" [(disabled)]="!shouldUpdate" style="margin-left: 11px;  margin-top: 20px; margin-bottom: 5px;border-radius: 5px;border-width: 5px; border-color:#728653;background-color: #B9C6A6" (click)="actionEmitter(ae.update)" id="updateBtn">Update</button>
+  <button md-raised-button *ngIf="!isAdd" style="margin-left: 11px;  margin-top: 20px; margin-bottom: 5px;border-radius: 5px;border-width: 5px; border-color:#728653;background-color: #B9C6A6" (click)="actionEmitter(ae.delete)" id="deleteBtn">Delete</button>
 </div>
 <br>
 

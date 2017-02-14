@@ -11,7 +11,7 @@ import {Unit} from "./unit";
   styleUrls: ['./sub-form.component.css']
 })
 export class SubFormComponent implements OnInit {
-  @Input() isAdd = true;
+  @Input() isAdd =true;
   @Input() unitModel;
 
   @Output() action = new EventEmitter();
