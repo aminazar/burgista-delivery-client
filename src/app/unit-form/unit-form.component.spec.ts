@@ -7,6 +7,7 @@ import {UnitFormComponent} from './unit-form.component';
 import {SubFormComponent} from "./sub-form.component";
 import {FormsModule} from "@angular/forms";
 import {MaterialModule} from "@angular/material";
+import {RestService} from "../rest.service";
 
 describe('UnitFormComponent', () => {
   let component: UnitFormComponent;
@@ -14,8 +15,17 @@ describe('UnitFormComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [UnitFormComponent, SubFormComponent],
-      imports: [FormsModule, MaterialModule.forRoot()]
+      declarations: [
+        UnitFormComponent,
+        SubFormComponent,
+      ],
+      imports: [
+        FormsModule,
+        MaterialModule.forRoot(),
+      ],
+      providers: [
+        RestService
+      ]
     })
       .compileComponents();
   }));
