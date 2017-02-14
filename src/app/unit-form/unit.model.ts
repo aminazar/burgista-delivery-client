@@ -5,6 +5,8 @@ import {Unit} from "./unit";
 
 export class UnitModel {
   _unit: Unit;          //Can change
+  isUpdating: boolean;
+  isDeleting: boolean;
   private _unitBackup: Unit;      //One time initialized
 
   constructor(unit: Unit){
