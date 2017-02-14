@@ -7,12 +7,16 @@ export class RestService {
   constructor(private http: Http) {
   }
 
+  call(table) {
+    return this.http.get('/api/' + table);
+  }
+
   insert(table, values) {
     return this.http.put('/api/' + table, values).map((data: Response) => data.json());
   }
 
   get(table) {
-    return this.http.get('/api/' + table).map((data: Response) => data.json());
+    return this.call(table).map((data: Response) => data.json());
   };
 
   getWithParams(table, values) {

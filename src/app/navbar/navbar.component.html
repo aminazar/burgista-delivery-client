@@ -1,3 +1,9 @@
-<p>
-  navbar works!
-</p>
+<md-toolbar color="primary">
+  <span><a [routerLink]="['']">ng2 Seed</a></span>
+  <span *ngIf="auth"><a [routerLink]="['units']">Units</a></span>
+  <!-- This fills the remaining space of the current row -->
+  <span class="fill-remaining-space"></span>
+
+  <span *ngIf="!auth"><a [routerLink]="['login']"><span class="fa fa-sign-in"></span> Login</a></span>
+  <span *ngIf="auth"><a (click)="logout()"><span class="fa fa-sign-out"></span> Logout</a></span>
+</md-toolbar>

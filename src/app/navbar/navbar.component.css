@@ -1,0 +1,29 @@
+.fill-remaining-space {
+flex: 1 1 auto;
+}
+a{
+  color:white;
+  text-decoration: none;
+}
+a:hover{
+  color: brown;
+  text-decoration: none;
+}
+a:visited{
+  color:white;
+  text-decoration: none;
+
+}
+a:active{
+  text-weight: bold;
+  color:antiquewhite;
+  text-decoration: none;
+}
+a:after{
+  text-weight: bold;
+  color:antiquewhite;
+  text-decoration: none;
+}
+span{
+  padding: 0px 10px;
+}

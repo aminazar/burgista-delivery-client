@@ -1,8 +1,10 @@
 <nav class="navbar navbar-inverse">
   <app-navbar></app-navbar>
 </nav>
-<div class="container-fluid text-center">
-  <div class="row content">
-    <app-home></app-home>
-  </div>
+<div class="flex-container"
+     fxLayout="row" fxLayout.xs="column"
+     fxLayoutAlign="center center" fxLayoutAlign.xs="center center">
+  <div class="flex-item" fxFlex="33"></div>
+  <div class="flex-item" fxFlex="34"><router-outlet></router-outlet></div>
+  <div class="flex-item" fxFlex="33"></div>
 </div>

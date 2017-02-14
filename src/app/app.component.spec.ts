@@ -1,19 +1,36 @@
 /* tslint:disable:no-unused-variable */
 
-import { TestBed, async } from '@angular/core/testing';
-import { AppComponent } from './app.component';
+import {TestBed, async} from '@angular/core/testing';
+import {AppComponent} from './app.component';
 import {NavbarComponent} from "./navbar/navbar.component";
 import {HomeComponent} from "./home/home.component";
-import {RouterModule, RouterOutletMap} from "@angular/router";
+import {RouterOutletMap} from "@angular/router";
+import {RouterTestingModule} from "@angular/router/testing";
+import {LoginComponent} from "./login/login.component";
+import {UsersComponent} from "./users/users.component";
+import {BrowserModule} from "@angular/platform-browser";
+import {FormsModule} from "@angular/forms";
+import {MaterialModule} from "@angular/material";
+import {HttpModule} from "@angular/http";
+import {AuthService} from "./auth.service";
+import {RestService} from "./rest.service";
 
 describe('App: Ng2Seed', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [
-        AppComponent, NavbarComponent, HomeComponent
+        AppComponent, NavbarComponent, HomeComponent,
+        LoginComponent,
+        UsersComponent
       ],
-      imports: [RouterModule],
-      providers: [RouterOutletMap]
+      imports: [
+        BrowserModule,
+        FormsModule,
+        HttpModule,
+        MaterialModule.forRoot(),
+        RouterTestingModule,
+      ],
+      providers: [RouterOutletMap, AuthService, RestService]
     });
   });
 

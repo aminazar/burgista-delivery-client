@@ -21,14 +21,20 @@ export class AuthService {
           this.router.navigate([url !== null ? url : '/']);
         },
         err => {
+      //TODO: showing error in component
           this.authStream.next(false);
+          console.log(err);
         })
   }
 
   logOff() {
-    this.restService.get('logout')
+    this.restService.call('logout')
       .subscribe(() => {
         this.authStream.next(false)
+      },
+      err => {
+        //TODO: showing error in component
+        console.log(err);
       });
   }
 }
