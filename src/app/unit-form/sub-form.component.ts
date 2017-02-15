@@ -1,10 +1,9 @@
 import {Component, OnInit, EventEmitter} from '@angular/core';
 import {Input, Output} from "@angular/core/src/metadata/directives";
-import {ViewChild} from "@angular/core/src/metadata/di";
+import {Observable} from "rxjs";
 
 import {ActionEnum} from "./actionEnum";
 import {Unit} from "./unit";
-import {document} from "@angular/platform-browser/src/facade/browser";
 
 @Component({
   selector: 'app-sub-form',
@@ -16,18 +15,40 @@ export class SubFormComponent implements OnInit {
   @Input() isAdding = false;
 
   @Input() unitModel;
+  @Input() actionIsSuccess : Observable<boolean>;
 
   @Output() action = new EventEmitter();
 
   unit : Unit = new Unit();
   ae = ActionEnum;
 
-  shouldUpdate = false;
   formTitle = '';
+  addIsDisable = true;
+  updateIsDisable = true;
+  deleteIsDisable = false;
 
   constructor() { }
 
   ngOnInit() {
+    this.actionIsSuccess.subscribe(
+      (data) => {
+        if(data === true){
+          if(this.isAdd === true){
+            this.unit.id = -1;
+            this.unit.name = '';
+            this.unit.username = '';
+            this.unit.password = '';
+            this.unit.is_branch = null;
+          }
+
+          this.disabilityStatus();
+        }
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+
     if(this.isAdd) {
       this.formTitle = 'New Unit';
 
@@ -35,24 +56,29 @@ export class SubFormComponent implements OnInit {
       this.unit.name = '';
       this.unit.username = '';
       this.unit.password = '';
-      this.unit.isBranch = true;
+      this.unit.is_branch = null;
     }
     else {
       this.unit.id = this.unitModel._unit.id;
       this.unit.name = this.unitModel._unit.name;
       this.unit.username = this.unitModel._unit.username;
-      this.unit.isBranch = this.unitModel._unit.isBranch;
+      this.unit.is_branch = this.unitModel._unit.is_branch;
+      this.unit.password = '';
 
-      if(this.unit.isBranch)
+      if(this.unit.is_branch)
         this.formTitle = 'Main depote';
       else
         this.formTitle = 'Prep Kitchen';
     }
   }
 
-  checkDiff(){
-    if(!this.isAdd)
-     this.shouldUpdate = this.unitModel.isDifferent(this.unit);
+  disabilityStatus(){
+    if(this.isAdd)
+      this.addIsDisable = this.shouldDisableAddBtn();
+    else{
+      this.deleteIsDisable = this.shouldDisableDeleteBtn();
+      this.updateIsDisable = this.shouldDisableUpdateBtn();
+    }
   }
 
   actionEmitter(clickType){
@@ -63,8 +89,36 @@ export class SubFormComponent implements OnInit {
     this.action.emit(value);
   }
 
-  checkSubFormInputs(){
-    if( this.unitModel._unit.name && this.unitModel._unit.username && this.unitModel._unit.password && (this.unitModel._unit.isBranch || !this.unitModel._unit.isBranch) )
+  isCorrectFormData(isForAdd : boolean){
+    if(isForAdd === true && this.unit.password === "")
+      return false;
+
+    if( this.unit.name !== "" && this.unit.username !== "" && (this.unit.is_branch || !this.unit.is_branch) )
+      return true;
+    else
+      return false;
+  }
+
+  shouldDisableAddBtn() : boolean{
+    if(this.isAdding === true)
+      return true;
+    else
+      return !this.isCorrectFormData(true);
+  }
+
+  shouldDisableUpdateBtn() : boolean{
+    if(this.unitModel.waiting.updating === true)
+      return true;
+    else{
+      if(this.unitModel.isDifferent(this.unit) === true)
+        return !this.isCorrectFormData(false);
+      else
+        return true;
+    }
+  }
+
+  shouldDisableDeleteBtn() : boolean{
+    if(this.unitModel.waiting.deleting === true)
       return true;
     else
       return false;
