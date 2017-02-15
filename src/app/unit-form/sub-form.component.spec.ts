@@ -75,7 +75,7 @@ describe('SubFormComponent', () => {
     expect(el.value).toBe('');
   }));
 
-  it('should should be enabled after change name/username/password', fakeAsync(() => {
+  it('should be enabled after change name/username/password', fakeAsync(() => {
     let unit = new Unit();
     unit.id = 0;
     unit.name = 'ali';
@@ -100,5 +100,4 @@ describe('SubFormComponent', () => {
     tick();
     expect(fixture.debugElement.query(By.css('#updateBtn')).nativeElement.disabled).toBe(false);
   }));
-
 });

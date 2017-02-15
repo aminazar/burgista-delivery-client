@@ -1,7 +1,7 @@
-<div class="OuterDivStyle">
+<md-card style="width: 700px; background-color: #607D8B; border-radius: 7px; text-align: left;">
   <span class="SpanStyle">Branches and Preparation Units</span>
-  <div class="InnerDivStyle">
+  <md-card style="background-color: white; width: 630px; padding: 10px;">
     <app-sub-form [isAdd]="true" [isAdding]=""  (action)="doClickedAction($event)"></app-sub-form>
     <app-sub-form *ngFor="let um of unitModels" [isAdd]="false" [unitModel]="um" (action)="doClickedAction($event)"></app-sub-form>
-  </div>
-</div>
+  </md-card>
+</md-card>

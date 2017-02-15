@@ -1,6 +1,7 @@
 .OuterDivStyle{
-  background-color: #728653;
-  width: 700px; padding: 10px;
+  background-color: #607D8B;
+  width: 700px;
+  padding: 10px;
   border-radius: 7px;
   text-align: left;
   margin-left: 3px
@@ -15,5 +16,5 @@
 .SpanStyle{
   font-size: x-large;
   font-weight: bold ;
-  margin-left: 10px;
+  margin-left: 7px;
 }

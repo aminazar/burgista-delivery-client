@@ -1,20 +1,20 @@
 <span class="FormTitleStyle">{{formTitle}}</span>
-<div class="DivStyle">
+<md-card style="width: 570px; border-style: solid; border-width: 2px; border-color:#607D8B; direction: ltr; margin-left: 10px;">
   <span class="TopSpanStyle">Name</span>
-  <input type="text" class="InputStyle" (keyup)="checkDiff()" [(ngModel)]="unit.name"id="name">
+  <md-input type="text" style="text-indent: 2%; width: 30%;" (keyup)="checkDiff()" [(ngModel)]="unit.name"id="name"></md-input>
   <md-radio-group class="RadioButtonStyle" [(ngModel)]="unit.isBranch" id="isBranch">
     <md-radio-button value="true">Branch</md-radio-button>
     <md-radio-button style="margin-left: 10px;" value="false">Prep Kitchen</md-radio-button>
   </md-radio-group>
   <br>
   <span class="SpanStyle">Username</span>
-  <input type="text" class="InputStyle" (keyup)="checkDiff()" [(ngModel)]="unit.username" id="username">
+  <md-input type="text" style="text-indent: 2%; width: 30%;"  (keyup)="checkDiff()" [(ngModel)]="unit.username" id="username"></md-input>
   <br>
   <span class="SpanStyle">Password</span>
-  <input type="password" class="InputStyle" (keyup)="checkDiff()" [(ngModel)]="unit.password" id="password">
+  <md-input type="password" style="text-indent: 2%; width: 30%;" (keyup)="checkDiff()" [(ngModel)]="unit.password" id="password"></md-input>
   <br>
-  <button md-raised-button *ngIf="isAdd" class="ButtonStyle" (click)="actionEmitter(ae.add)" [(disabled)]="isAdding && checkSubFormInputs()" id="addBtn">Add</button>
-  <button md-raised-button *ngIf="!isAdd" class="ButtonStyle" (click)="actionEmitter(ae.update)" [(disabled)]="unitModel._unit.wating.updating && !shouldUpdate && checkSubFormInputs()" id="updateBtn">Update</button>
-  <button md-raised-button *ngIf="!isAdd" class="ButtonStyle" (click)="actionEmitter(ae.delete)" [(disabled)]= "unitModel._unit.wating.deleting" id="deleteBtn">Delete</button>
-</div>
+  <button md-raised-button *ngIf="isAdd" class="ButtonStyle" (click)="actionEmitter(ae.add)" [(disabled)]="checkSubFormInputs() && isAdding" id="addBtn">Add</button>
+  <button md-raised-button *ngIf="!isAdd" class="ButtonStyle" (click)="actionEmitter(ae.update)" [(disabled)]="checkSubFormInputs() && unitModel.waiting.updating && !shouldUpdate" id="updateBtn">Update</button>
+  <button md-raised-button *ngIf="!isAdd" class="ButtonStyle" (click)="actionEmitter(ae.delete)" [(disabled)]= "unitModel.waiting.deleting" id="deleteBtn">Delete</button>
+</md-card>
 <br>

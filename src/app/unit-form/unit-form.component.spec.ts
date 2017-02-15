@@ -39,4 +39,11 @@ describe('UnitFormComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should show the origin title', () => {
+    let de : DebugElement = fixture.debugElement.query(By.css('span'));
+    let el : HTMLInputElement = de.nativeElement;
+    expect(el.textContent).toContain('Branches and Preparation Units');
+  });
+
 });

@@ -6,7 +6,6 @@ import {AppComponent} from './app.component';
 import {LoginComponent} from './login/login.component';
 import {NavbarComponent} from './navbar/navbar.component';
 import {HomeComponent} from './home/home.component';
-import {UsersComponent} from './users/users.component';
 import {AuthService} from "./auth.service";
 import {RestService} from "./rest.service";
 import {LoggedInGuard} from "./login/logged-in.guard";
