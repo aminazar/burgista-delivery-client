@@ -66,7 +66,7 @@ export class SubFormComponent implements OnInit {
       this.unit.password = '';
 
       if(this.unit.is_branch)
-        this.formTitle = this.unit.name + ' - Main depote';
+        this.formTitle = this.unit.name + ' - Branch';
       else
         this.formTitle = this.unit.name + ' - Prep Unit';
     }
