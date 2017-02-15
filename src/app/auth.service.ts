@@ -41,6 +41,7 @@ export class AuthService{
   logOff() {
     this.restService.call('logout')
       .subscribe(() => {
+        this.user = '';
         this.authStream.next(false);
         this.router.navigate(['login']);
       },
