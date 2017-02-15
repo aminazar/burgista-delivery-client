@@ -39,6 +39,8 @@ export class UnitFormComponent implements OnInit {
 
           this.unitModels.push(unitModel);
         }
+
+        this.sortUnitModelList();
       },
       (error) => {
         console.log(error);
@@ -77,6 +79,9 @@ export class UnitFormComponent implements OnInit {
         this.actionIsSuccess.next(true);
 
         this.unitModels.push(tempUnitModel);
+
+        //Sort unitModels
+        this.sortUnitModelList();
 
         this.disableEnable(unit.id, ActionEnum.add, false);
 
@@ -124,6 +129,9 @@ export class UnitFormComponent implements OnInit {
         //Update this unit in unitModels list
         this.unitModels[index].setUnit(unit);
 
+        //Sort unitModels
+        this.sortUnitModelList();
+
         this.disableEnable(unitId, ActionEnum.update, false);
         //ToDo: adding prop message
 
@@ -151,6 +159,23 @@ export class UnitFormComponent implements OnInit {
       case ActionEnum.add: this.isAdding = isDisable;
         break;
     }
+  }
+
+  private sortUnitModelList(){
+    this.unitModels.sort(function(a, b){
+      if(a._unit.is_branch === false && b._unit.is_branch === true)
+        return -1;
+      else if(a._unit.is_branch === true && b._unit.is_branch === false)
+        return 1;
+      else {
+        if(a._unit.name > b._unit.name)
+          return 1;
+        else if(a._unit.name < b._unit.name)
+          return -1;
+        else
+          return 0;
+      }
+    });
   }
 
   // changeTabComponent(id){
