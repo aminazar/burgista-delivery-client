@@ -7,7 +7,9 @@ import {Unit} from "./unit";
 
 describe('Unit Model', () => {
   let unit: Unit;
+  let anotherUnit: Unit;
   let unitModel: UnitModel;
+
 
   it('should set own unit', () => {
     unit = new Unit();
@@ -26,7 +28,7 @@ describe('Unit Model', () => {
   });
 
   it('should compare two unit (Different in name)', () => {
-    let anotherUnit = new Unit();
+    anotherUnit = new Unit();
     anotherUnit.id = 0;
     anotherUnit.name = 'CountryBranch';
     anotherUnit.username = 'Jack';
@@ -36,4 +38,30 @@ describe('Unit Model', () => {
     expect(unitModel.isDifferent(anotherUnit)).toBe(true);
   });
 
+  it('should give changed properties', () => {
+    expect(unitModel.getDifferentValues(anotherUnit)).toEqual(jasmine.objectContaining({
+      name: 'CountryBranch'
+    }));
+  });
+
+  it('should compare two unit (no difference)', () => {
+    anotherUnit.name = 'CenterBranch';
+    expect(unitModel.isDifferent(anotherUnit)).toBe(false);
+  });
+
+  it('should return true for difference in password', () => {
+    anotherUnit.password = '123';
+    expect(unitModel.isDifferent(anotherUnit)).toBe(true);
+  });
+
+  it('should return empty object', () => {
+    anotherUnit.password = '';
+    expect(unitModel.getDifferentValues(anotherUnit)).toEqual(jasmine.objectContaining({}));
+  });
+
+  it('should check correct value for waiting on update', () => {
+    expect(unitModel.waiting.updating).toBe(false);
+    unitModel.waiting.updating = true;
+    expect(unitModel.waiting.updating).toBe(true);
+  });
 });

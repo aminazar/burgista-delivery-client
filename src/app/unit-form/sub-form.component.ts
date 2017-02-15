@@ -4,6 +4,7 @@ import {ViewChild} from "@angular/core/src/metadata/di";
 
 import {ActionEnum} from "./actionEnum";
 import {Unit} from "./unit";
+import {document} from "@angular/platform-browser/src/facade/browser";
 
 @Component({
   selector: 'app-sub-form',
@@ -11,7 +12,9 @@ import {Unit} from "./unit";
   styleUrls: ['./sub-form.component.css']
 })
 export class SubFormComponent implements OnInit {
-  @Input() isAdd =true;
+  @Input() isAdd = true;
+  @Input() isAdding = false;
+
   @Input() unitModel;
 
   @Output() action = new EventEmitter();
@@ -48,7 +51,8 @@ export class SubFormComponent implements OnInit {
   }
 
   checkDiff(){
-    this.shouldUpdate = this.unitModel.isDifferent(this.unit);
+    if(!this.isAdd)
+     this.shouldUpdate = this.unitModel.isDifferent(this.unit);
   }
 
   actionEmitter(clickType){
@@ -56,8 +60,13 @@ export class SubFormComponent implements OnInit {
       type : clickType,
       data : this.unit
     };
-
     this.action.emit(value);
   }
 
+  checkSubFormInputs(){
+    if( this.unitModel._unit.name && this.unitModel._unit.username && this.unitModel._unit.password && (this.unitModel._unit.isBranch || !this.unitModel._unit.isBranch) )
+      return true;
+    else
+      return false;
+  }
 }
