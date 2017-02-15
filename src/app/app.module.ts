@@ -23,7 +23,6 @@ import {FlexLayoutModule} from "@angular/flex-layout";
     LoginComponent,
     NavbarComponent,
     HomeComponent,
-    UsersComponent,
     UnitFormComponent,
     SubFormComponent
   ],
@@ -36,8 +35,7 @@ import {FlexLayoutModule} from "@angular/flex-layout";
     RouterModule.forRoot([
       {path: '',      component: HomeComponent, pathMatch: 'full'},
       {path: 'login', component: LoginComponent},
-      {path: 'users', component: UsersComponent},
-      {path: 'units', component: UnitFormComponent},
+      {path: 'units', component: UnitFormComponent, canActivate: [LoggedInGuard]},
     ]),
   ],
   providers: [AuthService, RestService, LoggedInGuard],

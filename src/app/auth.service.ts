@@ -30,7 +30,8 @@ export class AuthService {
   logOff() {
     this.restService.call('logout')
       .subscribe(() => {
-        this.authStream.next(false)
+        this.authStream.next(false);
+        this.router.navigate(['login']);
       },
       err => {
         //TODO: showing error in component
