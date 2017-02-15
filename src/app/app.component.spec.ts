@@ -21,7 +21,6 @@ describe('App: Burgista Internal Delivery', () => {
       declarations: [
         AppComponent, NavbarComponent, HomeComponent,
         LoginComponent,
-        UsersComponent
       ],
       imports: [
         BrowserModule,
