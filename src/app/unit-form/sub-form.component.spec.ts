@@ -8,6 +8,7 @@ import {FormsModule} from "@angular/forms";
 import {MaterialModule} from "@angular/material";
 import {UnitModel} from "./unit.model";
 import {Unit} from './unit';
+import {BehaviorSubject} from "rxjs";
 
 describe('SubFormComponent', () => {
   let component: SubFormComponent;
@@ -28,6 +29,9 @@ describe('SubFormComponent', () => {
 
   it('should create', () => {
     component.isAdd = true;
+
+    let actionIsSuccess : BehaviorSubject<boolean> = new BehaviorSubject(false);
+    component.actionIsSuccess = actionIsSuccess;
     fixture.detectChanges();
     expect(component).toBeTruthy();
   });
@@ -38,17 +42,13 @@ describe('SubFormComponent', () => {
     unit.name = 'center branch';
     unit.username = 'john';
     unit.password = '';
-    unit.isBranch = true;
+    unit.is_branch = true;
 
     let unitModel = new UnitModel(unit);
     component.unitModel = unitModel;
 
-    component.isAdd = false;
-    fixture.detectChanges();
-
-    let unitModel = new UnitModel(unit);
-    component.unitModel = unitModel;
-
+    let actionIsSuccess : BehaviorSubject<boolean> = new BehaviorSubject(false);
+    component.actionIsSuccess = actionIsSuccess;
     component.isAdd = false;
     fixture.detectChanges();
 
@@ -81,11 +81,13 @@ describe('SubFormComponent', () => {
     unit.name = 'ali';
     unit.username = 'ahmadi';
     unit.password = '';
-    unit.isBranch = true;
+    unit.is_branch = true;
 
     let unitModel = new UnitModel(unit);
     component.unitModel = unitModel;
     component.isAdd = false;
+    let actionIsSuccess : BehaviorSubject<boolean> = new BehaviorSubject(false);
+    component.actionIsSuccess = actionIsSuccess;
     fixture.detectChanges();
 
     let de : DebugElement = fixture.debugElement.query(By.css('#name'));
@@ -93,11 +95,14 @@ describe('SubFormComponent', () => {
     el.dispatchEvent(new Event('input'));
     fixture.detectChanges();
     tick();
-    el.value = 'mehdi';
-    de.triggerEventHandler('keyup', null);
+    expect(el.value).toContain('ali');
+    el.value = 'mahdi';
     el.dispatchEvent(new Event('input'));
     fixture.detectChanges();
     tick();
+    actionIsSuccess.next(true);
+    de.triggerEventHandler('keyup', null);
+    fixture.detectChanges();
     expect(fixture.debugElement.query(By.css('#updateBtn')).nativeElement.disabled).toBe(false);
   }));
 });
