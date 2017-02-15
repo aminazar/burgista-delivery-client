@@ -14,6 +14,7 @@ import {MaterialModule} from "@angular/material";
 import {HttpModule} from "@angular/http";
 import {AuthService} from "./auth.service";
 import {RestService} from "./rest.service";
+import {LoggedInGuard} from "./login/logged-in.guard";
 
 describe('App: Burgista Internal Delivery', () => {
   beforeEach(() => {
@@ -29,7 +30,7 @@ describe('App: Burgista Internal Delivery', () => {
         MaterialModule.forRoot(),
         RouterTestingModule,
       ],
-      providers: [RouterOutletMap, AuthService, RestService]
+      providers: [RouterOutletMap, AuthService, RestService, LoggedInGuard]
     });
   });
 
