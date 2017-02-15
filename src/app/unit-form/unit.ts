@@ -6,5 +6,5 @@ export class Unit {
   name: string;
   username: string;
   password: string;
-  isBranch: boolean;
+  is_branch: boolean;
 }
