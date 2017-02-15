@@ -8,6 +8,7 @@ import {AuthService} from "../auth.service";
 })
 export class NavbarComponent implements OnInit {
   private auth: boolean;
+  private user: string;
 
   constructor(private authService: AuthService) {
   }
@@ -15,6 +16,7 @@ export class NavbarComponent implements OnInit {
   ngOnInit() {
     this.authService.auth$.subscribe(auth => {
       this.auth = auth;
+      this.user = this.authService.user;
     })
   }
 
