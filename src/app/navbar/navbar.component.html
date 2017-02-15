@@ -5,5 +5,5 @@
   <span class="fill-remaining-space"></span>
 
   <span *ngIf="!auth"><a [routerLink]="['login']"><span class="fa fa-sign-in"></span> Login</a></span>
-  <span *ngIf="auth"><a (click)="logout()"><span class="fa fa-sign-out"></span> Logout</a></span>
+  <span *ngIf="auth"><a (click)="logout()">{{user}} <i class="fa fa-sign-out"></i> Logout</a></span>
 </md-toolbar>
