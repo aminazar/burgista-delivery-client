@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {BehaviorSubject} from "rxjs";
 
 import {UnitModel} from "./unit.model";
 import {ActionEnum} from "./actionEnum";
@@ -12,6 +13,8 @@ import {RestService} from "../rest.service";
 })
 export class UnitFormComponent implements OnInit {
   unitModels: UnitModel[] = [];
+  isAdding = false;
+  actionIsSuccess : BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(private restService: RestService) { }
 
@@ -30,7 +33,7 @@ export class UnitFormComponent implements OnInit {
           unit.name = unitData.name;
           unit.username = unitData.username;
           unit.password = '';
-          unit.isBranch = unitData.is_branch;
+          unit.is_branch = unitData.is_branch;
 
           let unitModel = new UnitModel(unit);
 
@@ -68,12 +71,16 @@ export class UnitFormComponent implements OnInit {
     this.restService.insert('unit', unit).subscribe(
       (data) => {
         //Adding new unit to unitModels list
-        unit.id = data.id;
+        unit.id = data;
         let tempUnitModel = new UnitModel(unit);
+
+        this.actionIsSuccess.next(true);
 
         this.unitModels.push(tempUnitModel);
 
         this.disableEnable(unit.id, ActionEnum.add, false);
+
+        this.actionIsSuccess.next(false);
         //ToDo: adding prop message
       },
       (error) => {
@@ -106,17 +113,21 @@ export class UnitFormComponent implements OnInit {
   }
 
   private updateUnit(unitId: number, unit: Unit){
-    let tempUnitModel : UnitModel = this.unitModels.find(function (element) {
+    let index : number = this.unitModels.findIndex(function (element) {
       return element._unit.id == unitId;
     });
 
-    this.restService.update('unit', unitId, tempUnitModel.getDifferentValues(unit)).subscribe(
+    this.restService.update('unit', unitId, this.unitModels[index].getDifferentValues(unit)).subscribe(
       (data) => {
+        this.actionIsSuccess.next(true);
+
         //Update this unit in unitModels list
-        tempUnitModel._unit = unit;
+        this.unitModels[index].setUnit(unit);
 
         this.disableEnable(unitId, ActionEnum.update, false);
         //ToDo: adding prop message
+
+        this.actionIsSuccess.next(false);
       },
       (error) => {
         console.log(error);
@@ -137,7 +148,7 @@ export class UnitFormComponent implements OnInit {
         break;
       case ActionEnum.delete: tempUnitModel.waiting.deleting = isDisable;
         break;
-      case ActionEnum.add: tempUnitModel.waiting.adding = isDisable;
+      case ActionEnum.add: this.isAdding = isDisable;
         break;
     }
   }

@@ -1,20 +1,20 @@
 <span class="FormTitleStyle">{{formTitle}}</span>
 <div class="DivStyle">
   <span class="TopSpanStyle">Name</span>
-  <input type="text" class="InputStyle" (keyup)="checkDiff()" [(ngModel)]="unit.name"id="name">
-  <md-radio-group class="RadioButtonStyle" [(ngModel)]="unit.isBranch" id="isBranch">
-    <md-radio-button value="true">Branch</md-radio-button>
-    <md-radio-button style="margin-left: 10px;" value="false">Prep Kitchen</md-radio-button>
+  <input type="text" class="InputStyle" (keyup)="disabilityStatus()" [(ngModel)]="unit.name" id="name">
+  <md-radio-group class="RadioButtonStyle" id="isBranch" [(ngModel)]="unit.is_branch  ">
+    <md-radio-button [value]="true">Branch</md-radio-button>
+    <md-radio-button style="margin-left: 10px;" [value]="false">Prep Kitchen</md-radio-button>
   </md-radio-group>
   <br>
   <span class="SpanStyle">Username</span>
-  <input type="text" class="InputStyle" (keyup)="checkDiff()" [(ngModel)]="unit.username" id="username">
+  <input type="text" class="InputStyle" (keyup)="disabilityStatus()" [(ngModel)]="unit.username" id="username">
   <br>
   <span class="SpanStyle">Password</span>
-  <input type="password" class="InputStyle" (keyup)="checkDiff()" [(ngModel)]="unit.password" id="password">
+  <input type="password" class="InputStyle" (keyup)="disabilityStatus()" [(ngModel)]="unit.password" id="password">
   <br>
-  <button md-raised-button *ngIf="isAdd" class="ButtonStyle" (click)="actionEmitter(ae.add)" [(disabled)]="isAdding && checkSubFormInputs()" id="addBtn">Add</button>
-  <button md-raised-button *ngIf="!isAdd" class="ButtonStyle" (click)="actionEmitter(ae.update)" [(disabled)]="unitModel._unit.wating.updating && !shouldUpdate && checkSubFormInputs()" id="updateBtn">Update</button>
-  <button md-raised-button *ngIf="!isAdd" class="ButtonStyle" (click)="actionEmitter(ae.delete)" [(disabled)]= "unitModel._unit.wating.deleting" id="deleteBtn">Delete</button>
+  <button md-raised-button *ngIf="isAdd" class="ButtonStyle" (click)="actionEmitter(ae.add)"  id="addBtn" [(disabled)]="addIsDisable">Add</button>
+  <button md-raised-button *ngIf="!isAdd" class="ButtonStyle" (click)="actionEmitter(ae.update)" id="updateBtn" [(disabled)]="updateIsDisable">Update</button>
+  <button md-raised-button *ngIf="!isAdd" class="ButtonStyle" (click)="actionEmitter(ae.delete)" id="deleteBtn" [(disabled)]= "deleteIsDisable">Delete</button>
 </div>
 <br>

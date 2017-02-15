@@ -18,7 +18,7 @@ export class UnitModel {
     this._unit.name = unit.name;
     this._unit.username = unit.username;
     this._unit.password = unit.password;
-    this._unit.isBranch = unit.isBranch;
+    this._unit.is_branch = unit.is_branch;
   }
 
   isDifferent(unit: Unit): boolean {
@@ -28,7 +28,7 @@ export class UnitModel {
       return true;
     else if (unit.username !== this._unit.username)
       return true;
-    else if (unit.isBranch !== this._unit.isBranch)
+    else if (unit.is_branch !== this._unit.is_branch)
       return true;
     else
       return false;
@@ -46,9 +46,17 @@ export class UnitModel {
     if(unit.username !== this._unit.username)
       diffValues['username'] = unit.username;
 
-    if(unit.isBranch !== this._unit.isBranch)
-      diffValues['isBranch'] = unit.isBranch;
+    if(unit.is_branch !== this._unit.is_branch)
+      diffValues['is_branch'] = unit.is_branch;
 
     return diffValues;
+  }
+
+  setUnit(unit: Unit){
+    this._unit.id = unit.id;
+    this._unit.name = unit.name;
+    this._unit.username = unit.username;
+    this._unit.password = unit.password;
+    this._unit.is_branch = unit.is_branch;
   }
 }
