@@ -2,13 +2,14 @@
 import {async, ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {DebugElement} from '@angular/core';
-
-import {SubFormComponent} from './sub-form.component';
 import {FormsModule} from "@angular/forms";
 import {MaterialModule} from "@angular/material";
+import {BehaviorSubject} from "rxjs";
+
+import {SubFormComponent} from './sub-form.component';
 import {UnitModel} from "./unit.model";
 import {Unit} from './unit';
-import {BehaviorSubject} from "rxjs";
+import {ActionEnum} from "./actionEnum";
 
 describe('SubFormComponent', () => {
   let component: SubFormComponent;
@@ -105,4 +106,28 @@ describe('SubFormComponent', () => {
     fixture.detectChanges();
     expect(fixture.debugElement.query(By.css('#updateBtn')).nativeElement.disabled).toBe(false);
   }));
+
+  it('should trigger event to delete specific unitModel', () => {
+    let unit : Unit = new Unit();
+    unit.id = 1;
+    unit.name = 'Baker Street';
+    unit.username = 'John';
+    unit.password = '';
+    unit.is_branch = true;
+
+    let actionIsSuccess : BehaviorSubject<boolean> = new BehaviorSubject(false);
+    component.isAdd = false;
+    component.unitModel = new UnitModel(unit);
+    component.actionIsSuccess = actionIsSuccess;
+
+    fixture.detectChanges();
+
+    let rcvId = 0;
+    component.action.subscribe((value) => rcvId = value.data.id);
+
+    let de : DebugElement = fixture.debugElement.query(By.css('#deleteBtn'));
+    de.triggerEventHandler('click', ActionEnum.delete);
+
+    expect(rcvId).toBe(1);
+  });
 });

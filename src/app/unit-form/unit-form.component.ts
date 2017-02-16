@@ -74,6 +74,7 @@ export class UnitFormComponent implements OnInit {
       (data) => {
         //Adding new unit to unitModels list
         unit.id = data;
+        unit.password = '';
         let tempUnitModel = new UnitModel(unit);
 
         this.actionIsSuccess.next(true);
@@ -105,7 +106,6 @@ export class UnitFormComponent implements OnInit {
           return elemenet._unit.id !== unitId;
         });
 
-        this.disableEnable(unitId, ActionEnum.delete, false);
         //ToDo: adding prop message
       },
       (error) => {
@@ -127,6 +127,7 @@ export class UnitFormComponent implements OnInit {
         this.actionIsSuccess.next(true);
 
         //Update this unit in unitModels list
+        unit.password = '';
         this.unitModels[index].setUnit(unit);
 
         //Sort unitModels
@@ -161,7 +162,7 @@ export class UnitFormComponent implements OnInit {
     }
   }
 
-  private sortUnitModelList(){
+  sortUnitModelList(){
     this.unitModels.sort(function(a, b){
       if(a._unit.is_branch === false && b._unit.is_branch === true)
         return -1;
@@ -177,8 +178,4 @@ export class UnitFormComponent implements OnInit {
       }
     });
   }
-
-  // changeTabComponent(id){
-  //
-  // }
 }
