@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Subject} from "rxjs/Subject";
+import {Observable} from "rxjs/Observable";
 import {RestService} from "./rest.service";
 import {Router} from "@angular/router";
 

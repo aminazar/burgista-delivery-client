@@ -1,0 +1,4 @@
+<md-select [(ngModel)]="options.freq" (ngModelChange)="onChange()">
+  <md-option *ngFor="let freq of freqs;let i = index;" [value]="freqsConst[i]">{{freq}}</md-option>
+</md-select>
+<p>{{text}}</p>

@@ -15,6 +15,7 @@ import 'hammerjs';
 import { UnitFormComponent } from './unit-form/unit-form.component';
 import { SubFormComponent } from './unit-form/sub-form.component';
 import {FlexLayoutModule} from "@angular/flex-layout";
+import { RRuleComponent } from './rrule/rrule.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import {FlexLayoutModule} from "@angular/flex-layout";
     NavbarComponent,
     HomeComponent,
     UnitFormComponent,
-    SubFormComponent
+    SubFormComponent,
+    RRuleComponent,
   ],
   imports: [
     BrowserModule,
@@ -32,9 +34,10 @@ import {FlexLayoutModule} from "@angular/flex-layout";
     MaterialModule.forRoot(),
     FlexLayoutModule,
     RouterModule.forRoot([
-      {path: '',      component: HomeComponent, pathMatch: 'full'},
+      {path: '',      component: RRuleComponent, pathMatch: 'full'},
       {path: 'login', component: LoginComponent},
       {path: 'units', component: UnitFormComponent, canActivate: [LoggedInGuard]},
+      {path: 'test', component: RRuleComponent},
     ]),
   ],
   providers: [AuthService, RestService, LoggedInGuard],
