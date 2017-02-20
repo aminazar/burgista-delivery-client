@@ -1,6 +1,6 @@
 /* tslint:disable:no-unused-variable */
 
-import {TestBed, async, inject, getTestBed} from '@angular/core/testing';
+import {TestBed, async, inject, getTestBed, tick} from '@angular/core/testing';
 import {RestService} from './rest.service';
 import {MockBackend, MockConnection} from "@angular/http/testing";
 import {
@@ -14,12 +14,18 @@ import {HomeComponent} from './home/home.component';
 import {Router, RouterModule} from "@angular/router";
 import {routerNgProbeToken} from "@angular/router/src/router_module";
 class RouterStub {
-  navigateByUrl(url: string) { return url; }
-  navigate(url: string){ return url; }
-};
+  navigateByUrl(url: string) {
+    return url;
+  }
+
+  navigate(url: string) {
+    return url;
+  }
+}
+;
 
 describe('Service: Auth', () => {
-  let mockBackend: MockBackend, restService: RestService, authService: AuthService, router:any;
+  let mockBackend: MockBackend, restService: RestService, authService: AuthService, router: any;
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       providers: [
@@ -27,7 +33,7 @@ describe('Service: Auth', () => {
         AuthService,
         MockBackend,
         BaseRequestOptions,
-        { provide: Router,      useClass: RouterStub },
+        {provide: Router, useClass: RouterStub},
         {
           provide: Http,
           deps: [MockBackend, BaseRequestOptions],
@@ -36,7 +42,7 @@ describe('Service: Auth', () => {
           }
         }
       ],
-      declarations:[HomeComponent],
+      declarations: [HomeComponent],
       imports: [
         FormsModule,
         HttpModule,
@@ -49,7 +55,7 @@ describe('Service: Auth', () => {
     mockBackend = getTestBed().get(MockBackend);
     restService = getTestBed().get(RestService);
     authService = getTestBed().get(AuthService);
-    router      = getTestBed().get(Router);
+    router = getTestBed().get(Router);
   }));
 
   it('should be injected', inject([AuthService], (service: AuthService) => {
@@ -57,7 +63,7 @@ describe('Service: Auth', () => {
   }));
 
   it(`should call login with HTTP`, async(() => {
-    let spy = spyOn(router,'navigate');
+    let spy = spyOn(router, 'navigate');
     mockBackend.connections.subscribe(
       (connection: MockConnection) => {
         expect(connection.request.url).toBe('/api/login');
@@ -67,9 +73,14 @@ describe('Service: Auth', () => {
         expect(body.password).toBe('testPwd');
         connection.mockRespond(new Response(new ResponseOptions({
           status: 200,
+          body: `{"user":"testUser","userType":"branch"}`
         })));
       });
-    authService.auth$.subscribe(auth => expect(auth).toBeTruthy());
+    authService.auth$.subscribe(auth => {
+      expect(auth).toBeTruthy()
+      expect(authService.user).toBe("testUser");
+      expect(authService.userType).toBe("branch");
+    });
     authService.logIn('testUser', 'testPwd');
   }));
   it(`should not login where HTTP responds with error`, async(() => {
@@ -91,6 +102,7 @@ describe('Service: Auth', () => {
         }
         connection.mockRespond(new Response(new ResponseOptions({
           status: 200,
+          body: `{"user":"testUser","userType":"branch"}`
         })));
       });
     authService.auth$.subscribe(auth => i === 2 ? expect(auth).toBeFalsy() : expect(auth).toBeTruthy());

@@ -16,6 +16,7 @@ import { UnitFormComponent } from './unit-form/unit-form.component';
 import { SubFormComponent } from './unit-form/sub-form.component';
 import {FlexLayoutModule} from "@angular/flex-layout";
 import { RRuleComponent } from './rrule/rrule.component';
+import { MonthdayComponent } from './rrule/monthday.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { RRuleComponent } from './rrule/rrule.component';
     UnitFormComponent,
     SubFormComponent,
     RRuleComponent,
+    MonthdayComponent,
   ],
   imports: [
     BrowserModule,
@@ -37,7 +39,6 @@ import { RRuleComponent } from './rrule/rrule.component';
       {path: '',      component: RRuleComponent, pathMatch: 'full'},
       {path: 'login', component: LoginComponent},
       {path: 'units', component: UnitFormComponent, canActivate: [LoggedInGuard]},
-      {path: 'test', component: RRuleComponent},
     ]),
   ],
   providers: [AuthService, RestService, LoggedInGuard],
