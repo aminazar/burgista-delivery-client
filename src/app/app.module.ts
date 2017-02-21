@@ -36,7 +36,7 @@ import { MonthdayComponent } from './rrule/monthday.component';
     MaterialModule.forRoot(),
     FlexLayoutModule,
     RouterModule.forRoot([
-      {path: '',      component: RRuleComponent, pathMatch: 'full'},
+      {path: '',      component: HomeComponent, pathMatch: 'full'},
       {path: 'login', component: LoginComponent},
       {path: 'units', component: UnitFormComponent, canActivate: [LoggedInGuard]},
     ]),
