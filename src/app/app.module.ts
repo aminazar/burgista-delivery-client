@@ -17,6 +17,8 @@ import { SubFormComponent } from './unit-form/sub-form.component';
 import {FlexLayoutModule} from "@angular/flex-layout";
 import { RRuleComponent } from './rrule/rrule.component';
 import { MonthdayComponent } from './rrule/monthday.component';
+import {ProductFormComponent} from "./product-form/product-form.component";
+import {ProductSubFormComponent} from "./product-form/product-sub-form.component";
 
 @NgModule({
   declarations: [
@@ -28,6 +30,8 @@ import { MonthdayComponent } from './rrule/monthday.component';
     SubFormComponent,
     RRuleComponent,
     MonthdayComponent,
+    ProductFormComponent,
+    ProductSubFormComponent
   ],
   imports: [
     BrowserModule,
@@ -39,6 +43,7 @@ import { MonthdayComponent } from './rrule/monthday.component';
       {path: '',      component: HomeComponent, pathMatch: 'full'},
       {path: 'login', component: LoginComponent},
       {path: 'units', component: UnitFormComponent, canActivate: [LoggedInGuard]},
+      {path: 'products', component: ProductFormComponent, canActivate: [LoggedInGuard]},
     ]),
   ],
   providers: [AuthService, RestService, LoggedInGuard],
