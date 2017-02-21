@@ -1,0 +1,38 @@
+<md-input-container>
+  <input mdInput type="number" placeholder="Interval" [(ngModel)]="options.interval" (ngModelChange)="onChange()" min="1">
+  <md-hint>Every {{options.interval>1?options.interval:''}} {{freqsName[freqsConst.indexOf(options.freq)]}}{{options.interval>1?'s':''}}</md-hint>
+</md-input-container><br/>
+<md-button-toggle-group [(ngModel)]="options.freq" [vertical]="true" (ngModelChange)="onChange()">
+  <md-button-toggle *ngFor="let freq of freqs;let i = index;" [value]="freqsConst[i]">
+    {{freq}}
+  </md-button-toggle>
+</md-button-toggle-group>
+<md-button-toggle-group *ngIf="showMonthOptions" [(ngModel)]="monthlyChooseByWeek" [vertical]="true" (ngModelChange)="onChange()">
+  <md-button-toggle [value]="true">
+    By Weekdays
+  </md-button-toggle>
+  <md-button-toggle [value]="false">
+    By Month Days
+  </md-button-toggle>
+</md-button-toggle-group>
+<md-button-toggle-group *ngIf="showMonthOptions&&!monthlyChooseByWeek" multiple [vertical]="true">
+  <md-button-toggle  value="past" (change)="monthDaysPastOrRemainedChange($event)" [checked]="monthDaysOption.indexOf('past')!==-1">
+    Days Past
+  </md-button-toggle>
+  <md-button-toggle  value="remained" (change)="monthDaysPastOrRemainedChange($event)" [checked]="monthDaysOption.indexOf('remained')!==-1">
+    Days Remained
+  </md-button-toggle>
+</md-button-toggle-group>
+<app-monthday *ngIf="showMonthOptions&&showMonthDaysPast&&!monthlyChooseByWeek" [(days)]="monthDaysPast" (daysChange)="monthDaysPastChange()"></app-monthday>
+<app-monthday *ngIf="showMonthOptions&&showMonthDaysRemained&&!monthlyChooseByWeek" [reverse]="true" [(days)]="monthDaysRemained" (daysChange)="monthDaysRemainedChange()"></app-monthday>
+
+<md-button-toggle-group *ngIf="showMonthOptions&&monthlyChooseByWeek" multiple [vertical]="true">
+  <md-button-toggle *ngFor="let pos of weekpos;let i=index" [value]="pos" [checked]="bysetpos.indexOf(pos)!==-1" (change)="weekposChange($event)">{{weekposName[i]}}</md-button-toggle>
+</md-button-toggle-group>
+<md-button-toggle-group *ngIf="showWeekdays" multiple [vertical]="true">
+  <md-button-toggle *ngFor="let weekday of weekdays;let i = index;" [value]="weekdaysConst[i]" [checked]="byweekday.indexOf(weekdaysConst[i])!==-1" (change)="byweekdayChange($event)">
+    {{weekday}}
+  </md-button-toggle>
+</md-button-toggle-group>
+<h4>Next occurrences</h4>
+<pre>{{text}}</pre>

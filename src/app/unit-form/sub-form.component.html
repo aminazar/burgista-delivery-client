@@ -1,22 +1,18 @@
 <span class="FormTitleStyle">{{formTitle}}</span>
 <md-card style="border-style: solid; border-width: 2px; border-color:#607D8B; direction: ltr; margin-left: 10px;">
-  <span class="TopSpanStyle">Name</span>
-  <md-input-container style="text-indent: 2%; width: 30%;" >
-    <input md-input type="text" (keyup)="disabilityStatus()" [(ngModel)]="unit.name" id="name"/>
-  </md-input-container>
   <md-radio-group class="RadioButtonStyle" [(ngModel)]="unit.is_branch" id="isBranch">
     <md-radio-button [value]="true">Branch</md-radio-button>
-    <md-radio-button style="margin-left: 10px;" [value]="false">Prep Unit</md-radio-button>
-  </md-radio-group>
-  <br>
-  <span class="SpanStyle">Username</span>
-  <md-input-container style="text-indent: 2%; width: 30%;">
-    <input md-input type="text" (keyup)="disabilityStatus()" [(ngModel)]="unit.username" id="username"/>
+    <md-radio-button [value]="false">Prep Unit</md-radio-button>
+  </md-radio-group><br>
+  <md-input-container>
+    <input mdInput placeholder="Unit Name" type="text" (keyup)="disabilityStatus()" [(ngModel)]="unit.name" id="name"/>
+  </md-input-container>
+  <md-input-container>
+    <input mdInput  placeholder="Admin Username" type="text" (keyup)="disabilityStatus()" [(ngModel)]="unit.username" id="username"/>
   </md-input-container>
   <br>
-  <span class="SpanStyle">Password</span>
-  <md-input-container style="text-indent: 2%; width: 30%;" >
-    <input md-input type="password" (keyup)="disabilityStatus()" [(ngModel)]="unit.password" id="password"/>
+  <md-input-container >
+    <input mdInput  placeholder="Admin Password" type="password" (keyup)="disabilityStatus()" [(ngModel)]="unit.password" id="password"/>
   </md-input-container>
   <br>
   <button md-raised-button *ngIf="isAdd" class="ButtonStyle" (click)="actionEmitter(ae.add)" [(disabled)]="addIsDisable" id="addBtn">Add</button>

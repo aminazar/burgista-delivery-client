@@ -1,0 +1,10 @@
+<md-card>
+  <md-card-title>
+  Days {{reverse?'remained to month-end':'past from month'}}
+  </md-card-title>
+  <md-card-content>
+    <md-button-toggle-group *ngFor="let row of calDays;let i=index" multiple [vertical]="true">
+      <md-button-toggle *ngFor="let day of row" [value]="day" (change)="monthDaysChange($event)" [checked]="days.indexOf(reverse?day+1:day)!==-1">{{day}}</md-button-toggle>
+    </md-button-toggle-group>
+  </md-card-content>
+</md-card>

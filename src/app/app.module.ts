@@ -15,6 +15,8 @@ import 'hammerjs';
 import { UnitFormComponent } from './unit-form/unit-form.component';
 import { SubFormComponent } from './unit-form/sub-form.component';
 import {FlexLayoutModule} from "@angular/flex-layout";
+import { RRuleComponent } from './rrule/rrule.component';
+import { MonthdayComponent } from './rrule/monthday.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +25,9 @@ import {FlexLayoutModule} from "@angular/flex-layout";
     NavbarComponent,
     HomeComponent,
     UnitFormComponent,
-    SubFormComponent
+    SubFormComponent,
+    RRuleComponent,
+    MonthdayComponent,
   ],
   imports: [
     BrowserModule,
