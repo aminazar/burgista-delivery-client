@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable,isDevMode} from '@angular/core';
 import {Subject} from "rxjs/Subject";
 import {Observable} from "rxjs/Observable";
 import {RestService} from "./rest.service";
@@ -22,7 +22,8 @@ export class AuthService {
           this.authStream.next(true);
         },
         err => {
-          console.log(err);
+          if(isDevMode())
+            console.log(err);
           this.authStream.next(false);
         });
   }
@@ -40,7 +41,8 @@ export class AuthService {
         err => {
           //TODO: showing error in component
           this.authStream.next(false);
-          console.log(err);
+          if(isDevMode())
+            console.log(err);
         })
   }
 
@@ -53,7 +55,8 @@ export class AuthService {
         },
         err => {
           //TODO: showing error in component
-          console.log(err);
+          if(isDevMode())
+            console.log(err);
         });
   }
 }
