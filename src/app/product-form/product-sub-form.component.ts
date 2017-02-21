@@ -36,8 +36,8 @@ export class ProductSubFormComponent implements OnInit {
         this.prepUnits = [];
 
         for(let unit of data){
-          if(unit.name === 'admin')
-            continue;
+          // if(unit.name === 'admin')
+          //   continue;
 
           let tempObj = {
             id: unit.uid,
