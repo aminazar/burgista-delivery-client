@@ -176,7 +176,7 @@ describe('UnitFormComponent', () => {
   //Don't forget to undo your changes on below unit test (uncomment) and 'disableEnable' method.
   // it('should disabled delete/update/add button of a unitModel in unitModel list', fakeAsync(() => {
   //   component.unitModels = tempUnitModels;
-  //   component.sortUnitModelList();
+  //   component.sortProductModelList();
   //
   //   expect(component.isAdding).toBe(false);
   //   expect(component.unitModels[0].waiting.updating).toBe(false);

@@ -15,8 +15,8 @@
     <input mdInput  placeholder="Admin Password" type="password" (keyup)="disabilityStatus()" [(ngModel)]="unit.password" id="password"/>
   </md-input-container>
   <br>
-  <button md-raised-button *ngIf="isAdd" class="ButtonStyle" (click)="actionEmitter(ae.add)" [(disabled)]="addIsDisable" id="addBtn">Add</button>
-  <button md-raised-button *ngIf="!isAdd" class="ButtonStyle" (click)="actionEmitter(ae.update)" [(disabled)]="updateIsDisable" id="updateBtn">Update</button>
-  <button md-raised-button *ngIf="!isAdd" class="ButtonStyle" (click)="actionEmitter(ae.delete)" [(disabled)]= "deleteIsDisable" id="deleteBtn">Delete</button>
+    <button md-raised-button *ngIf="isAdd" class="ButtonStyle" (click)="actionEmitter(ae.add)" [(disabled)]="addIsDisable" id="addBtn">Add</button>
+    <button md-raised-button *ngIf="!isAdd" class="ButtonStyle" (click)="actionEmitter(ae.update)" [(disabled)]="updateIsDisable" id="updateBtn">Update</button>
+    <button md-raised-button *ngIf="!isAdd" class="ButtonStyle" (click)="actionEmitter(ae.delete)" [(disabled)]= "deleteIsDisable" id="deleteBtn">Delete</button>
 </md-card>
 <br>

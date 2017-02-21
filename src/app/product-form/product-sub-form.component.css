@@ -1,0 +1,33 @@
+/*md-select, md-input-container{*/
+  /*margin: 6px;*/
+  /*width: 40%;*/
+  /*text-indent: 2px;*/
+/*}*/
+
+.FormTitleStyle{
+  margin-top: 15px;
+  margin-left: 15px;
+  font-weight: bold;
+}
+
+input{
+  min-width: 100px;
+}
+
+.ButtonStyle{
+  margin-left: 12px;
+  margin-top: 20px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  border-width: 5px;
+  border-color:#728653;
+  background-color: #607D8B;
+  font-weight: bold;
+}
+
+md-card{
+  border-style: solid;
+  border-width: 2px;
+  border-color: #607D8B;
+  direction: ltr;
+}

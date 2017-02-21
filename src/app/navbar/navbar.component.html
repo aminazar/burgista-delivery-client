@@ -1,6 +1,7 @@
 <md-toolbar color="primary">
   <span><a [routerLink]="['']">Burgista Internal Delivery</a></span>
   <span *ngIf="isAdmin"><a [routerLink]="['units']">Units</a></span>
+  <span *ngIf="isAdmin"><a [routerLink]="['products']">Products</a></span>
   <!-- This fills the remaining space of the current row -->
   <span class="fill-remaining-space"></span>
 
