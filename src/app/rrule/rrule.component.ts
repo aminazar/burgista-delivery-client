@@ -37,14 +37,8 @@ export class RRuleComponent implements OnInit {
 
   ngOnInit() {
     this.byweekday = [Rrule.MO, Rrule.FR];
-    this.options = {
-      freq: Rrule.WEEKLY,
-      interval: 5,
-      byweekday: this.byweekday,
-    };
-
-    this.rule = //new Rrule(this.options);
-      Rrule.fromString('FREQ=MONTHLY;INTERVAL=5;DTSTART=20170219T111638Z;BYMONTHDAY=-27,-31,13');
+    this.rule = Rrule.fromString(this.RRuleStr);
+//    delete this.rule.options.dtstart;
     this.options = this.rule.options;
     if (<number[]>this.options.bysetpos)
       this.bysetpos = <number[]>this.options.bysetpos;
@@ -104,13 +98,15 @@ export class RRuleComponent implements OnInit {
         this.options.byweekday = [];
 
       for (let key in this.options)
-        if (!this.options[key] || this.options[key].length === 0 || [ 'bynmonthday', 'bynweeday', 'bynsetpos'].indexOf(key) !== -1)
+        if (!this.options[key] || this.options[key].length === 0 || [ 'bynmonthday', 'bynweeday', 'bynsetpos', 'byhour', 'byminute', 'bysecond'].indexOf(key) !== -1)
           delete this.options[key];
 
       this.rule = new Rrule(this.options);
       let d = new Date();
       let d2 = moment(d).add(366,'d').toDate();
       this.text = this.rule.between(d,d2).map(r=>moment(r).format('ddd DD-MMM-YY')).splice(0,10).join('\n');
+      this.RRuleStr = this.rule.toString();
+      this.RRuleStrChange.emit(this.RRuleStr);
     }
     catch (err) {
       console.log(err);
