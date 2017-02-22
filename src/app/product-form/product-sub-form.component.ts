@@ -13,32 +13,36 @@ import {RestService} from "../rest.service";
 })
 export class ProductSubFormComponent implements OnInit {
   @Input() isAdd: boolean = true;
-  @Input() isAdding: boolean = false;
+  // @Input() isAdding: boolean = false;
+  @Input() isAdding: Observable<boolean>;
   @Input() productModel : ProductModel;
   @Input() actionIsSuccess: Observable<boolean>;
   @Output() action = new EventEmitter();
 
+
+  _isAdding: boolean;
+  _isUpdating: boolean;
+  _isDeleting: boolean;
   formTitle: string = '';
   product: Product;
   ae = ActionEnum;
   addIsDisable: boolean = false;
   updateIsDisable: boolean = false;
   deleteIsDisable: boolean = false;
-  measuringUnits = ['Kg', 'Liter'];
+  measuringUnits = ['Kg', 'Gr', 'Litre', 'Pound(lb)', 'Ounce(oz)', 'Fluid ounce(oz)', 'Units', 'Packs', 'Dozens', 'Barrels'];
   prepUnits = [];
-  days = ['Monday', 'Sunday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Usage'];
+  days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Usage'];
 
   constructor(private restService: RestService) { }
 
   ngOnInit() {
+    this.product = new Product();
+
     this.restService.get('unit?isBranch=false').subscribe(
       (data) => {
         this.prepUnits = [];
 
         for(let unit of data){
-          // if(unit.name === 'admin')
-          //   continue;
-
           let tempObj = {
             id: unit.uid,
             name: unit.name
@@ -63,7 +67,15 @@ export class ProductSubFormComponent implements OnInit {
             this.product.measuringUnit = null;
             this.product.prep_unit_id = null;
             this.product.countingRecursion = '';
+            this.product.minQty = null;
+            this.product.maxQty = null;
+
+            for(let day in this.product.coefficients){
+              this.product.coefficients[day] = 1;
+            }
           }
+
+          this.disabilityStatus();
         }
       },
       (err) => {
@@ -71,7 +83,31 @@ export class ProductSubFormComponent implements OnInit {
       }
     );
 
-    this.product = new Product();
+    if(this.isAdd){
+      this.isAdding.subscribe(
+        (data) => {
+          this._isAdding = data;
+
+          this.disabilityStatus();
+        },
+        (err) => {
+          console.log(err.message);
+        }
+      )
+    }
+    else{
+      this.productModel.waiting.subscribe(
+        (data) => {
+          this._isUpdating = data.updating;
+          this._isDeleting = data.deleting;
+
+          this.disabilityStatus();
+        },
+        (err) => {
+          console.log(err.message);
+        }
+      );
+    }
 
     if(this.isAdd){
       this.formTitle = 'New Product';
@@ -83,10 +119,14 @@ export class ProductSubFormComponent implements OnInit {
       this.product.measuringUnit = null;
       this.product.prep_unit_id = null;
       this.product.countingRecursion = '';
+      this.product.minQty = null;
+      this.product.maxQty = null;
+
+      for(let day in this.product.coefficients){
+        this.product.coefficients[day] = 1;
+      }
     }
     else{
-      this.formTitle = this.productModel._product.name;
-
       this.product.id = this.productModel._product.id;
       this.product.name = this.productModel._product.name;
       this.product.code = this.productModel._product.code;
@@ -102,6 +142,8 @@ export class ProductSubFormComponent implements OnInit {
       }
       // this.product.coefficients = this.productModel._product.coefficients;
       this.product.countingRecursion = this.productModel._product.countingRecursion;
+
+      this.formTitle = this.product.name;
     }
 
     this.disabilityStatus();
@@ -126,9 +168,31 @@ export class ProductSubFormComponent implements OnInit {
 
   isCorrectFormData(){
     for(let day in this.product.coefficients){
+      if(this.product.coefficients[day] < 0)
+        this.product.coefficients[day] = 1;
+
+      if(this.product.coefficients[day] > 99999)
+        this.product.coefficients[day] = 99999;
+
       if(this.product.coefficients[day] === 0 || this.product.coefficients[day] === null)
         return false;
     }
+
+    //Set limitation to numerical inputs
+    if(this.product.size < 0)
+      this.product.size = 1;
+
+    if(this.product.size > 99999)
+      this.product.size = 99999;
+
+    if(this.product.minQty < 0)
+      this.product.minQty = 0;
+
+    if(this.product.minQty > 99998)
+      this.product.minQty = 99998;
+
+    if(this.product.maxQty > 99999)
+      this.product.maxQty  = 99999;
 
     if(this.product.name !== ''
     && this.product.code !== ''
@@ -136,7 +200,7 @@ export class ProductSubFormComponent implements OnInit {
     && this.product.measuringUnit !== null
     && this.product.prep_unit_id !== null
     && this.product.minQty !== null && this.product.minQty !== 0
-    && this.product.maxQty !== null && this.product.maxQty !== 0 && this.product.maxQty >= this.product.maxQty
+    && this.product.maxQty !== null && this.product.maxQty !== 0 && this.product.maxQty > this.product.minQty && this.product.minQty >= 0
     && this.product.countingRecursion !== null && this.product.countingRecursion !== '')
       return true;
     else
@@ -144,14 +208,14 @@ export class ProductSubFormComponent implements OnInit {
   }
 
   shouldDisableAddBtn() : boolean{
-    if(this.isAdding === true)
+    if(this._isAdding === true)
       return true;
     else
       return !this.isCorrectFormData();
   }
 
   shouldDisableUpdateBtn() : boolean{
-    if(this.productModel.waiting.updating === true)
+    if(this._isUpdating === true)
       return true;
     else{
       if(this.productModel.isDifferent(this.product) === true)
@@ -162,7 +226,7 @@ export class ProductSubFormComponent implements OnInit {
   }
 
   shouldDisableDeleteBtn() : boolean{
-    if(this.productModel.waiting.deleting === true)
+    if(this._isDeleting === true)
       return true;
     else
       return false;

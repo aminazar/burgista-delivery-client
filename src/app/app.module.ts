@@ -1,6 +1,6 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
 import {AppComponent} from './app.component';
 import {LoginComponent} from './login/login.component';
@@ -39,6 +39,7 @@ import {ProductSubFormComponent} from "./product-form/product-sub-form.component
     HttpModule,
     MaterialModule.forRoot(),
     FlexLayoutModule,
+    ReactiveFormsModule,
     RouterModule.forRoot([
       {path: '',      component: HomeComponent, pathMatch: 'full'},
       {path: 'login', component: LoginComponent},

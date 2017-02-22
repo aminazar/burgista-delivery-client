@@ -1,7 +1,25 @@
 <md-card style="background-color: #607D8B; border-radius: 7px; text-align: left; margin: 10px;">
   <span class="SpanStyle">Products</span>
-  <md-card style="background-color: white; padding: 10px;">
-    <app-product-sub-form [isAdd]="true" [isAdding]="isAdding" [actionIsSuccess]="actionIsSuccess" (action)="doClickedAction($event)"></app-product-sub-form>
-    <app-product-sub-form *ngFor="let pm of productModels" [isAdd]="false" [actionIsSuccess]="actionIsSuccess" [productModel]="pm" (action)="doClickedAction($event)"></app-product-sub-form>
-  </md-card>
+  <md-tab-group>
+    <md-tab label="Add">
+      <md-card style="background-color: white; padding: 10px;">
+        <app-product-sub-form [isAdd]="true" [isAdding]="isAdding" [actionIsSuccess]="actionIsSuccess" (action)="doClickedAction($event)"></app-product-sub-form>
+      </md-card>
+    </md-tab>
+    <md-tab label="Modify">
+      <md-card>
+        <md-card-content>
+          <md-input-container>
+            <input mdInput type="text" placeholder="Product name/code" [mdAutocomplete]="auto" [formControl]="productModelCtrl"/>
+            <md-autocomplete #auto="mdAutocomplete">
+              <md-option *ngFor="let nameCode of filteredNameCode | async" [value]="nameCode">
+                {{nameCode}}
+              </md-option>
+            </md-autocomplete>
+          </md-input-container>
+        </md-card-content>
+        <app-product-sub-form *ngIf="isFiltered" [isAdd]="false" [actionIsSuccess]="actionIsSuccess" [productModel]="filteredProductModel" (action)="doClickedAction($event)"></app-product-sub-form>
+      </md-card>
+    </md-tab>
+  </md-tab-group>
 </md-card>
