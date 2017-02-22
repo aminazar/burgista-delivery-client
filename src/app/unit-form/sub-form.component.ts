@@ -93,7 +93,7 @@ export class SubFormComponent implements OnInit {
     if(isForAdd === true && this.unit.password === "")
       return false;
 
-    if( this.unit.name !== "" && this.unit.username !== "" && (this.unit.is_branch || !this.unit.is_branch) )
+    if( this.unit.name !== "" && this.unit.username !== "" && this.unit.is_branch !== null )
       return true;
     else
       return false;

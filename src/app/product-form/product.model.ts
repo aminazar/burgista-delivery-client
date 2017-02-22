@@ -3,14 +3,16 @@
  */
 
 import { Product } from './product';
+import {hasProperties} from "codelyzer/util/astQuery";
+import {BehaviorSubject} from "rxjs";
 
 export class ProductModel {
   _product: Product;
-  waiting = {
+  waiting : BehaviorSubject<any> = new BehaviorSubject({
     adding: false,
     updating: false,
     deleting: false
-  };
+  });
 
   constructor(product: Product){
     this._product = new Product();
@@ -46,8 +48,12 @@ export class ProductModel {
     for(let prop in product){
       if(prop === 'coefficients'){
         for(let day in product.coefficients){
-          if(this._product.coefficients[day] !== product.coefficients[day])
+          if(this._product.coefficients[day] !== product.coefficients[day]){
+            if(!diffValue['coefficients'])
+              diffValue['coefficients'] = {};
+
             diffValue['coefficients'][day] = product.coefficients[day];
+          }
         }
       }
       else if(this._product[prop] !== product[prop])
