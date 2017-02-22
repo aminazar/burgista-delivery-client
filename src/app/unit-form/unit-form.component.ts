@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, isDevMode } from '@angular/core';
 import {BehaviorSubject} from "rxjs";
 
 import {UnitModel} from "./unit.model";
 import {ActionEnum} from "./actionEnum";
 import {Unit} from "./unit";
 import {RestService} from "../rest.service";
+import {MessageService} from "../message.service";
 
 @Component({
   selector: 'app-unit-form',
@@ -16,7 +17,7 @@ export class UnitFormComponent implements OnInit {
   isAdding = false;
   actionIsSuccess : BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  constructor(private restService: RestService) { }
+  constructor(private restService: RestService, private messageService:MessageService) { }
 
   ngOnInit() {
     //Get all units from server
@@ -43,9 +44,9 @@ export class UnitFormComponent implements OnInit {
         this.sortUnitModelList();
       },
       (error) => {
-        console.log(error);
-
-        //ToDo: adding prop message
+        this.messageService.error(error);
+        if(isDevMode())
+          console.log(error);
       }
     );
 
@@ -70,6 +71,7 @@ export class UnitFormComponent implements OnInit {
   }
 
   private addUnit(unit: Unit){
+    let name = unit.name;
     this.restService.insert('unit', unit).subscribe(
       (data) => {
         //Adding new unit to unitModels list
@@ -87,13 +89,14 @@ export class UnitFormComponent implements OnInit {
         this.disableEnable(unit.id, ActionEnum.add, false);
 
         this.actionIsSuccess.next(false);
-        //ToDo: adding prop message
+        this.messageService.message(`'${name}' is added to units as a new ${unit.is_branch?'Branch':'Prep Unit'}`);
       },
       (error) => {
-        console.log(error);
+        this.messageService.error(error);
+        if(isDevMode())
+          console.log(error);
 
         this.disableEnable(unit.id, ActionEnum.add, false);
-        //ToDo: adding prop message
       }
     );
   }
@@ -106,13 +109,14 @@ export class UnitFormComponent implements OnInit {
           return elemenet._unit.id !== unitId;
         });
 
-        //ToDo: adding prop message
+        this.messageService.message('Unit is deleted.');
       },
       (error) => {
-        console.log(error);
+        this.messageService.error(error);
+        if(isDevMode())
+          console.log(error);
 
         this.disableEnable(unitId, ActionEnum.delete, false);
-        //ToDo: adding prop message
       }
     );
   }
@@ -134,15 +138,16 @@ export class UnitFormComponent implements OnInit {
         this.sortUnitModelList();
 
         this.disableEnable(unitId, ActionEnum.update, false);
-        //ToDo: adding prop message
+        this.messageService.message(`${unit.name} (${unit.is_branch?'branch':'prep unit'}) is updated.`);
 
         this.actionIsSuccess.next(false);
       },
       (error) => {
-        console.log(error);
+        this.messageService.error(error);
+        if(isDevMode())
+          console.log(error);
 
         this.disableEnable(unitId, ActionEnum.update, false);
-        //ToDo: adding prop message
       }
     )
   }
