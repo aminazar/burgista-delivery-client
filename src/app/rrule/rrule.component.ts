@@ -10,27 +10,27 @@ import * as moment from 'moment';
 export class RRuleComponent implements OnInit {
   @Input() RRuleStr: string;
   @Output() RRuleStrChange = new EventEmitter<string>();
-  private options: Rrule.Options;
-  private rule: Rrule;
-  private freqs = ['Daily', 'Weekly', 'Monthly'];
-  private freqsConst = [Rrule.DAILY, Rrule.WEEKLY, Rrule.MONTHLY];
-  private freqsName = ['day', 'week', 'month'];
-  private weekdays = ['Mon', 'Tue', 'Wed', 'Thr', 'Fri', 'Sat', 'Sun'];
-  private weekdaysConst = [Rrule.MO, Rrule.TU, Rrule.WE, Rrule.TH, Rrule.FR, Rrule.SA, Rrule.SU];
-  private weekpos = [1, 2, 3, 4, -1];
-  private weekposName = ['First', 'Second', 'Third', 'Fourth', 'Last'];
-  private byweekday: Rrule.Weekday[] = [];
-  private text = '';
-  private showWeekdays = false;
-  private showMonthOptions = false;
-  private monthlyChooseByWeek = false;
-  private monthDaysOption = [];
-  private monthDaysPast: number[] = [];
-  private monthDaysRemained: number[] = [];
-  private bymonthday: number[] = [];
-  private showMonthDaysPast: boolean;
-  private showMonthDaysRemained: boolean;
-  private bysetpos: number[] = [];
+  options: Rrule.Options;
+  rule: Rrule;
+  freqs = ['Daily', 'Weekly', 'Monthly'];
+  freqsConst = [Rrule.DAILY, Rrule.WEEKLY, Rrule.MONTHLY];
+  freqsName = ['day', 'week', 'month'];
+  weekdays = ['Mon', 'Tue', 'Wed', 'Thr', 'Fri', 'Sat', 'Sun'];
+  weekdaysConst = [Rrule.MO, Rrule.TU, Rrule.WE, Rrule.TH, Rrule.FR, Rrule.SA, Rrule.SU];
+  weekpos = [1, 2, 3, 4, -1];
+  weekposName = ['First', 'Second', 'Third', 'Fourth', 'Last'];
+  byweekday: Rrule.Weekday[] = [];
+  text = '';
+  showWeekdays = false;
+  showMonthOptions = false;
+  monthlyChooseByWeek = false;
+  monthDaysOption = [];
+  monthDaysPast: number[] = [];
+  monthDaysRemained: number[] = [];
+  bymonthday: number[] = [];
+  showMonthDaysPast: boolean;
+  showMonthDaysRemained: boolean;
+  bysetpos: number[] = [];
 
   constructor() {
   }
@@ -44,7 +44,9 @@ export class RRuleComponent implements OnInit {
       this.bysetpos = <number[]>this.options.bysetpos;
     if (<number[]>this.options.bymonthday)
       this.bymonthday = <number[]>this.options.bymonthday;
-    if (<Array<Rrule.Weekday>>this.options.byweekday)
+    if(<Array<number>>this.options.byweekday && (<Array<number>>this.options.byweekday).length)
+        this.byweekday = (<Array<number>>this.options.byweekday).map(r=>this.weekdaysConst[r]);
+    else if (<Array<Rrule.Weekday>>this.options.byweekday)
       this.byweekday = (<Array<Rrule.Weekday>>this.options.byweekday);
     this.monthlyChooseByWeek = this.bysetpos.length > 0;
     this.monthDaysPast = this.bymonthday.filter(r => r > 0);
