@@ -26,8 +26,8 @@ export class UnitFormComponent implements OnInit {
         this.unitModels = [];
 
         for(let unitData of data){
-          if(unitData.username === 'admin')
-            continue;
+          // if(unitData.username === 'admin')
+          //   continue;
 
           let unit = new Unit();
           unit.id = unitData.uid;

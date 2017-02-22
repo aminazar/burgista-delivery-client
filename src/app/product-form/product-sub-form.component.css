@@ -25,3 +25,8 @@ md-card{
   border-color: #607D8B;
   direction: ltr;
 }
+
+.numInput{
+  max-width: 100px;
+  min-width: 80px;
+}
