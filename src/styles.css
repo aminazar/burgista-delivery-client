@@ -1,1 +1,24 @@
 /* You can add global styles to this file, and also import other style files */
+a{text-decoration: none;}
+a:focus{text-decoration: none;text-weight:bold;}
+a:hover{text-decoration: none;text-weight:bold;}
+.outerCard{
+  background-color: #607D8B !important; border-radius: 7px; text-align: left; margin: 10px;
+}
+.innerCard{
+background-color:antiquewhite !important; padding: 10px;
+}
+.FormTitleStyle{
+  margin-top: 15px;
+  margin-left: 15px;
+  font-weight: bold;
+  display:inline-block;
+  font-size:120%;
+}
+.cardTitle{
+  color:beige;
+}
+.snackBar{
+  background-color: #283440 !important;
+  border-radius: 7px;
+}

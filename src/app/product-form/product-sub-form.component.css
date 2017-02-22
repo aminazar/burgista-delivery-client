@@ -4,12 +4,6 @@
   /*text-indent: 2px;*/
 /*}*/
 
-.FormTitleStyle{
-  margin-top: 15px;
-  margin-left: 15px;
-  font-weight: bold;
-}
-
 input{
   min-width: 100px;
 }
