@@ -1,5 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from "../auth.service";
+import {RouterLinkActive, Router} from "@angular/router";
+
+interface navLink{
+  link:string;
+  label:string;
+}
 
 @Component({
   selector: 'app-navbar',
@@ -12,8 +18,9 @@ export class NavbarComponent implements OnInit {
   private isAdmin: boolean;
   private isBranch: boolean;
   private isPrep: boolean;
+  private navLinks:navLink[] = [];
 
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService, private router:Router) {
   }
 
   ngOnInit() {
@@ -23,6 +30,10 @@ export class NavbarComponent implements OnInit {
       this.isAdmin = auth && this.authService.userType  === 'admin';
       this.isBranch = auth && this.authService.userType === 'branch';
       this.isPrep   = auth && this.authService.userType === 'prep';
+      if(this.isAdmin) {
+        this.navLinks.push({label: 'Units', link: 'units'});
+        this.navLinks.push({label: 'Products', link: 'products'});
+      }
     })
   }
 

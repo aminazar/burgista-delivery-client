@@ -7,11 +7,6 @@
   text-indent: 2%;
 }
 
-.FormTitleStyle{
-  margin-left: 15px;
-  font-weight: bold;
-}
-
 .DivStyle{
   width: 90%;
   border-style: solid;
@@ -53,4 +48,11 @@
 
 .RadioButtonStyle{
   margin-left: 20px;
+}
+
+md-card{
+  border-style: solid;
+  border-width: 2px;
+  border-color: #607D8B;
+  direction: ltr;
 }
