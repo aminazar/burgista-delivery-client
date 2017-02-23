@@ -217,7 +217,10 @@ export class ProductFormComponent implements OnInit {
       return element._product.id == productId;
     });
 
-    let tempWaitingObj = tempProductModel.waiting.getValue();
+    let tempWaitingObj;
+
+    if(btnType !== ActionEnum.add)
+      tempWaitingObj = tempProductModel.waiting.getValue();
 
     switch (btnType){
       case ActionEnum.update: tempWaitingObj.updating = isDisable;
@@ -228,7 +231,8 @@ export class ProductFormComponent implements OnInit {
         break;
     }
 
-    tempProductModel.waiting.next(tempWaitingObj);
+    if(btnType !== ActionEnum.add)
+      tempProductModel.waiting.next(tempWaitingObj);
   }
 
   // sortProductModelList(){
