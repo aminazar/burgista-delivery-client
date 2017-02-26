@@ -1,4 +1,5 @@
 import {Component, OnInit, isDevMode} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
 import {FormControl} from "@angular/forms";
 
@@ -25,6 +26,8 @@ export class ProductFormComponent implements OnInit {
   productName_Code: string[] = [];
   productNames: string[] = [];
   productCodes: string[] = [];
+
+  @ViewChild('autoNameCode') autoNameCode;
 
   constructor(private restService: RestService, private messageService:MessageService) { }
 
@@ -159,7 +162,12 @@ export class ProductFormComponent implements OnInit {
         this.productName_Code = this.productName_Code.concat(this.productNames);
         this.productName_Code = this.productName_Code.concat(this.productCodes);
 
+        this.isFiltered = false;
+        this.filteredProductModel = null;
+        this.productModelCtrl.setValue('');
+
         this.messageService.message(`Product is deleted.`);
+        //ToDo: adding prop message
       },
       (error) => {
         this.messageService.error(error);
@@ -221,7 +229,9 @@ export class ProductFormComponent implements OnInit {
       return element._product.id == productId;
     });
 
+
     let tempWaitingObj = tempProductModel ? tempProductModel.waiting.getValue():null;
+
 
     switch (btnType){
       case ActionEnum.update: tempWaitingObj.updating = isDisable;
@@ -231,6 +241,7 @@ export class ProductFormComponent implements OnInit {
       case ActionEnum.add: this.isAdding.next(isDisable);
         break;
     }
+
     if(tempProductModel)
       tempProductModel.waiting.next(tempWaitingObj);
   }

@@ -30,3 +30,8 @@ md-card{
   max-width: 100px;
   min-width: 80px;
 }
+
+.errorMessage{
+  font-weight: bold;
+  color: red;
+}
