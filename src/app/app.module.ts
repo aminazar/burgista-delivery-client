@@ -20,6 +20,7 @@ import { MonthdayComponent } from './rrule/monthday.component';
 import {ProductFormComponent} from "./product-form/product-form.component";
 import {ProductSubFormComponent} from "./product-form/product-sub-form.component";
 import { CountingRuleComponent } from './counting-rule/counting-rule.component';
+import {MessageService} from "./message.service";
 
 @NgModule({
   declarations: [
@@ -49,7 +50,7 @@ import { CountingRuleComponent } from './counting-rule/counting-rule.component';
       {path: 'products', component: ProductFormComponent, canActivate: [LoggedInGuard]},
     ]),
   ],
-  providers: [AuthService, RestService, LoggedInGuard],
+  providers: [AuthService, RestService, LoggedInGuard, MessageService],
   bootstrap: [AppComponent]
 })
 export class AppModule {

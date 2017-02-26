@@ -1,3 +1,4 @@
+import {Component, OnInit, isDevMode} from '@angular/core';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
 import {FormControl} from "@angular/forms";
@@ -6,7 +7,7 @@ import {Product} from "./product";
 import {ProductModel} from "./product.model";
 import {ActionEnum} from "../unit-form/actionEnum";
 import {RestService} from "../rest.service";
-import {isUndefined} from "util";
+import {MessageService} from "../message.service";
 
 @Component({
   selector: 'app-product-form',
@@ -28,7 +29,7 @@ export class ProductFormComponent implements OnInit {
 
   @ViewChild('autoNameCode') autoNameCode;
 
-  constructor(private restService: RestService) { }
+  constructor(private restService: RestService, private messageService:MessageService) { }
 
   ngOnInit() {
     this.restService.get('product').subscribe(
@@ -105,6 +106,7 @@ export class ProductFormComponent implements OnInit {
   }
 
   private addProduct(product: Product){
+    let name = product.name;
     this.restService.insert('product', ProductModel.toAnyObject(product)).subscribe(
       (data) => {
         //Adding new product to productModels list
@@ -123,13 +125,14 @@ export class ProductFormComponent implements OnInit {
         this.disableEnable(product.id, ActionEnum.add, false);
 
         this.actionIsSuccess.next(false);
-        //ToDo: adding prop message
+        this.messageService.message(`'${name}' is added to products.`);
       },
       (error) => {
-        console.log(error);
+        this.messageService.error(error);
+        if(isDevMode())
+          console.log(error);
 
         this.disableEnable(product.id, ActionEnum.add, false);
-        //ToDo: adding prop message
       }
     );
   }
@@ -163,13 +166,15 @@ export class ProductFormComponent implements OnInit {
         this.filteredProductModel = null;
         this.productModelCtrl.setValue('');
 
+        this.messageService.message(`Product is deleted.`);
         //ToDo: adding prop message
       },
       (error) => {
-        console.log(error);
+        this.messageService.error(error);
+        if(isDevMode())
+          console.log(error);
 
         this.disableEnable(productId, ActionEnum.delete, false);
-        //ToDo: adding prop message
       }
     );
   }
@@ -205,15 +210,16 @@ export class ProductFormComponent implements OnInit {
 
 
         this.disableEnable(productId, ActionEnum.update, false);
-        //ToDo: adding prop message
+        this.messageService.message(`'${name}' is added to products.`);
 
         this.actionIsSuccess.next(false);
       },
       (error) => {
-        console.log(error);
+        this.messageService.error(error);
+        if(isDevMode())
+          console.log(error);
 
         this.disableEnable(productId, ActionEnum.update, false);
-        //ToDo: adding prop message
       }
     )
   }
@@ -223,10 +229,9 @@ export class ProductFormComponent implements OnInit {
       return element._product.id == productId;
     });
 
-    let tempWaitingObj;
 
-    if(btnType !== ActionEnum.add)
-      tempWaitingObj = tempProductModel.waiting.getValue();
+    let tempWaitingObj = tempProductModel ? tempProductModel.waiting.getValue():null;
+
 
     switch (btnType){
       case ActionEnum.update: tempWaitingObj.updating = isDisable;
@@ -237,7 +242,7 @@ export class ProductFormComponent implements OnInit {
         break;
     }
 
-    if(btnType !== ActionEnum.add)
+    if(tempProductModel)
       tempProductModel.waiting.next(tempWaitingObj);
   }
 

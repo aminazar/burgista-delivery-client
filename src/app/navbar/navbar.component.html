@@ -1,10 +1,10 @@
-<md-toolbar color="primary">
-  <span><a [routerLink]="['']">Burgista Internal Delivery</a></span>
-  <span *ngIf="isAdmin"><a [routerLink]="['units']">Units</a></span>
-  <span *ngIf="isAdmin"><a [routerLink]="['products']">Products</a></span>
-  <!-- This fills the remaining space of the current row -->
+<md-toolbar color="primary" style="font-weight:200;font-size:100%">
+  <span><a style="font-weight:400;font-size:120%" class="toolbar" [routerLink]="['']">Burgista Internal Delivery</a></span>
   <span class="fill-remaining-space"></span>
-
-  <span *ngIf="!auth"><a [routerLink]="['login']"><span class="fa fa-sign-in"></span> Login</a></span>
-  <span *ngIf="auth"><a (click)="logout()">{{user}} <i class="fa fa-sign-out"></i> Logout</a></span>
+  <span *ngIf="!auth"><a  class="toolbar" [routerLink]="['login']"><span class="fa fa-sign-in"></span> Login</a></span>
+  <span *ngIf="auth"><a  class="toolbar" (click)="logout()">{{user}} <i class="fa fa-sign-out"></i> Logout</a></span>
 </md-toolbar>
+<nav *ngIf="auth" md-tab-nav-bar>
+  <a md-tab-link [routerLink]="['units']" routerLinkActive #unitsLink="routerLinkActive" [active]="unitsLink.isActive">Units</a>
+  <a md-tab-link [routerLink]="['products']" routerLinkActive #productsLink="routerLinkActive" [active]="productsLink.isActive">Products</a>
+</nav>

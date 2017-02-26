@@ -53,7 +53,7 @@ describe('SubFormComponent', () => {
     component.isAdd = false;
     fixture.detectChanges();
 
-    let de : DebugElement = fixture.debugElement.query(By.css('#name'));
+    let de : DebugElement = fixture.debugElement.query(By.css('.name'));
     let el : HTMLInputElement = de.nativeElement;
 
     el.dispatchEvent(new Event('input'));
@@ -61,14 +61,14 @@ describe('SubFormComponent', () => {
     tick();
     expect(el.value).toContain('center branch');
 
-    de = fixture.debugElement.query(By.css('#username'));
+    de = fixture.debugElement.query(By.css('.username'));
     el = de.nativeElement;
     el.dispatchEvent(new Event('input'));
     fixture.detectChanges();
     tick();
     expect(el.value).toContain('john');
 
-    de = fixture.debugElement.query(By.css('#password'));
+    de = fixture.debugElement.query(By.css('.password'));
     el = de.nativeElement;
     el.dispatchEvent(new Event('input'));
     fixture.detectChanges();
@@ -91,7 +91,7 @@ describe('SubFormComponent', () => {
     component.actionIsSuccess = actionIsSuccess;
     fixture.detectChanges();
 
-    let de : DebugElement = fixture.debugElement.query(By.css('#name'));
+    let de : DebugElement = fixture.debugElement.query(By.css('.name'));
     let el : HTMLInputElement = de.nativeElement;
     el.dispatchEvent(new Event('input'));
     fixture.detectChanges();
@@ -104,7 +104,7 @@ describe('SubFormComponent', () => {
     actionIsSuccess.next(true);
     de.triggerEventHandler('keyup', null);
     fixture.detectChanges();
-    expect(fixture.debugElement.query(By.css('#updateBtn')).nativeElement.disabled).toBe(false);
+    expect(fixture.debugElement.query(By.css('.updateBtn')).nativeElement.disabled).toBe(false);
   }));
 
   it('should trigger event to delete specific unitModel', () => {
@@ -125,7 +125,7 @@ describe('SubFormComponent', () => {
     let rcvId = 0;
     component.action.subscribe((value) => rcvId = value.data.id);
 
-    let de : DebugElement = fixture.debugElement.query(By.css('#deleteBtn'));
+    let de : DebugElement = fixture.debugElement.query(By.css('.deleteBtn'));
     de.triggerEventHandler('click', ActionEnum.delete);
 
     expect(rcvId).toBe(1);

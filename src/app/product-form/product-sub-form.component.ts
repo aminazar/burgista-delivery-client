@@ -31,7 +31,7 @@ export class ProductSubFormComponent implements OnInit {
   addIsDisable: boolean = false;
   updateIsDisable: boolean = false;
   deleteIsDisable: boolean = false;
-  measuringUnits = ['Kg', 'Gr', 'Litre', 'Pound(lb)', 'Ounce(oz)', 'Fluid ounce(oz)', 'Units', 'Packs', 'Dozens', 'Barrels'];
+  measuringUnits = ['Kg', 'gr', 'L', 'lb', 'oz', 'fl oz', 'mL', 'units', 'packs', 'dozens', 'barrels'];
   prepUnits = [];
   // days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Usage'];
 

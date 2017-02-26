@@ -1,9 +1,8 @@
-<nav>
-  <app-navbar></app-navbar>
-</nav>
+<app-navbar></app-navbar>
+<div *ngIf="showError" style="width:100%;background:darkred;color:white"><i class="fa fa-close" style="padding:5px" (click)="closeError()"></i> {{error}}</div>
 <div class="flex-container"
      fxLayout="row" fxLayout.xs="column"
-     fxLayoutAlign="center center" fxLayoutAlign.xs="center center">
+     fxLayoutAlign="center center" fxLayoutAlign.xs="start start">
   <!--<div class="flex-item" fxFlex="33"></div>-->
   <div class="flex-item" fxFlex="80"><router-outlet></router-outlet></div>
   <!--<div class="flex-item" fxFlex="33"></div>-->

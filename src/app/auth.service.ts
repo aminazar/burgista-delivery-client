@@ -3,6 +3,7 @@ import {Subject} from "rxjs/Subject";
 import {Observable} from "rxjs/Observable";
 import {RestService} from "./rest.service";
 import {Router} from "@angular/router";
+import {MessageService} from "./message.service";
 
 @Injectable()
 export class AuthService {
@@ -12,7 +13,7 @@ export class AuthService {
   auth$ = this.authStream.asObservable();
   originBeforeLogin = '/';
 
-  constructor(private restService: RestService, private router: Router) {
+  constructor(private restService: RestService, private router: Router, private messageService:MessageService) {
     this.restService.call('validUser')
       .subscribe(
         res => {
@@ -20,11 +21,14 @@ export class AuthService {
           this.user = data.user;
           this.userType = data.userType;
           this.authStream.next(true);
+          this.router.navigate(['/']);
+          this.messageService.message(`You are already logged in as ${this.user}.`)
         },
         err => {
           if(isDevMode())
             console.log(err);
           this.authStream.next(false);
+          this.router.navigate(['login']);
         });
   }
 
@@ -37,10 +41,11 @@ export class AuthService {
           this.authStream.next(true);
           let url = this.originBeforeLogin;
           this.router.navigate([url !== null ? url : '/']);
+          this.messageService.message(`${this.user} logged in.`);
         },
         err => {
-          //TODO: showing error in component
           this.authStream.next(false);
+          this.messageService.error(err);
           if(isDevMode())
             console.log(err);
         })
@@ -49,12 +54,13 @@ export class AuthService {
   logOff() {
     this.restService.call('logout')
       .subscribe(() => {
+          this.messageService.message(`${this.user} logged out.`);
           this.user = '';
           this.authStream.next(false);
           this.router.navigate(['login']);
         },
         err => {
-          //TODO: showing error in component
+          this.messageService.error(err);
           if(isDevMode())
             console.log(err);
         });
