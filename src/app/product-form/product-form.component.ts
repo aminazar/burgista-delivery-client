@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
 import {FormControl} from "@angular/forms";
 
@@ -25,6 +25,8 @@ export class ProductFormComponent implements OnInit {
   productName_Code: string[] = [];
   productNames: string[] = [];
   productCodes: string[] = [];
+
+  @ViewChild('autoNameCode') autoNameCode;
 
   constructor(private restService: RestService) { }
 
@@ -156,6 +158,10 @@ export class ProductFormComponent implements OnInit {
         this.productName_Code = [];
         this.productName_Code = this.productName_Code.concat(this.productNames);
         this.productName_Code = this.productName_Code.concat(this.productCodes);
+
+        this.isFiltered = false;
+        this.filteredProductModel = null;
+        this.productModelCtrl.setValue('');
 
         //ToDo: adding prop message
       },

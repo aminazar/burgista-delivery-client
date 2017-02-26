@@ -20,6 +20,8 @@ export class ProductSubFormComponent implements OnInit {
   @Output() action = new EventEmitter();
 
 
+  hasCountingRuleError: boolean = false;
+  countingRuleError: string = '';
   _isAdding: boolean;
   _isUpdating: boolean;
   _isDeleting: boolean;
@@ -31,7 +33,7 @@ export class ProductSubFormComponent implements OnInit {
   deleteIsDisable: boolean = false;
   measuringUnits = ['Kg', 'Gr', 'Litre', 'Pound(lb)', 'Ounce(oz)', 'Fluid ounce(oz)', 'Units', 'Packs', 'Dozens', 'Barrels'];
   prepUnits = [];
-  days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Usage'];
+  // days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Usage'];
 
   constructor(private restService: RestService) { }
 
@@ -93,23 +95,8 @@ export class ProductSubFormComponent implements OnInit {
         (err) => {
           console.log(err.message);
         }
-      )
-    }
-    else{
-      this.productModel.waiting.subscribe(
-        (data) => {
-          this._isUpdating = data.updating;
-          this._isDeleting = data.deleting;
-
-          this.disabilityStatus();
-        },
-        (err) => {
-          console.log(err.message);
-        }
       );
-    }
 
-    if(this.isAdd){
       this.formTitle = 'New Product';
 
       this.product.id = -1;
@@ -127,6 +114,18 @@ export class ProductSubFormComponent implements OnInit {
       }
     }
     else{
+      this.productModel.waiting.subscribe(
+        (data) => {
+          this._isUpdating = data.updating;
+          this._isDeleting = data.deleting;
+
+          this.disabilityStatus();
+        },
+        (err) => {
+          console.log(err.message);
+        }
+      );
+
       this.product.id = this.productModel._product.id;
       this.product.name = this.productModel._product.name;
       this.product.code = this.productModel._product.code;
@@ -185,23 +184,12 @@ export class ProductSubFormComponent implements OnInit {
     if(this.product.size > 99999)
       this.product.size = 99999;
 
-    if(this.product.minQty < 0)
-      this.product.minQty = 0;
-
-    if(this.product.minQty > 99998)
-      this.product.minQty = 99998;
-
-    if(this.product.maxQty > 99999)
-      this.product.maxQty  = 99999;
-
     if(this.product.name !== ''
     && this.product.code !== ''
     && this.product.size !== null && this.product.size !== 0
     && this.product.measuringUnit !== null
     && this.product.prep_unit_id !== null
-    && this.product.minQty !== null && this.product.minQty !== 0
-    && this.product.maxQty !== null && this.product.maxQty !== 0 && this.product.maxQty > this.product.minQty && this.product.minQty >= 0
-    && this.product.countingRecursion !== null && this.product.countingRecursion !== '')
+    && !this.hasCountingRuleError)
       return true;
     else
       return false;
@@ -230,6 +218,18 @@ export class ProductSubFormComponent implements OnInit {
       return true;
     else
       return false;
+  }
+
+  countingRuleErrorHandler(value){
+    let hasError = value.hasError;
+    let message = value.message;
+
+    if(hasError){
+      this.countingRuleError = message;
+      this.hasCountingRuleError = true;
+    }
+    else
+      this.hasCountingRuleError = false;
   }
 
 }
