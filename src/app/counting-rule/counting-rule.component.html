@@ -1,16 +1,17 @@
 <span>Inventory Rules By Default:</span>
 <br/>
 <md-card>
-  <div class="flex-container" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="center top">
+  <div class="errorMessage">{{showMessage}}</div>
+  <div class="flex-container" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="center top" fxLayoutAlign.xs="start start">
     <div class="flex-item" style="margin: 5px;" fxFlex="30%">
       <div class="flex-container" fxLayout="column" fxLayoutAlign="left top">
         <div class="flex-item" style="margin-left: 5px;" fxFlex="20%">
           <md-card-content>
             <md-input-container>
-              <input mdInput class="numInput" type="number" placeholder="Min Qty" [(ngModel)]="minQty" (keyup)="changeOccur()" id="minQty" min="0" maxlength="5"/>
+              <input mdInput min="0" class="numInput" type="number" placeholder="Min Qty" [(ngModel)]="minQty" (ngModelChange)="minChange()" id="minQty" min="0" maxlength="5"/>
             </md-input-container>
             <md-input-container>
-              <input mdInput class="numInput" type="number" placeholder="Max Qty" [(ngModel)]="maxQty" (keyup)="changeOccur()" id="maxQty" maxlength="5"/>
+              <input mdInput min="0" class="numInput" type="number" placeholder="Max Qty" [(ngModel)]="maxQty" (ngModelChange)="maxChange()" id="maxQty" maxlength="5"/>
             </md-input-container>
           </md-card-content>
         </div>
@@ -23,7 +24,7 @@
                   <br/>
                   <div *ngFor="let day of days">
                     <md-input-container>
-                      <input mdInput class="numInput" type="number" placeholder="{{day}}" [(ngModel)]="coefficients[day]" (keyup)="changeOccur()" id="{{day}}"/>
+                      <input mdInput min="0" class="numInput" type="number" placeholder="{{day}}" [(ngModel)]="coefficients[day]" (ngModelChange)="coeffChange()" id="{{day}}"/>
                     </md-input-container>
                   </div>
                 </div>
@@ -38,7 +39,7 @@
         <span>Inventory Counting Recursion</span>
         <md-card>
           <md-card-content>
-            <app-rrule [(RRuleStr)]="recursionRule" (RRuleStrChange)="changeOccur()"></app-rrule>
+            <app-rrule [RRuleStr]="recursionRule" (RRuleStrChange)="recurChange($event)" (validation)="addRRuleValidation($event)"></app-rrule>
           </md-card-content>
         </md-card>
       </md-card-content>

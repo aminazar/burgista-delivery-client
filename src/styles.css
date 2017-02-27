@@ -22,3 +22,20 @@ background-color:antiquewhite !important; padding: 10px;
   background-color: #283440 !important;
   border-radius: 7px;
 }
+
+.warnBar{
+  background-color: darkred !important;
+  border-radius: 7px;
+}
+
+.mat-tab-label{
+  background: antiquewhite;
+}
+
+.mat-tab-label:focus{
+  background: white !important;
+}
+
+.mat-tab-label-active{
+  opacity:1 !important;
+}

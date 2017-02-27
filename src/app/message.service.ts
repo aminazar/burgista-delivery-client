@@ -8,6 +8,8 @@ export class MessageService {
   err$:Observable<Response> = this.errStream.asObservable();
   private msgStream = new Subject<string>();
   msg$:Observable<string> = this.msgStream.asObservable();
+  private warningStream = new Subject<string>();
+  warn$:Observable<string> = this.warningStream.asObservable();
 
   error(err:Response){
     this.errStream.next(err);
@@ -15,6 +17,10 @@ export class MessageService {
 
   message(msg:string){
     this.msgStream.next(msg);
+  }
+
+  warn(msg:string){
+    this.warningStream.next(msg);
   }
   constructor() { }
 
