@@ -21,9 +21,11 @@ export class AppComponent implements OnInit {
     this.messageService.err$.subscribe(
       err => {
         this.showError = true;
-        let errMsg = '';
+        let errMsg:any = '';
         try {
           errMsg = err.json();
+          if(errMsg.Message)
+            errMsg = errMsg.Message;
         }
         catch (e) {
           errMsg = err.text();
