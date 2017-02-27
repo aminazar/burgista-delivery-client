@@ -27,19 +27,18 @@
       </md-card-content>
     </div>
     <div class="flex-item" fxFlex="70%">
+      <md-card-content *ngIf="hasCountingRuleError">
+        <label class="errorMessage">{{countingRuleError}}</label>
+      </md-card-content>
       <md-card-content>
         <app-counting-rule [(coefficients)]="product.coefficients"
                            [(minQty)]="product.minQty"
                            [(maxQty)]="product.maxQty"
                            [(recursionRule)]="product.countingRecursion"
-                           (hasError)="countingRuleErrorHandler($event)"
-                           (changed)="disabilityStatus()"></app-counting-rule>
+                           (hasError)="countingRuleErrorHandler($event)"></app-counting-rule>
       </md-card-content>
     </div>
     <div class="flex-item" fxFlex="10%">
-      <md-card-content *ngIf="hasCountingRuleError">
-        <label class="errorMessage">{{countingRuleError}}</label>
-      </md-card-content>
       <md-card-content>
         <button md-raised-button *ngIf="isAdd" class="ButtonStyle addBtn" (click)="actionEmitter(ae.add)" [(disabled)]="addIsDisable" id="addBtn">Add</button>
         <button md-raised-button *ngIf="!isAdd" class="ButtonStyle updateBtn" (click)="actionEmitter(ae.update)" [(disabled)]="updateIsDisable" id="updateBtn">Update</button>
