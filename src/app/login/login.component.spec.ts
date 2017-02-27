@@ -11,6 +11,7 @@ import {AuthService} from "../auth.service";
 import {RestService} from "../rest.service";
 import {RouterTestingModule} from "@angular/router/testing";
 import 'hammerjs';
+import {MessageService} from "../message.service";
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -26,7 +27,7 @@ describe('LoginComponent', () => {
         MaterialModule.forRoot(),
         RouterTestingModule
       ],
-      providers: [AuthService, RestService]
+      providers: [AuthService, RestService, MessageService]
     })
       .compileComponents();
   }));

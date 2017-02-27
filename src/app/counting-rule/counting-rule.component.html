@@ -24,6 +24,7 @@
                   <br/>
                   <div *ngFor="let day of days">
                     <md-input-container>
+
                       <input mdInput min="0" class="numInput" type="number" placeholder="{{day}}" [(ngModel)]="coefficients[day]" (ngModelChange)="coeffChange()" id="{{day}}"/>
                     </md-input-container>
                   </div>

@@ -12,6 +12,7 @@ import {RestService} from "../rest.service";
 import {Unit} from "./unit";
 import {UnitModel} from "./unit.model";
 import {ActionEnum} from "./actionEnum";
+import {MessageService} from "../message.service";
 
 
 describe('UnitFormComponent', () => {
@@ -31,6 +32,7 @@ describe('UnitFormComponent', () => {
         MaterialModule.forRoot(),
       ],
       providers: [
+        MessageService,
         RestService
       ]
     })
@@ -48,7 +50,7 @@ describe('UnitFormComponent', () => {
   });
 
   it('should show the origin title', () => {
-    let de : DebugElement = fixture.debugElement.query(By.css('span'));
+    let de : DebugElement = fixture.debugElement.query(By.css('md-card-title'));
     let el : HTMLInputElement = de.nativeElement;
     expect(el.textContent).toContain('Branches and Preparation Units');
   });

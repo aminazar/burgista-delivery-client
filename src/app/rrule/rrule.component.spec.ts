@@ -14,6 +14,7 @@ import * as Rrule from 'rrule';
 describe('RruleComponent', () => {
   let component: RRuleComponent;
   let fixture: ComponentFixture<RRuleComponent>;
+  let rruleStr: string = '';
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -32,6 +33,9 @@ describe('RruleComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(RRuleComponent);
     component = fixture.componentInstance;
+
+    component.RRuleStr = rruleStr;
+
     fixture.detectChanges();
   });
 

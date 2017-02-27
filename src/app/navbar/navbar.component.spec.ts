@@ -9,6 +9,7 @@ import {MaterialModule} from "@angular/material";
 import {RouterTestingModule} from "@angular/router/testing";
 import {AuthService} from "../auth.service";
 import {RestService} from "../rest.service";
+import {MessageService} from "../message.service";
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
@@ -22,7 +23,7 @@ describe('NavbarComponent', () => {
         MaterialModule.forRoot(),
         RouterTestingModule,
       ],
-      providers: [RouterOutletMap, AuthService, RestService]
+      providers: [RouterOutletMap, AuthService, RestService, MessageService]
     })
     .compileComponents();
   }));
