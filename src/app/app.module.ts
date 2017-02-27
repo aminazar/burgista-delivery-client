@@ -39,8 +39,8 @@ import { OverrideFormComponent } from './override-form/override-form.component';
     ProductFormComponent,
     ProductSubFormComponent,
     CountingRuleComponent,
-    FocusDirective
-    OverrideFormComponent
+    FocusDirective,
+    OverrideFormComponent,
   ],
   imports: [
     BrowserModule,
