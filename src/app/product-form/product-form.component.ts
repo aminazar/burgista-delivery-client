@@ -1,5 +1,4 @@
-import {Component, OnInit, isDevMode} from '@angular/core';
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, isDevMode, ViewChild} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
 import {FormControl} from "@angular/forms";
 
@@ -26,6 +25,7 @@ export class ProductFormComponent implements OnInit {
   productName_Code: string[] = [];
   productNames: string[] = [];
   productCodes: string[] = [];
+  selectedIndex: number = 0;
 
   @ViewChild('autoNameCode') autoNameCode;
 
@@ -116,8 +116,15 @@ export class ProductFormComponent implements OnInit {
         this.actionIsSuccess.next(true);
 
         this.productModels.push(tempProductModel);
-        this.productName_Code.push(tempProductModel._product.name);
-        this.productName_Code.push(tempProductModel._product.code);
+        this.productNames.push(tempProductModel._product.name);
+        this.productCodes.push(tempProductModel._product.code);
+
+        this.productNames.sort();
+        this.productCodes.sort();
+
+        this.productName_Code = [];
+        this.productName_Code = this.productName_Code.concat(this.productNames);
+        this.productName_Code = this.productName_Code.concat(this.productCodes);
 
         //Sort productModels
         // this.sortProductModelList();

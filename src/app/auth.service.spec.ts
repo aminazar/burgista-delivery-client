@@ -13,6 +13,7 @@ import {MaterialModule} from "@angular/material";
 import {HomeComponent} from './home/home.component';
 import {Router, RouterModule} from "@angular/router";
 import {routerNgProbeToken} from "@angular/router/src/router_module";
+import {MessageService} from "./message.service";
 class RouterStub {
   navigateByUrl(url: string) {
     return url;
@@ -33,6 +34,7 @@ describe('Service: Auth', () => {
         AuthService,
         MockBackend,
         BaseRequestOptions,
+        MessageService,
         {provide: Router, useClass: RouterStub},
         {
           provide: Http,
