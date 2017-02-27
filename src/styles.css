@@ -39,3 +39,6 @@ background-color:antiquewhite !important; padding: 10px;
 .mat-tab-label-active{
   opacity:1 !important;
 }
+.mat-radio-focused{
+  background-color: antiquewhite;
+}
