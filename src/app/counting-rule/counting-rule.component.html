@@ -7,10 +7,10 @@
         <div class="flex-item" style="margin-left: 5px;" fxFlex="20%">
           <md-card-content>
             <md-input-container>
-              <input mdInput class="numInput" type="number" placeholder="Min Qty" [(ngModel)]="minQty" (keyup)="changeOccur()" id="minQty" min="0" maxlength="5"/>
+              <input mdInput class="numInput minQty" type="number" placeholder="Min Qty" [(ngModel)]="minQty" (keyup)="changeOccur()" id="minQty" min="0" maxlength="5"/>
             </md-input-container>
             <md-input-container>
-              <input mdInput class="numInput" type="number" placeholder="Max Qty" [(ngModel)]="maxQty" (keyup)="changeOccur()" id="maxQty" maxlength="5"/>
+              <input mdInput class="numInput maxQty" type="number" placeholder="Max Qty" [(ngModel)]="maxQty" (keyup)="changeOccur()" id="maxQty" maxlength="5"/>
             </md-input-container>
           </md-card-content>
         </div>
@@ -23,7 +23,7 @@
                   <br/>
                   <div *ngFor="let day of days">
                     <md-input-container>
-                      <input mdInput class="numInput" type="number" placeholder="{{day}}" [(ngModel)]="coefficients[day]" (keyup)="changeOccur()" id="{{day}}"/>
+                      <input mdInput class="numInput {{day}}" type="number" placeholder="{{day}}" [(ngModel)]="coefficients[day]" (keyup)="changeOccur()" id="{{day}}"/>
                     </md-input-container>
                   </div>
                 </div>
@@ -38,7 +38,7 @@
         <span>Inventory Counting Recursion</span>
         <md-card>
           <md-card-content>
-            <app-rrule [(RRuleStr)]="recursionRule" (RRuleStrChange)="changeOccur()"></app-rrule>
+            <app-rrule class="countingRecursion" [(RRuleStr)]="recursionRule" (RRuleStrChange)="changeOccur()"></app-rrule>
           </md-card-content>
         </md-card>
       </md-card-content>

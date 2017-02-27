@@ -4,20 +4,20 @@
     <div class="flex-item" fxFlex="20%">
       <md-card-content>
         <md-input-container>
-          <input mdInput type="text" placeholder="Name" [(ngModel)]="product.name" (keyup)="disabilityStatus()" id="name"/>
+          <input mdInput type="text" class="name" placeholder="Name" [(ngModel)]="product.name" (keyup)="disabilityStatus()"/>
         </md-input-container>
         <md-input-container>
-          <input mdInput type="text" placeholder="Code" [(ngModel)]="product.code" (keyup)="disabilityStatus()" id="code"/>
+          <input mdInput type="text" class="code" placeholder="Code" [(ngModel)]="product.code" (keyup)="disabilityStatus()"/>
         </md-input-container>
         <md-input-container>
-          <input mdInput type="number" placeholder="size" [(ngModel)]="product.size" (keyup)="disabilityStatus()" id="size"/>
+          <input mdInput type="number" class="size" placeholder="size" [(ngModel)]="product.size" (keyup)="disabilityStatus()"/>
         </md-input-container>
-        <md-select placeholder="Measuring Units" [(ngModel)]="product.measuringUnit" (change)="disabilityStatus()" id="measuringUnit">
+        <md-select placeholder="Measuring Units" class="measuringUnit" [(ngModel)]="product.measuringUnit" (change)="disabilityStatus()">
           <md-option *ngFor="let mu of measuringUnits" [value]="mu">{{mu}}</md-option>
         </md-select>
         <div>
           <span>Preparation Unit</span>
-          <md-radio-group [(ngModel)]="product.prep_unit_id" (change)="disabilityStatus()" id="prep_unit_id">
+          <md-radio-group class="prepUnitId" [(ngModel)]="product.prep_unit_id" (change)="disabilityStatus()">
             <div *ngFor="let pu of prepUnits">
               <md-radio-button [value]="pu.id">{{pu.name}}</md-radio-button>
               <br/>
@@ -34,53 +34,6 @@
                            [(recursionRule)]="product.countingRecursion"
                            (hasError)="countingRuleErrorHandler($event)"
                            (changed)="disabilityStatus()"></app-counting-rule>
-        <!--<span>Inventory Rules By Default:</span>-->
-        <!--<br/>-->
-        <!--<md-card>-->
-          <!--<div class="flex-container" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="center top">-->
-            <!--<div class="flex-item" style="margin: 5px;" fxFlex="30%">-->
-              <!--<div class="flex-container" fxLayout="column" fxLayoutAlign="left top">-->
-                <!--<div class="flex-item" style="margin-left: 5px;" fxFlex="20%">-->
-                  <!--<md-card-content>-->
-                    <!--<md-input-container>-->
-                      <!--<input mdInput class="numInput" type="number" placeholder="Min Qty" [(ngModel)]="product.minQty" (keyup)="disabilityStatus()" id="minQty" min="0" maxlength="5"/>-->
-                    <!--</md-input-container>-->
-                    <!--<md-input-container>-->
-                      <!--<input mdInput class="numInput" type="number" placeholder="Max Qty" [(ngModel)]="product.maxQty" (keyup)="disabilityStatus()" id="maxQty" maxlength="5"/>-->
-                    <!--</md-input-container>-->
-                  <!--</md-card-content>-->
-                <!--</div>-->
-                <!--<div class="flex-item" fxFlex="80%">-->
-                  <!--<md-card-content>-->
-                    <!--<span>Coefficients</span>-->
-                    <!--<md-card>-->
-                      <!--<md-card-content>-->
-                        <!--<div>-->
-                          <!--<br/>-->
-                          <!--<div *ngFor="let day of days">-->
-                            <!--<md-input-container>-->
-                              <!--<input mdInput class="numInput" type="number" placeholder="{{day}}" [(ngModel)]="product.coefficients[day]" (keyup)="disabilityStatus()" id="{{day}}"/>-->
-                            <!--</md-input-container>-->
-                          <!--</div>-->
-                        <!--</div>-->
-                      <!--</md-card-content>-->
-                    <!--</md-card>-->
-                  <!--</md-card-content>-->
-                <!--</div>-->
-              <!--</div>-->
-            <!--</div>-->
-            <!--<div class="flex-item" style="margin: 5px;" fxFlex="70%">-->
-              <!--<md-card-content>-->
-                <!--<span>Inventory Counting Recursion</span>-->
-                <!--<md-card>-->
-                  <!--<md-card-content>-->
-                    <!--<app-rrule [(RRuleStr)]="product.countingRecursion" (RRuleStrChange)="disabilityStatus()"></app-rrule>-->
-                  <!--</md-card-content>-->
-                <!--</md-card>-->
-              <!--</md-card-content>-->
-            <!--</div>-->
-          <!--</div>-->
-        <!--</md-card>-->
       </md-card-content>
     </div>
     <div class="flex-item" fxFlex="10%">
@@ -88,9 +41,9 @@
         <label class="errorMessage">{{countingRuleError}}</label>
       </md-card-content>
       <md-card-content>
-        <button md-raised-button *ngIf="isAdd" class="ButtonStyle" (click)="actionEmitter(ae.add)" [(disabled)]="addIsDisable" id="addBtn">Add</button>
-        <button md-raised-button *ngIf="!isAdd" class="ButtonStyle" (click)="actionEmitter(ae.update)" [(disabled)]="updateIsDisable" id="updateBtn">Update</button>
-        <button md-raised-button *ngIf="!isAdd" class="ButtonStyle" (click)="actionEmitter(ae.delete)" [(disabled)]= "deleteIsDisable" id="deleteBtn">Delete</button>
+        <button md-raised-button *ngIf="isAdd" class="ButtonStyle addBtn" (click)="actionEmitter(ae.add)" [(disabled)]="addIsDisable" id="addBtn">Add</button>
+        <button md-raised-button *ngIf="!isAdd" class="ButtonStyle updateBtn" (click)="actionEmitter(ae.update)" [(disabled)]="updateIsDisable" id="updateBtn">Update</button>
+        <button md-raised-button *ngIf="!isAdd" class="ButtonStyle deleteBtn" (click)="actionEmitter(ae.delete)" [(disabled)]= "deleteIsDisable" id="deleteBtn">Delete</button>
       </md-card-content>
     </div>
   </div>
