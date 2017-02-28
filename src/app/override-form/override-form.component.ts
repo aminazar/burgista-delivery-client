@@ -300,16 +300,15 @@ export class OverrideFormComponent implements OnInit {
     }
   }
 
-  countingRuleErrorHandler(value){
-    let hasError = value.hasError;
-    let message = value.message;
-
-    if(hasError){
-      this.messageService.message(message);
+  countingRuleErrorHandler(message){
+    if (message) {
+      this.messageService.warn(message);
       this.hasCountingRuleError = true;
     }
     else
       this.hasCountingRuleError = false;
+
+    this.checkDisabilityStatus();
   }
 
   setWaiting(type: ActionEnum, isWaiting: boolean){
@@ -341,8 +340,6 @@ export class OverrideFormComponent implements OnInit {
     tempProductModel = this.productModels.filter((p) => {
       return p._product.name == nameCode;
     });
-
-    console.log(tempProductModel);
 
     if (tempProductModel !== null && tempProductModel.length !== 0)
       return tempProductModel[0]._product;
