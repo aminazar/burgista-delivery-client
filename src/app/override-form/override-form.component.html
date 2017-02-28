@@ -1,7 +1,7 @@
 <md-card style="background-color: #607D8B; border-radius: 7px; text-align: left; margin: 10px;">
   <md-card-title class="cardTitle">Inventory Rules Overrides</md-card-title>
   <div *ngIf="!isAdmin">
-    <md-card class="innerCard">
+    <md-card [ngClass]="[(isFiltered && filteredProductModel._product.isOverridden) ? 'innerCardOverride' : 'innerCard']">
       <md-card-content>
         <md-input-container>
           <input mdInput type="text" class="pnc" placeholder="Product name/code" [mdAutocomplete]="auto" [formControl]="productModelCtrl" #autoNameCode/>
@@ -25,7 +25,7 @@
   </div>
   <md-tab-group *ngIf="isAdmin" class="materialTab" [(selectedIndex)]="selectedIndex" (selectChange)="changedTab()">
     <md-tab *ngFor="let branch of branchList" label="{{branch.name}}">
-      <md-card class="innerCard">
+      <md-card [ngClass]="[(isFiltered && filteredProductModel._product.isOverridden) ? 'innerCardOverride' : 'innerCard']">
         <md-card-content>
           <md-input-container>
             <input mdInput type="text" class="pnc" placeholder="Product name/code" [mdAutocomplete]="auto" [formControl]="productModelCtrl" #autoNameCode/>
