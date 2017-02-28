@@ -46,6 +46,7 @@ import {MessageService} from "./message.service";
       {path: 'login', component: LoginComponent},
       {path: 'units', component: UnitFormComponent, canActivate: [LoggedInGuard]},
       {path: 'products', component: ProductFormComponent, canActivate: [LoggedInGuard]},
+      {path: 'override', component: OverrideFormComponent, canActivate: [LoggedInGuard]},
     ]),
   ],
   providers: [AuthService, RestService, LoggedInGuard, MessageService],

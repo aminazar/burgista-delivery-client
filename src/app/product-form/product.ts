@@ -22,4 +22,5 @@ export class Product {
     Sunday: 1,
     Usage: 1
   };
+  isOverridden: boolean = false;
 }
