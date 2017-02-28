@@ -17,6 +17,7 @@ export class ProductModel {
   constructor(product: Product){
     this._product = new Product();
 
+    this._product.isOverridden = product.isOverridden;
     this._product.id = product.id;
     this._product.name = product.name;
     this._product.code = product.code;
@@ -25,7 +26,10 @@ export class ProductModel {
     this._product.prep_unit_id = product.prep_unit_id;
     this._product.minQty = product.minQty;
     this._product.maxQty = product.maxQty;
-    this._product.coefficients = product.coefficients;
+
+    for(let day in product.coefficients)
+      this._product.coefficients[day] = product.coefficients[day];
+
     this._product.countingRecursion = product.countingRecursion;
   }
 
@@ -64,6 +68,10 @@ export class ProductModel {
   }
 
   setProduct(product: Product){
+    if(this._product == null)
+      this._product = new Product();
+
+    this._product.isOverridden = product.isOverridden;
     this._product.id = product.id;
     this._product.name = product.name;
     this._product.code = product.code;
@@ -72,7 +80,10 @@ export class ProductModel {
     this._product.prep_unit_id = product.prep_unit_id;
     this._product.minQty = product.minQty;
     this._product.maxQty = product.maxQty;
-    this._product.coefficients = product.coefficients;
+
+    for(let day in product.coefficients)
+      this._product.coefficients[day] = product.coefficients[day];
+
     this._product.countingRecursion = product.countingRecursion;
   }
 
@@ -128,11 +139,55 @@ export class ProductModel {
     return resObj;
   }
 
+  static toAnyObjectOverride(product) : any {
+    let resObj = {};
+
+    for(let prop in product){
+      switch (prop){
+        case 'id': resObj['pid'] = product.id;
+          break;
+        case 'minQty': resObj['min'] = product.minQty;
+          break;
+        case 'maxQty': resObj['max'] = product.maxQty;
+          break;
+        case 'countingRecursion': resObj['date_rule'] = product.countingRecursion;
+          break;
+        case 'coefficients':{
+          for(let day in product.coefficients){
+            switch (day){
+              case 'Monday': resObj['mon_multiple'] = product.coefficients.Monday;
+                break;
+              case 'Tuesday': resObj['tue_multiple'] = product.coefficients.Tuesday;
+                break;
+              case 'Wednesday': resObj['wed_multiple'] = product.coefficients.Wednesday;
+                break;
+              case 'Thursday': resObj['thu_multiple'] = product.coefficients.Thursday;
+                break;
+              case 'Friday': resObj['fri_multiple'] = product.coefficients.Friday;
+                break;
+              case 'Saturday': resObj['sat_multiple'] = product.coefficients.Saturday;
+                break;
+              case 'Sunday': resObj['sun_multiple'] = product.coefficients.Sunday;
+                break;
+              case 'Usage': resObj['usage'] = product.coefficients.Usage;
+                break;
+            }
+          }
+        }
+          break;
+      }
+    }
+
+    return resObj;
+  }
+
   static fromAnyObject(object: any) : Product {
     let tempProduct : Product = new Product();
 
     for(let prop in object){
       switch (prop){
+        case 'isOverridden': tempProduct.isOverridden = true;
+          break;
         case 'pid': tempProduct.id = object[prop];
           break;
         case 'name': tempProduct.name = object[prop];

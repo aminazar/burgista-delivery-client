@@ -7,4 +7,5 @@
 <nav *ngIf="auth" md-tab-nav-bar>
   <a md-tab-link [routerLink]="['units']" routerLinkActive #unitsLink="routerLinkActive" [active]="unitsLink.isActive">Units</a>
   <a md-tab-link [routerLink]="['products']" routerLinkActive #productsLink="routerLinkActive" [active]="productsLink.isActive">Products</a>
+  <a md-tab-link [routerLink]="['override']" routerLinkActive #overrideLink="routerLinkActive" [active]="overrideLink.isActive">Override Rules</a>
 </nav>
