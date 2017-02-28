@@ -14,7 +14,6 @@ import {MessageService} from "../message.service";
   styleUrls: ['./product-form.component.css']
 })
 export class ProductFormComponent implements OnInit {
-  // isAdding: boolean = false;
   isAdding: BehaviorSubject<boolean> = new BehaviorSubject(false);
   actionIsSuccess: BehaviorSubject<boolean> = new BehaviorSubject(false);
   productModels: ProductModel[] = [];
@@ -29,14 +28,15 @@ export class ProductFormComponent implements OnInit {
 
   @ViewChild('autoNameCode') autoNameCode;
 
-  constructor(private restService: RestService, private messageService:MessageService) { }
+  constructor(private restService: RestService, private messageService: MessageService) {
+  }
 
   ngOnInit() {
     this.restService.get('product').subscribe(
       (data) => {
         this.productModels = [];
 
-        for(let productObj of data){
+        for (let productObj of data) {
           let tempProduct = ProductModel.fromAnyObject(productObj);
 
           let tempProductModel = new ProductModel(tempProduct);
@@ -46,10 +46,10 @@ export class ProductFormComponent implements OnInit {
           // this.productName_Code.unshift(tempProduct.name);
           // this.productName_Code.push(tempProduct.code);
 
-          if(!this.productNames.find((n) => n === tempProduct.name))
+          if (!this.productNames.find((n) => n === tempProduct.name))
             this.productNames.push(tempProduct.name);
 
-          if(!this.productCodes.find((c) => c === tempProduct.code))
+          if (!this.productCodes.find((c) => c === tempProduct.code))
             this.productCodes.push(tempProduct.code);
         }
 
@@ -74,7 +74,7 @@ export class ProductFormComponent implements OnInit {
 
     this.filteredNameCode.subscribe(
       (data) => {
-        if(data.length === 1){
+        if (data.length === 1) {
           this.filteredProductModel = this.getProduct(data);
           this.isFiltered = true;
         }
@@ -87,25 +87,28 @@ export class ProductFormComponent implements OnInit {
     )
   }
 
-  doClickedAction(value){
-    let clickType : ActionEnum = value.type;
-    let clickData : Product = value.data;
+  doClickedAction(value) {
+    let clickType: ActionEnum = value.type;
+    let clickData: Product = value.data;
 
     //Disable respective button
     this.disableEnable(clickData.id, clickType, true);
 
     //Do update, delete or add
-    switch (clickType){
-      case ActionEnum.add: this.addProduct(clickData);
+    switch (clickType) {
+      case ActionEnum.add:
+        this.addProduct(clickData);
         break;
-      case ActionEnum.delete: this.deleteProduct(clickData.id);
+      case ActionEnum.delete:
+        this.deleteProduct(clickData.id);
         break;
-      case ActionEnum.update: this.updateProduct(clickData.id, clickData);
+      case ActionEnum.update:
+        this.updateProduct(clickData.id, clickData);
         break;
     }
   }
 
-  private addProduct(product: Product){
+  private addProduct(product: Product) {
     let name = product.name;
     this.restService.insert('product', ProductModel.toAnyObject(product)).subscribe(
       (data) => {
@@ -136,7 +139,7 @@ export class ProductFormComponent implements OnInit {
       },
       (error) => {
         this.messageService.error(error);
-        if(isDevMode())
+        if (isDevMode())
           console.log(error);
 
         this.disableEnable(product.id, ActionEnum.add, false);
@@ -144,7 +147,7 @@ export class ProductFormComponent implements OnInit {
     );
   }
 
-  private deleteProduct(productId: number){
+  private deleteProduct(productId: number) {
     this.restService.delete('product', productId).subscribe(
       (data) => {
         //Deleting this product from productModels list
@@ -178,7 +181,7 @@ export class ProductFormComponent implements OnInit {
       },
       (error) => {
         this.messageService.error(error);
-        if(isDevMode())
+        if (isDevMode())
           console.log(error);
 
         this.disableEnable(productId, ActionEnum.delete, false);
@@ -186,8 +189,8 @@ export class ProductFormComponent implements OnInit {
     );
   }
 
-  private updateProduct(productId: number, product: Product){
-    let index : number = this.productModels.findIndex(function (element) {
+  private updateProduct(productId: number, product: Product) {
+    let index: number = this.productModels.findIndex(function (element) {
       return element._product.id == productId;
     });
     let lastCode: string = this.productModels[index]._product.code;
@@ -223,7 +226,7 @@ export class ProductFormComponent implements OnInit {
       },
       (error) => {
         this.messageService.error(error);
-        if(isDevMode())
+        if (isDevMode())
           console.log(error);
 
         this.disableEnable(productId, ActionEnum.update, false);
@@ -231,25 +234,28 @@ export class ProductFormComponent implements OnInit {
     )
   }
 
-  private disableEnable(productId: number, btnType : ActionEnum, isDisable: boolean){
-    let tempProductModel : ProductModel = this.productModels.find(function (element) {
+  private disableEnable(productId: number, btnType: ActionEnum, isDisable: boolean) {
+    let tempProductModel: ProductModel = this.productModels.find(function (element) {
       return element._product.id == productId;
     });
 
 
-    let tempWaitingObj = tempProductModel ? tempProductModel.waiting.getValue():null;
+    let tempWaitingObj = tempProductModel ? tempProductModel.waiting.getValue() : null;
 
 
-    switch (btnType){
-      case ActionEnum.update: tempWaitingObj.updating = isDisable;
+    switch (btnType) {
+      case ActionEnum.update:
+        tempWaitingObj.updating = isDisable;
         break;
-      case ActionEnum.delete: tempWaitingObj.deleting = isDisable;
+      case ActionEnum.delete:
+        tempWaitingObj.deleting = isDisable;
         break;
-      case ActionEnum.add: this.isAdding.next(isDisable);
+      case ActionEnum.add:
+        this.isAdding.next(isDisable);
         break;
     }
 
-    if(tempProductModel)
+    if (tempProductModel)
       tempProductModel.waiting.next(tempWaitingObj);
   }
 
@@ -274,7 +280,7 @@ export class ProductFormComponent implements OnInit {
     return val ? this.productName_Code.filter((p) => new RegExp(val, 'gi').test(p)) : this.productName_Code;
   }
 
-  getProduct(nameCode: string){
+  getProduct(nameCode: string) {
     let tempProductModel: ProductModel[] = null;
 
     tempProductModel = this.productModels.filter((p) => {
@@ -283,7 +289,7 @@ export class ProductFormComponent implements OnInit {
 
     console.log(tempProductModel);
 
-    if(tempProductModel !== null && tempProductModel.length !== 0)
+    if (tempProductModel !== null && tempProductModel.length !== 0)
       return tempProductModel[0];
 
     return this.productModels.filter((p) => {

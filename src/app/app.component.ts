@@ -9,21 +9,25 @@ import {MdSnackBar} from "@angular/material";
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
   title = 'app works!';
   private showError = false;
   private error: string;
-  constructor(private loggedInGuard:LoggedInGuard, private messageService:MessageService, public snackBar: MdSnackBar){}
+
+  constructor(private loggedInGuard: LoggedInGuard, private messageService: MessageService, public snackBar: MdSnackBar) {
+  }
 
   ngOnInit(): void {
     this.messageService.err$.subscribe(
-      err =>{
+      err => {
         this.showError = true;
-        let errMsg = '';
+        let errMsg:any = '';
         try {
           errMsg = err.json();
+          if(errMsg.Message)
+            errMsg = errMsg.Message;
         }
-        catch(e) {
+        catch (e) {
           errMsg = err.text();
         }
         this.error = `${err.statusText}: ${errMsg}`;
@@ -32,12 +36,17 @@ export class AppComponent implements OnInit{
     this.messageService.msg$.subscribe(
       msg => {
         this.showError = false;
-        this.snackBar.open(msg,'x',{duration:3000,extraClasses:['snackBar']})
+        this.snackBar.open(msg, 'x', {duration: 3000, extraClasses: ['snackBar']});
+      }
+    );
+    this.messageService.warn$.subscribe(
+      msg => {
+        this.snackBar.open(msg, 'x', {duration: 3000, extraClasses: ['warnBar']});
       }
     )
   }
 
-  closeError(){
+  closeError() {
     this.showError = false;
   }
 }

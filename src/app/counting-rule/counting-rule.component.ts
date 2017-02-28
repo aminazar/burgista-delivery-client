@@ -8,82 +8,105 @@ import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 export class CountingRuleComponent implements OnInit {
   @Input() isOverridden: boolean = false;
   @Input() coefficients;
-  @Input() minQty;
+  private _mq: any;
+
+  @Input() //To have a trigger to redo validation after blanking the form after add
+  set minQty(val) {
+    this._mq = val;
+    if (val === null)
+      this.ngOnInit()
+  }
+
+  get minQty() {
+    return this._mq;
+  }
+
   @Input() maxQty;
   @Input() recursionRule;
-  @Output() changed = new EventEmitter();
-  @Output() coefficientsChange = new EventEmitter();
-  @Output() minQtyChange = new EventEmitter();
-  @Output() maxQtyChange = new EventEmitter();
-  @Output() recursionRuleChange = new EventEmitter();
-  @Output() hasError = new EventEmitter();
+
+  @Output() coefficientsChange = new EventEmitter<any>();
+  @Output() minQtyChange = new EventEmitter<number>();
+  @Output() maxQtyChange = new EventEmitter<number>();
+  @Output() recursionRuleChange = new EventEmitter<string>();
+  @Output() hasError = new EventEmitter<string>();
 
   days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Usage'];
+  private RRuleValidation: any;
+  private errorMessage = {};
+  private showMessage: string;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {
+    this.minChange();
+    this.maxChange();
+    if (!this.recursionRule)
+      this.addRRuleValidation('add a period');
   }
 
-
-  changeOccur(){
-    this.checkDataCorrectness();
-
-    this.coefficientsChange.next(this.coefficients);
-    this.minQtyChange.next(this.minQty);
-    this.maxQtyChange.next(this.maxQty);
-    this.recursionRuleChange.next(this.recursionRule);
-
-    this.changed.emit();
-  }
-
-  checkDataCorrectness(){
-    let isCorrect: boolean = true;
-    let errorMessage: string = "";
-
-    if(this.minQty < 0)
-      this.minQty = 0;
-
-    if(this.maxQty < 0)
-      this.maxQty = 0;
-
-    if(this.minQty > 99998)
-      this.minQty = 99998;
-
-    if(this.maxQty > 99999)
-      this.maxQty  = 99999;
-
-    if(this.recursionRule === null || this.recursionRule === ""){
-      isCorrect = false;
-      errorMessage = 'Please choose at least one recursion rule';
-    }
-
-    for(let day in this.coefficients){
-      if(this.coefficients[day] === null || this.coefficients[day] === ""){
-        isCorrect = false;
-        errorMessage = 'The ' + day + ' value should not be empty';
+  coeffChange() {
+    this.coefficientsChange.emit(this.coefficients);
+    let i = 0;
+    for (let day in this.coefficients) {
+      i++;
+      if (!this.coefficients[day]) {
+        this.sendError(`${day} coefficient should be a non-zero number`, 10 + i);
       }
-    }
+      else {
+        this.sendError('', 10 + i);
+      }
 
-    if(this.minQty >= this.maxQty){
-      isCorrect = false;
-      errorMessage = 'The minQty should be less than maxQty';
     }
+  }
 
-    if(this.maxQty === null || this.maxQty === ""){
-      isCorrect = false;
-      errorMessage = 'The maxQty should not has empty value';
+  minChange() {
+    this.minQtyChange.emit(this.minQty);
+    if (!this.minQty) {
+      this.sendError('The Min Qty should not be blank', 0);
     }
+    else this.sendError('', 0);
+    this.checkMinMax()
+  }
 
-    if(this.minQty === null || this.minQty === ""){
-      isCorrect = false;
-      errorMessage = 'The minQty should not has empty value';
+  maxChange() {
+    this.maxQtyChange.emit(this.maxQty);
+    if (!this.maxQty) {
+      this.sendError('The Max Qty should not be blank', 1);
     }
+    else this.sendError('', 1);
+    this.checkMinMax()
+  }
 
-    this.hasError.emit({
-      hasError: !isCorrect,
-      message: ((isCorrect) ? '' : errorMessage)
-    });
+  recurChange(event) {
+    this.recursionRuleChange.emit(event);
+  }
+
+  addRRuleValidation(event) {
+    this.RRuleValidation = event;
+    if (event)
+      this.sendError(`Recursion rule warning: ${this.RRuleValidation}`, 2)
+    else this.sendError('', 2);
+  }
+
+  checkMinMax() {
+    if (this.minQty > this.maxQty) {
+      this.sendError('The Min Qty should be less than or equal to Max Qty', 3);
+    }
+    else this.sendError('', 3);
+  }
+
+  sendError(msg, index) {
+    this.errorMessage[index] = msg;
+    if (msg)
+      this.hasError.emit(msg);
+    else {
+      for (let key in this.errorMessage)
+        if (this.errorMessage[key])
+          msg = this.errorMessage[key];
+      this.hasError.emit(msg);
+    }
+    this.showMessage = msg;
   }
 
 }

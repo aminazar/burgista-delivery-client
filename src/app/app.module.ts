@@ -21,7 +21,10 @@ import {ProductFormComponent} from "./product-form/product-form.component";
 import {ProductSubFormComponent} from "./product-form/product-sub-form.component";
 import { CountingRuleComponent } from './counting-rule/counting-rule.component';
 import {MessageService} from "./message.service";
+
+import { FocusDirective } from './focus.directive';
 import { OverrideFormComponent } from './override-form/override-form.component';
+
 
 @NgModule({
   declarations: [
@@ -36,7 +39,8 @@ import { OverrideFormComponent } from './override-form/override-form.component';
     ProductFormComponent,
     ProductSubFormComponent,
     CountingRuleComponent,
-    OverrideFormComponent
+    FocusDirective,
+    OverrideFormComponent,
   ],
   imports: [
     BrowserModule,

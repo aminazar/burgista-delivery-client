@@ -2,10 +2,10 @@
   <md-card-title>Login</md-card-title>
   <md-card-content>
     <md-input-container>
-      <input mdInput placeholder="Username" [(ngModel)]="username" (change)="onChange()">
+      <input mdInput focus placeholder="Username" [(ngModel)]="username" (change)="onChange()">
     </md-input-container>
     <md-input-container>
-      <input mdInput placeholder="Password" type="password" [(ngModel)]="password" (change)="onChange()">
+      <input mdInput placeholder="Password" type="password" [(ngModel)]="password" (change)="onChange()" (keydown)="ifEnterLogin($event)">
     </md-input-container>
   </md-card-content>
   <md-card-actions>
