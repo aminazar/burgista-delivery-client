@@ -1,4 +1,5 @@
-<span>Inventory Rules By Default:</span>
+<span *ngIf="!isOverridden">Inventory Rules By Default:</span>
+<span *ngIf="isOverridden">Inventory Rules Overrides:</span>
 <br/>
 <md-card>
   <div class="errorMessage">{{showMessage}}</div>

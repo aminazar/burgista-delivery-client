@@ -27,16 +27,6 @@ import {MonthdayComponent} from "./rrule/monthday.component";
 import {MockBackend} from "@angular/http/testing";
 import {APP_BASE_HREF} from "@angular/common";
 
-class RouterStub {
-  navigateByUrl(url: string) {
-    return url;
-  }
-
-  navigate(url: string) {
-    return url;
-  }
-}
-
 describe('App: Burgista Internal Delivery', () => {
   let app : AppComponent;
   let fixture : ComponentFixture<AppComponent>;

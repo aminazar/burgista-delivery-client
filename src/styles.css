@@ -8,6 +8,11 @@ a:hover{text-decoration: none;text-weight:bold;}
 .innerCard{
 background-color:antiquewhite !important; padding: 10px;
 }
+
+.innerCardOverride{
+  background-color:white !important; padding: 10px;
+}
+
 .FormTitleStyle{
   margin-top: 15px;
   margin-left: 15px;

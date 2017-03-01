@@ -84,7 +84,26 @@ export class ProductFormComponent implements OnInit {
       (err) => {
         console.log(err.message);
       }
-    )
+    );
+
+    this.productModelCtrl.valueChanges.subscribe(
+      (data) => {
+        let fullMatch = this.productModels.find((el) => {
+          return (el._product.name.toLowerCase() == this.productModelCtrl.value.toLowerCase())
+            || (el._product.code.toLowerCase() == this.productModelCtrl.value.toLowerCase());
+        });
+
+        if (fullMatch !== null && fullMatch !== undefined) {
+          this.filteredProductModel = fullMatch;
+          this.isFiltered = true;
+        }
+        else
+          this.isFiltered = false;
+      },
+      (err) => {
+        console.log(err.message);
+      }
+    );
   }
 
   doClickedAction(value) {
@@ -109,6 +128,26 @@ export class ProductFormComponent implements OnInit {
   }
 
   private addProduct(product: Product) {
+    let foundByName = this.productModels.find((el) => {
+      return el._product.name.toLowerCase() ===  product.name.toLowerCase();
+    });
+
+    if(foundByName !== null && foundByName !== undefined){
+      this.messageService.warn(`The '${foundByName._product.name}' name is already exist.`);
+      this.disableEnable(product.id, ActionEnum.add, false);
+      return;
+    }
+
+    let foundByCode = this.productModels.find((el) => {
+      return el._product.code.toLowerCase() === product.code.toLowerCase();
+    });
+
+    if(foundByCode !== null && foundByCode !== undefined){
+      this.messageService.warn(`The '${foundByCode._product.code}' code is already exist.`);
+      this.disableEnable(product.id, ActionEnum.add, false);
+      return;
+    }
+
     let name = product.name;
     this.restService.insert('product', ProductModel.toAnyObject(product)).subscribe(
       (data) => {
@@ -190,6 +229,26 @@ export class ProductFormComponent implements OnInit {
   }
 
   private updateProduct(productId: number, product: Product) {
+    let foundByName = this.productModels.find((el) => {
+      return el._product.name.toLowerCase() ===  product.name.toLowerCase();
+    });
+
+    if((foundByName !== null  && foundByName !== undefined) && product.name !== this.filteredProductModel._product.name){
+      this.messageService.warn(`The '${foundByName._product.name}' name is already exist.`);
+      this.disableEnable(productId, ActionEnum.update, false);
+      return;
+    }
+
+    let foundByCode = this.productModels.find((el) => {
+      return el._product.code.toLowerCase() === product.code.toLowerCase();
+    });
+
+    if((foundByCode !== null && foundByCode !== undefined) && product.code !== this.filteredProductModel._product.code){
+      this.messageService.warn(`The '${foundByCode._product.code}' code is already exist.`);
+      this.disableEnable(productId, ActionEnum.update, false);
+      return;
+    }
+
     let index: number = this.productModels.findIndex(function (element) {
       return element._product.id == productId;
     });
@@ -220,7 +279,7 @@ export class ProductFormComponent implements OnInit {
 
 
         this.disableEnable(productId, ActionEnum.update, false);
-        this.messageService.message(`'${name}' is added to products.`);
+        this.messageService.message(`'${name}' is updated in products.`);
 
         this.actionIsSuccess.next(false);
       },
@@ -259,41 +318,25 @@ export class ProductFormComponent implements OnInit {
       tempProductModel.waiting.next(tempWaitingObj);
   }
 
-  // sortProductModelList(){
-  //   this.productModels.sort(function(a, b){
-  //     if(a._product.name > b._product.name)
-  //       return 1;
-  //     else if(a._product.name < b._product.name)
-  //       return -1;
-  //     else{
-  //       if(a._product.code > b._product.code)
-  //         return 1;
-  //       else if(a._product.code < b._product.code)
-  //         return -1;
-  //       else
-  //         return 0;
-  //     }
-  //   });
-  // }
-
   filterProducts(val: string) {
     return val ? this.productName_Code.filter((p) => new RegExp(val, 'gi').test(p)) : this.productName_Code;
   }
 
   getProduct(nameCode: string) {
-    let tempProductModel: ProductModel[] = null;
+    console.log(nameCode);
+    console.log(nameCode[0].toLowerCase());
 
-    tempProductModel = this.productModels.filter((p) => {
-      return p._product.name == nameCode;
+    let tempProductModel: ProductModel;
+
+    tempProductModel = this.productModels.find((p) => {
+      return p._product.name.toLowerCase() == nameCode[0].toLowerCase();
     });
 
-    console.log(tempProductModel);
+    if (tempProductModel !== null && tempProductModel !== undefined)
+      return tempProductModel;
 
-    if (tempProductModel !== null && tempProductModel.length !== 0)
-      return tempProductModel[0];
-
-    return this.productModels.filter((p) => {
-      return p._product.code == nameCode;
-    })[0];
+    return this.productModels.find((p) => {
+      return p._product.code.toLowerCase() == nameCode[0].toLowerCase();
+    });
   }
 }

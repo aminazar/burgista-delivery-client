@@ -54,6 +54,7 @@ import { OverrideFormComponent } from './override-form/override-form.component';
       {path: 'login', component: LoginComponent},
       {path: 'units', component: UnitFormComponent, canActivate: [LoggedInGuard]},
       {path: 'products', component: ProductFormComponent, canActivate: [LoggedInGuard]},
+      {path: 'override', component: OverrideFormComponent, canActivate: [LoggedInGuard]},
     ]),
   ],
   providers: [AuthService, RestService, LoggedInGuard, MessageService],

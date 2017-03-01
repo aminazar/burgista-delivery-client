@@ -11,11 +11,11 @@
   </md-input-container>
   <md-input-container>
 
-    <input mdInput  placeholder="Admin Username" type="text" (keyup)="disabilityStatus()" [(ngModel)]="unit.username" class="username"/>
+    <input mdInput autocomplete="off" placeholder="Admin Username" type="text" (keyup)="disabilityStatus()" [(ngModel)]="unit.username" class="username"/>
   </md-input-container>
   <br>
   <md-input-container >
-    <input mdInput  placeholder="Admin Password" type="password" (keyup)="disabilityStatus()" [(ngModel)]="unit.password" class="password"/>
+    <input mdInput autocomplete="off" placeholder="Admin Password" type="password" (keyup)="disabilityStatus()" [(ngModel)]="unit.password" class="password"/>
   </md-input-container>
   <br>
     <button md-raised-button *ngIf="isAdd" class="ButtonStyle" (click)="actionEmitter(ae.add)" [(disabled)]="addIsDisable" class="addBtn">Add</button>

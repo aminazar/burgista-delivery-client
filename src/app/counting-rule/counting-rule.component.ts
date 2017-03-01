@@ -6,6 +6,7 @@ import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
   styleUrls: ['./counting-rule.component.css']
 })
 export class CountingRuleComponent implements OnInit {
+  @Input() isOverridden: boolean = false;
   @Input() coefficients;
   private _mq: any;
 
