@@ -75,13 +75,14 @@ export class ProductSubFormComponent implements OnInit {
             this.product.size = null;
             this.product.measuringUnit = null;
             this.product.prep_unit_id = null;
-            this.product.countingRecursion = '';
             this.product.minQty = null;
             this.product.maxQty = null;
 
             for (let day in this.product.coefficients) {
               this.product.coefficients[day] = 1;
             }
+
+            this.product.countingRecursion = '';
           }
 
           this.disabilityStatus();
@@ -147,21 +148,6 @@ export class ProductSubFormComponent implements OnInit {
       }
 
       this.product.countingRecursion = this.tempProductModel._product.countingRecursion;
-      // this.product.id = this.productModel._product.id;
-      // this.product.name = this.productModel._product.name;
-      // this.product.code = this.productModel._product.code;
-      // this.product.size = this.productModel._product.size;
-      // this.product.measuringUnit = this.productModel._product.measuringUnit;
-      // this.product.prep_unit_id = this.productModel._product.prep_unit_id;
-      // this.product.maxQty = this.productModel._product.maxQty;
-      // this.product.minQty = this.productModel._product.minQty;
-
-      //Copy coefficients
-      for (let day in this.productModel._product.coefficients) {
-        this.product.coefficients[day] = this.productModel._product.coefficients[day];
-      }
-
-      this.product.countingRecursion = this.productModel._product.countingRecursion;
 
       this.formTitle = this.product.name;
     }
