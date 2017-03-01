@@ -1,16 +1,16 @@
 <md-card style="background-color: #607D8B; border-radius: 7px; text-align: left; margin: 10px;">
-  <span class="SpanStyle">Products</span>
-  <md-tab-group>
+ <md-card-title class="cardTitle">Products</md-card-title>
+  <md-tab-group class="materialTab" [selectedIndex]="selectedIndex">
     <md-tab label="Add">
-      <md-card style="background-color: white; padding: 10px;">
+      <md-card class="innerCard">
         <app-product-sub-form [isAdd]="true" [isAdding]="isAdding" [actionIsSuccess]="actionIsSuccess" (action)="doClickedAction($event)"></app-product-sub-form>
       </md-card>
     </md-tab>
     <md-tab label="Modify">
-      <md-card>
+      <md-card class="innerCard">
         <md-card-content>
           <md-input-container>
-            <input mdInput type="text" placeholder="Product name/code" [mdAutocomplete]="auto" [formControl]="productModelCtrl" #autoNameCode/>
+            <input mdInput type="text" class="pnc" placeholder="Product name/code" [mdAutocomplete]="auto" [formControl]="productModelCtrl" #autoNameCode/>
             <md-autocomplete #auto="mdAutocomplete">
               <md-option *ngFor="let nameCode of filteredNameCode | async" [value]="nameCode">
                 {{nameCode}}
