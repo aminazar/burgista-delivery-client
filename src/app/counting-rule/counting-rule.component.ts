@@ -31,7 +31,6 @@ export class CountingRuleComponent implements OnInit {
   @Output() hasError = new EventEmitter<string>();
 
   days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Usage'];
-  private RRuleValidation: any;
   private errorMessage = {};
   private showMessage: string;
 
@@ -42,7 +41,7 @@ export class CountingRuleComponent implements OnInit {
     this.minChange();
     this.maxChange();
     if (!this.recursionRule)
-      this.addRRuleValidation('add a period');
+      this.sendError('add a period', 2);
   }
 
   coeffChange() {
@@ -79,14 +78,10 @@ export class CountingRuleComponent implements OnInit {
   }
 
   recurChange(event) {
-    this.recursionRuleChange.emit(event);
-  }
-
-  addRRuleValidation(event) {
-    this.RRuleValidation = event;
-    if (event)
-      this.sendError(`Recursion rule warning: ${this.RRuleValidation}`, 2)
+    if(event.error)
+      this.sendError(`Recursion rule warning: ${event.error}`, 2)
     else this.sendError('', 2);
+    this.recursionRuleChange.emit(event.value);
   }
 
   checkMinMax() {
