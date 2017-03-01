@@ -104,7 +104,7 @@ export class RRuleComponent implements OnInit {
 
   private calcPastOrRemained() {
     this.monthDaysPast = this.bymonthday.filter(r => r > 0);
-    if (this.monthDaysPast.length) {
+    if (this.monthDaysPast.length && this.monthDaysOption.indexOf('past')) {
       this.monthDaysOption.push('past');
     }
     this.monthDaysRemained = this.bymonthday.filter(r => r < 0);
@@ -161,13 +161,14 @@ export class RRuleComponent implements OnInit {
   onMonthlyInputModeChange(event) {
     delete this.options.byweekday;
     delete this.options.bysetpos;
-    if (event === 'week') {
-      delete this.options.bymonthday;
-      this.bymonthday = [];
-    }
-    else {
+
+    if (event === 'month'){
       this.bymonthday = [moment().get('D')];
       this.options.bymonthday = this.bymonthday;
+    }
+    else {
+      delete this.options.bymonthday;
+      this.bymonthday = [];
     }
     this.bysetpos = [];
     this.byweekday = [];
