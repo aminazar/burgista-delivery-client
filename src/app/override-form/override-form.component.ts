@@ -102,6 +102,8 @@ export class OverrideFormComponent implements OnInit {
       .startWith(null)
       .map((name_code) => this.filterProducts(name_code));
 
+    let oneItemInList: boolean = false;
+
     this.filteredNameCode.subscribe(
       (data) => {
         if (data.length === 1) {
@@ -111,14 +113,42 @@ export class OverrideFormComponent implements OnInit {
             this.filteredProductModel.setProduct(this.getProduct(data));
 
           this.isFiltered = true;
+          oneItemInList = true;
         }
-        else
+        else {
           this.isFiltered = false;
+          oneItemInList = false;
+        }
       },
       (err) => {
         console.log(err.message);
       }
-    )
+    );
+
+    this.productModelCtrl.valueChanges.subscribe(
+      (data) => {
+        if (!oneItemInList) {
+          let fullMatch = this.productModels.find((el) => {
+            return (el._product.name.toLowerCase() == this.productModelCtrl.value.toLowerCase())
+              || (el._product.code.toLowerCase() == this.productModelCtrl.value.toLowerCase());
+          });
+
+          if (fullMatch !== null && fullMatch !== undefined) {
+            if(this.filteredProductModel == null)
+              this.filteredProductModel = new ProductModel(fullMatch._product);
+            else
+              this.filteredProductModel.setProduct(fullMatch._product);
+
+            this.isFiltered = true;
+          }
+          else
+            this.isFiltered = false;
+        }
+      },
+      (err) => {
+        console.log(err.message);
+      }
+    );
   }
 
   doClickedAction(type: ActionEnum) {
@@ -335,17 +365,17 @@ export class OverrideFormComponent implements OnInit {
   }
 
   getProduct(nameCode: string) : Product{
-    let tempProductModel: ProductModel[] = null;
+    let tempProductModel: ProductModel = null;
 
-    tempProductModel = this.productModels.filter((p) => {
-      return p._product.name == nameCode;
+    tempProductModel = this.productModels.find((p) => {
+      return p._product.name.toLowerCase() == nameCode[0].toLowerCase();
     });
 
-    if (tempProductModel !== null && tempProductModel.length !== 0)
-      return tempProductModel[0]._product;
+    if (tempProductModel !== null && tempProductModel !== undefined)
+      return tempProductModel._product;
 
-    return this.productModels.filter((p) => {
-      return p._product.code == nameCode;
-    })[0]._product;
+    return this.productModels.find((p) => {
+      return p._product.code.toLowerCase() == nameCode[0].toLowerCase();
+    })._product;
   }
 }
