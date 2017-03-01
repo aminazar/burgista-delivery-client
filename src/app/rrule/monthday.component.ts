@@ -10,7 +10,6 @@ export class MonthdayComponent implements OnInit {
   @Input()
   set days(val:number[]){
     this._days=val;
-    this.daysChange.emit(val);
   }
   get days(){
     return this._days;
