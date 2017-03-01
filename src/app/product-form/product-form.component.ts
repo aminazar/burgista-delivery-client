@@ -109,6 +109,15 @@ export class ProductFormComponent implements OnInit {
   }
 
   private addProduct(product: Product) {
+    let foundName = this.productModels.find((el) => {
+      return el._product.name.toLowerCase() ===  product.name.toLowerCase();
+    })._product.name;
+
+    if(foundName !== null){
+      this.messageService.warn(`The '${foundName}' name is already exist.`);
+      return;
+    }
+
     let name = product.name;
     this.restService.insert('product', ProductModel.toAnyObject(product)).subscribe(
       (data) => {
@@ -190,6 +199,15 @@ export class ProductFormComponent implements OnInit {
   }
 
   private updateProduct(productId: number, product: Product) {
+    let foundName = this.productModels.find((el) => {
+      return el._product.name.toLowerCase() ===  product.name.toLowerCase();
+    })._product.name;
+
+    if(foundName !== null && product.name !== this.filteredProductModel._product.name){
+      this.messageService.warn(`The '${foundName}' name is already exist.`);
+      return;
+    }
+
     let index: number = this.productModels.findIndex(function (element) {
       return element._product.id == productId;
     });
@@ -220,7 +238,7 @@ export class ProductFormComponent implements OnInit {
 
 
         this.disableEnable(productId, ActionEnum.update, false);
-        this.messageService.message(`'${name}' is added to products.`);
+        this.messageService.message(`'${name}' is updated in products.`);
 
         this.actionIsSuccess.next(false);
       },
