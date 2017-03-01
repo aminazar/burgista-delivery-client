@@ -15,8 +15,9 @@ import {BehaviorSubject} from "rxjs";
 import {PromiseObservable} from "rxjs/observable/PromiseObservable";
 import {ProductModel} from "./product.model";
 import {ActionEnum} from "../unit-form/actionEnum";
+import {MessageService} from "../message.service";
 
-describe('ProductSubFormComponent', () => {
+fdescribe('ProductSubFormComponent', () => {
   let component: ProductSubFormComponent;
   let fixture: ComponentFixture<ProductSubFormComponent>;
 
@@ -35,6 +36,7 @@ describe('ProductSubFormComponent', () => {
       ],
       providers: [
         RestService,
+        MessageService,
       ]
     })
     .compileComponents();
