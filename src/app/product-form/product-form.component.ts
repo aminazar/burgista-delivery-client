@@ -72,14 +72,27 @@ export class ProductFormComponent implements OnInit {
       .startWith(null)
       .map((name_code) => this.filterProducts(name_code));
 
+    let oneItemInList: boolean = false;
+
     this.filteredNameCode.subscribe(
       (data) => {
         if (data.length === 1) {
-          this.filteredProductModel = this.getProduct(data);
-          this.isFiltered = true;
-        }
-        else
           this.isFiltered = false;
+
+          // if(this.filteredProductModel == null)
+          //   this.filteredProductModel = new ProductModel(this.getProduct(data));
+          // else
+          //   this.filteredProductModel.setProduct(this.getProduct(data));
+
+          this.filteredProductModel = this.getProduct(data);
+
+          this.isFiltered = true;
+          oneItemInList = true;
+        }
+        else{
+          this.isFiltered = false;
+          oneItemInList = false;
+        }
       },
       (err) => {
         console.log(err.message);
@@ -88,17 +101,27 @@ export class ProductFormComponent implements OnInit {
 
     this.productModelCtrl.valueChanges.subscribe(
       (data) => {
-        let fullMatch = this.productModels.find((el) => {
-          return (el._product.name.toLowerCase() == this.productModelCtrl.value.toLowerCase())
-            || (el._product.code.toLowerCase() == this.productModelCtrl.value.toLowerCase());
-        });
+        if(!oneItemInList) {
+          let fullMatch = this.productModels.find((el) => {
+            return (el._product.name.toLowerCase() == this.productModelCtrl.value.toLowerCase())
+              || (el._product.code.toLowerCase() == this.productModelCtrl.value.toLowerCase());
+          });
 
-        if (fullMatch !== null && fullMatch !== undefined) {
-          this.filteredProductModel = fullMatch;
-          this.isFiltered = true;
+          if (fullMatch !== null && fullMatch !== undefined) {
+            this.isFiltered = false;
+
+            this.filteredProductModel = fullMatch;
+
+            // if (this.filteredProductModel == null)
+            //   this.filteredProductModel = fullMatch;
+            // else
+            //   this.filteredProductModel =fullMatch._product);
+
+            this.isFiltered = true;
+          }
+          else
+            this.isFiltered = false;
         }
-        else
-          this.isFiltered = false;
       },
       (err) => {
         console.log(err.message);
@@ -323,9 +346,6 @@ export class ProductFormComponent implements OnInit {
   }
 
   getProduct(nameCode: string) {
-    console.log(nameCode);
-    console.log(nameCode[0].toLowerCase());
-
     let tempProductModel: ProductModel;
 
     tempProductModel = this.productModels.find((p) => {
