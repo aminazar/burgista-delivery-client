@@ -14,11 +14,19 @@ import {MessageService} from "../message.service";
 export class ProductSubFormComponent implements OnInit {
   @Input() isAdd: boolean = true;
   @Input() isAdding: Observable<boolean>;
-  @Input() productModel: ProductModel;
   @Input() actionIsSuccess: Observable<boolean>;
+  @Input() //productModel: ProductModel;
+  set productModel(val: ProductModel){
+    this.tempProductModel = val;
+    this.ngOnInit();
+  }
+  get productModel(): ProductModel {
+    return this.tempProductModel;
+  }
   @Output() action = new EventEmitter();
 
 
+  tempProductModel: ProductModel;
   hasCountingRuleError: boolean = false;
   countingRuleError: string = '';
   _isAdding: boolean;
@@ -125,20 +133,34 @@ export class ProductSubFormComponent implements OnInit {
         }
       );
 
-      this.product.id = this.productModel._product.id;
-      this.product.name = this.productModel._product.name;
-      this.product.code = this.productModel._product.code;
-      this.product.size = this.productModel._product.size;
-      this.product.measuringUnit = this.productModel._product.measuringUnit;
-      this.product.prep_unit_id = this.productModel._product.prep_unit_id;
-      this.product.maxQty = this.productModel._product.maxQty;
-      this.product.minQty = this.productModel._product.minQty;
+      this.product.id = this.tempProductModel._product.id;
+      this.product.name = this.tempProductModel._product.name;
+      this.product.code = this.tempProductModel._product.code;
+      this.product.size = this.tempProductModel._product.size;
+      this.product.measuringUnit = this.tempProductModel._product.measuringUnit;
+      this.product.prep_unit_id = this.tempProductModel._product.prep_unit_id;
+      this.product.maxQty = this.tempProductModel._product.maxQty;
+      this.product.minQty = this.tempProductModel._product.minQty;
+
+      for (let day in this.tempProductModel._product.coefficients) {
+        this.product.coefficients[day] = this.tempProductModel._product.coefficients[day];
+      }
+
+      this.product.countingRecursion = this.tempProductModel._product.countingRecursion;
+      // this.product.id = this.productModel._product.id;
+      // this.product.name = this.productModel._product.name;
+      // this.product.code = this.productModel._product.code;
+      // this.product.size = this.productModel._product.size;
+      // this.product.measuringUnit = this.productModel._product.measuringUnit;
+      // this.product.prep_unit_id = this.productModel._product.prep_unit_id;
+      // this.product.maxQty = this.productModel._product.maxQty;
+      // this.product.minQty = this.productModel._product.minQty;
 
       //Copy coefficients
       for (let day in this.productModel._product.coefficients) {
         this.product.coefficients[day] = this.productModel._product.coefficients[day];
       }
-      // this.product.coefficients = this.productModel._product.coefficients;
+
       this.product.countingRecursion = this.productModel._product.countingRecursion;
 
       this.formTitle = this.product.name;
