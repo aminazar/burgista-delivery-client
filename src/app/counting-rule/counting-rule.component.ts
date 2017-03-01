@@ -38,8 +38,8 @@ export class CountingRuleComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.minChange();
     this.maxChange();
+    this.minChange();
     if (!this.recursionRule)
       this.sendError('add a period', 2);
   }
@@ -61,7 +61,7 @@ export class CountingRuleComponent implements OnInit {
 
   minChange() {
     this.minQtyChange.emit(this.minQty);
-    if (!this.minQty) {
+    if (this.minQty!==0&&!this.minQty) {
       this.sendError('The Min Qty should not be blank', 0);
     }
     else this.sendError('', 0);
@@ -70,7 +70,7 @@ export class CountingRuleComponent implements OnInit {
 
   maxChange() {
     this.maxQtyChange.emit(this.maxQty);
-    if (!this.maxQty) {
+    if (this.maxQty!==0&&!this.maxQty) {
       this.sendError('The Max Qty should not be blank', 1);
     }
     else this.sendError('', 1);

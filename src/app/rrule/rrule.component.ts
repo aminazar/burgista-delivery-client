@@ -15,6 +15,7 @@ export class RRuleComponent implements OnInit {
     if (val === '' || !this._rstr) {
       this._rstr = val;
       this.ngOnInit();
+      this.text = '';
     }
   };
 
@@ -120,9 +121,14 @@ export class RRuleComponent implements OnInit {
         delete this.options[key];
 
     this.rule = new Rrule(this.options);
-    let d = new Date();
-    let d2 = moment(d).add(366, 'd').toDate();
-    this.text = this.rule.between(d, d2).map(r => moment(r).format('ddd DD-MMM-YY')).splice(0, 10).join('\n');
+    if(this.rule.options.freq) {
+      let d = new Date();
+      let d2 = moment(d).add(366, 'd').toDate();
+      this.text = this.rule.between(d, d2).map(r => moment(r).format('ddd DD-MMM-YY')).splice(0, 10).join('\n');
+    }
+    else {
+      this.text = '';
+    }
     this.RRuleStrChange.emit({value: this.rule.toString(), error: this.validate()});
   }
 

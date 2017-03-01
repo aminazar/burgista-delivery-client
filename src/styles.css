@@ -47,3 +47,6 @@ background-color:antiquewhite !important; padding: 10px;
 .mat-radio-focused{
   background-color: antiquewhite;
 }
+.mat-button-toggle:hover{
+  background-color: antiquewhite;
+}
