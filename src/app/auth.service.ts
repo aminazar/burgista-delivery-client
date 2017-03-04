@@ -10,6 +10,7 @@ export class AuthService {
   private authStream = new Subject<boolean>();
   public user = '';
   public userType = '';
+  public unitName = '';
   auth$ = this.authStream.asObservable();
   originBeforeLogin = '/';
 
@@ -37,6 +38,7 @@ export class AuthService {
       .subscribe(res => {
           let data = res.json();
           this.user = data.user;
+          this.unitName = data.name;
           this.userType = data.userType;
           this.authStream.next(true);
           let url = this.originBeforeLogin;
@@ -56,6 +58,8 @@ export class AuthService {
       .subscribe(() => {
           this.messageService.message(`${this.user} logged out.`);
           this.user = '';
+          this.userType = '';
+          this.unitName = '';
           this.authStream.next(false);
           this.router.navigate(['login']);
         },

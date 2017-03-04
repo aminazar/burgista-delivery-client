@@ -12,8 +12,23 @@ export class MessageService {
   warn$:Observable<string> = this.warningStream.asObservable();
 
   error(err:Response){
-    // this.errStream.next(err);
-    this.errStream.next(this.changeToUnderstandableMessage(err));
+    err = this.changeToUnderstandableMessage(err);
+    let ro = new ResponseOptions();
+    let errMsg = '';
+    try {
+      if(err.json().Message)
+        errMsg = err.json().Message;
+      else if(typeof err.json().Message === "object")
+        errMsg = '';
+    }
+    catch (e) {
+      errMsg = err.text();
+    }
+    ro.body = errMsg;
+    let newErr = new Response(ro);
+    newErr.statusText = err.statusText;
+    newErr.status = err.status;
+    this.errStream.next(newErr);
   }
 
   message(msg:string){
@@ -29,18 +44,27 @@ export class MessageService {
     let data = msg._body;
 
     let resOptions = new ResponseOptions();
-    let res = new Response(resOptions);
 
-    if (data.indexOf('foreign key constraint') !== -1 && data.indexOf('unit') !== -1) {
-      res.statusText = 'Can not delete this unit because there are some products related to it';
+    if (data.indexOf('foreign key constraint') !== -1) {
+      resOptions.body = 'Can not delete this item because other data items depend on it.';
+      let res = new Response(resOptions);
+      res.statusText = 'Data Integrity Error';
       return res;
     }
     else if (data.indexOf('duplicate key value') !== -1) {
-      res.statusText = 'One of the data is already exist';
+      let n = 'constraint "';
+      let constraint = data.substring(data.indexOf(n) + n.length,data.indexOf('_key"')).replace(/\_/g,' ');
+      resOptions.body = `Can not add this item because same "${constraint}" already exists.`;
+      let res = new Response(resOptions);
+      res.statusText = 'Data Integrity Error';
       return res;
     }
     else if (data.indexOf('null value') !== -1 && data.indexOf('not-null constraint') !== -1) {
-      res.statusText = 'The fields can not have null value';
+      let n = 'in column "';
+      let constraint = data.substring(data.indexOf(n) + n.length,data.indexOf('" violates')).replace(/\_/g,' ');
+      resOptions.body = `The "${constraint}" field cannot be blank.`;
+      let res = new Response(resOptions);
+      res.statusText = 'Data Integrity Error';
       return res;
     }
     else
