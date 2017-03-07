@@ -1,7 +1,7 @@
 <md-input-container>
   <input mdInput type="number" placeholder="Interval" [(ngModel)]="options.interval" (ngModelChange)="onChange()"
          min="1">
-  <md-hint>Every {{options.interval>1?options.interval:''}}
+  <md-hint>{{options.freq ? 'Every' : 'Never'}} {{options.freq && options.interval>1?options.interval:''}}
     {{freqsName[freqsConst.indexOf(options.freq)]}}{{options.interval>1?'s':''}}
   </md-hint>
 </md-input-container><br/>

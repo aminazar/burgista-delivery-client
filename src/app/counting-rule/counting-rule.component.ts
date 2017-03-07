@@ -38,10 +38,6 @@ export class CountingRuleComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.maxChange();
-    // this.minChange();
-    if (!this.recursionRule)
-      this.sendError('add a period', 2);
   }
 
   coeffChange() {
