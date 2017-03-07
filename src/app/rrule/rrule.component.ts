@@ -26,8 +26,8 @@ export class RRuleComponent implements OnInit {
   @Output() RRuleStrChange = new EventEmitter<any>();
   options: Rrule.Options;
   rule: Rrule;
-  freqs = ['Daily', 'Weekly', 'Monthly'];
-  freqsConst = [Rrule.DAILY, Rrule.WEEKLY, Rrule.MONTHLY];
+  freqs = ['Daily', 'Weekly', 'Monthly', 'Never'];
+  freqsConst = [Rrule.DAILY, Rrule.WEEKLY, Rrule.MONTHLY, null];
   freqsName = ['day', 'week', 'month'];
   weekdays = ['Mon', 'Tue', 'Wed', 'Thr', 'Fri', 'Sat', 'Sun'];
   weekdaysConst = [Rrule.MO, Rrule.TU, Rrule.WE, Rrule.TH, Rrule.FR, Rrule.SA, Rrule.SU];
@@ -134,9 +134,7 @@ export class RRuleComponent implements OnInit {
 
   validate() {
     let v = '';
-    if (!this.options.freq)
-      v = 'choose a period';
-    else if (this.options.freq === Rrule.WEEKLY && !this.byweekday.length) {
+    if (this.options.freq === Rrule.WEEKLY && !this.byweekday.length) {
       v = 'choose a weekday';
     }
     else if (this.rule.options.freq === Rrule.MONTHLY && this.monthlyInputMode === 'week') {
