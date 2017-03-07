@@ -1,0 +1,105 @@
+<md-card style="background-color: #607D8B; border-radius: 7px; text-align: left; margin: 10px;">
+  <div class="flex-container"
+       fxLayout="row" fxLayout.xs="column" fxLayout.sm="column"
+       fxLayoutAlign="center center" fxLayoutAlign.xs="start start" fxLayoutAlign.sm="start start">
+    <md-card-title class="flex-item cardTitle" fxFlex="70">{{unitName}} Delivery</md-card-title>
+    <material-datepicker class="flex-item" fxFlex="30" [(date)]="selectedDate" (onSelect)="dateChanged()">
+    </material-datepicker>
+  </div>
+  <md-tab-group class="materialTab" [(selectedIndex)]="selectedIndex" (selectChange)="tabChanged()">
+    <md-tab label="All" *ngIf="overallDeliveryModel._deliveries !== undefined && overallDeliveryModel._deliveries.length > 0">
+      <md-card class="innerCard">
+        <md-card-title>To Do: Delivery</md-card-title>
+        <md-card-content>
+          <md-card>
+            <md-card-content>
+              <md-grid-list cols="6" rowHeight="50px">
+                <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1">Code</md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1">Product</md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1">Real Delivery</md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1">Min</md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1">Max</md-grid-tile>
+              </md-grid-list>
+              <md-grid-list cols="6" rowHeight="50px">
+                <div *ngFor="let delItem of overallDeliveryModel._deliveries">
+                  <md-grid-tile [colspan]="1" [rowspan]="1" *ngIf="delItem.id !== null"></md-grid-tile>
+                  <md-grid-tile [colspan]="1" [rowspan]="1" *ngIf="delItem.id === null">
+                    <button md-mini-fab (click)="removeDeliveryItem(delItem)"><i class="fa fa-times" aria-hidden="true"></i></button>
+                  </md-grid-tile>
+                  <md-grid-tile [colspan]="1" [rowspan]="1">{{delItem.productCode}}</md-grid-tile>
+                  <md-grid-tile [colspan]="1" [rowspan]="1">{{delItem.productName}}</md-grid-tile>
+                  <md-grid-tile [colspan]="1" [rowspan]="1">
+                    <md-input-container>
+                      <input mdInput type="number" disabled="disabled" placeholder="Real Delivery" [(ngModel)]="delItem.realDelivery"/>
+                    </md-input-container>
+                  </md-grid-tile>
+                  <md-grid-tile [colspan]="1" [rowspan]="1">{{delItem.min}}</md-grid-tile>
+                  <md-grid-tile [colspan]="1" [rowspan]="1">{{delItem.max}}</md-grid-tile>
+                </div>
+              </md-grid-list>
+            </md-card-content>
+          </md-card>
+        </md-card-content>
+      </md-card>
+    </md-tab>
+    <md-tab *ngFor="let rcv of receivers" label="{{rcv.name}}">
+      <md-card class="innerCard" *ngIf="receiversDeliveryModels[rcv.name] !== undefined && receiversDeliveryModels[rcv.name] !== null">
+        <md-card-title>To Do: Delivery</md-card-title>
+        <md-card-content>
+          <md-card>
+            <md-card-content>
+              <md-grid-list cols="8" rowHeight="50px">
+                <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
+                <md-grid-tile class="deliveryItem" [colspan]="1" [rowspan]="1">Code</md-grid-tile>
+                <md-grid-tile class="deliveryItem" [colspan]="1" [rowspan]="1">Product</md-grid-tile>
+                <md-grid-tile class="deliveryItem" [colspan]="1" [rowspan]="1">RealDelivery</md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1">Min</md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1">Max</md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1">Stock</md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1">Stock Date</md-grid-tile>
+              </md-grid-list>
+              <md-grid-list cols="8" rowHeight="50px">
+                <div *ngFor="let delItem of receiversDeliveryModels[rcv.name]._deliveries">
+                  <md-grid-tile [colspan]="1" [rowspan]="1" *ngIf="delItem.id !== null"></md-grid-tile>
+                  <md-grid-tile [colspan]="1" [rowspan]="1" *ngIf="delItem.id === null">
+                    <button md-mini-fab (click)="removeDeliveryItem(delItem)"><i class="fa fa-times" aria-hidden="true"></i></button>
+                  </md-grid-tile>
+                  <md-grid-tile class="deliveryItem" [colspan]="1" [rowspan]="1">{{delItem.productCode}}</md-grid-tile>
+                  <md-grid-tile class="deliveryItem" [colspan]="1" [rowspan]="1">{{delItem.productName}}</md-grid-tile>
+                  <md-grid-tile class="deliveryItem" [colspan]="1" [rowspan]="1">
+                    <md-input-container>
+                      <input mdInput type="number" placeholder="Real Delivery" [(ngModel)]="delItem.realDelivery" (ngModelChange)="checkRealDeliveryValue($event, delItem)"/>
+                    </md-input-container>
+                  </md-grid-tile>
+                  <md-grid-tile [colspan]="1" [rowspan]="1">{{delItem.min}}</md-grid-tile>
+                  <md-grid-tile [colspan]="1" [rowspan]="1">{{delItem.max}}</md-grid-tile>
+                  <md-grid-tile [colspan]="1" [rowspan]="1">{{delItem.stock}}</md-grid-tile>
+                  <md-grid-tile [colspan]="1" [rowspan]="1">{{delItem.stockDate | date: 'd MMM yy'}}</md-grid-tile>
+                </div>
+              </md-grid-list>
+              <md-grid-list cols="8" rowHeight="50px">
+                <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
+                <md-grid-tile class="deliveryItem" [colspan]="2" [rowspan]="1">
+                  <md-input-container>
+                    <input mdInput type="text" class="pnc" placeholder="Product name/code" [mdAutocomplete]="auto" [formControl]="productNameCodeCtrl" #autoNameCode/>
+                    <md-autocomplete #auto="mdAutocomplete">
+                      <md-option *ngFor="let nameCode of filteredNameCode | async" [value]="nameCode">
+                        {{nameCode}}
+                      </md-option>
+                    </md-autocomplete>
+                  </md-input-container>
+                </md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
+              </md-grid-list>
+            </md-card-content>
+          </md-card>
+        </md-card-content>
+      </md-card>
+    </md-tab>
+  </md-tab-group>
+</md-card>

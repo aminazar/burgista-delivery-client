@@ -50,3 +50,11 @@ background-color:antiquewhite !important; padding: 10px;
 .mat-button-toggle:hover{
   background-color: antiquewhite;
 }
+
+.deliveryItem > figure {
+  justify-content: inherit !important;
+}
+
+.deliveryItem{
+  /*width: 100px !important;*/
+}
