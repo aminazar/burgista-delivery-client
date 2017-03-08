@@ -18,10 +18,7 @@ export class AuthService {
     this.restService.call('validUser')
       .subscribe(
         res => {
-          let data = res.json();
-          this.user = data.user;
-          this.userType = data.userType;
-          this.authStream.next(true);
+          this.afterLogin(res);
           this.router.navigate(['/']);
           this.messageService.message(`You are already logged in as ${this.user}.`)
         },
@@ -36,11 +33,7 @@ export class AuthService {
   logIn(username, password) {
     this.restService.update('login', null, {username: username, password: password})
       .subscribe(res => {
-          let data = res.json();
-          this.user = data.user;
-          this.unitName = data.name;
-          this.userType = data.userType;
-          this.authStream.next(true);
+          this.afterLogin(res);
           let url = this.originBeforeLogin;
           this.router.navigate([url !== null ? url : '/']);
           this.messageService.message(`${this.user} logged in.`);
@@ -51,6 +44,14 @@ export class AuthService {
           if(isDevMode())
             console.log(err);
         })
+  }
+
+  private afterLogin(res) {
+    let data = res.json();
+    this.user = data.user;
+    this.unitName = data.name;
+    this.userType = data.userType;
+    this.authStream.next(true);
   }
 
   logOff() {
