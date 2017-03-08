@@ -75,7 +75,7 @@ export class ProductSubFormComponent implements OnInit {
             this.product.size = null;
             this.product.measuringUnit = null;
             this.product.prep_unit_id = null;
-            this.product.minQty = null;
+            this.product.minQty = -12345678;
             this.product.maxQty = null;
 
             for (let day in this.product.coefficients) {
