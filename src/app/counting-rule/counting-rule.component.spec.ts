@@ -9,7 +9,7 @@ import {MonthdayComponent} from "../rrule/monthday.component";
 import {By} from "@angular/platform-browser";
 import {DebugElement} from "@angular/core";
 
-fdescribe('CountingRuleComponent', () => {
+describe('CountingRuleComponent', () => {
   let component: CountingRuleComponent;
   let fixture: ComponentFixture<CountingRuleComponent>;
   let rruleStr: string = '';
@@ -92,39 +92,30 @@ fdescribe('CountingRuleComponent', () => {
     let errorData;
     component.hasError.subscribe((data) => errorData = data);
 
-    maxQtyDebugElement.triggerEventHandler('keyup', null);
+    maxQtyDebugElement.triggerEventHandler('ngModelChange', 10);
     tick();
     fixture.detectChanges();
 
     expect(component.minQty).toBe(12);
     expect(component.maxQty).toBe(10);
 
-    expect(errorData.hasError).toBe(true);
-    expect(errorData.message).toBe('The minQty should be less than maxQty');
+    expect(errorData).toBe('The Min Qty should be less than or equal to Max Qty');
   }));
 
   it('should replace 0 instead of negative value in minQty', fakeAsync(() => {
-    let minQtyDebugElement : DebugElement = fixture.debugElement.query(By.css('.minQty'));
-    let minQtyField : HTMLElement = minQtyDebugElement.nativeElement;
+    let maxQtyDebugElement : DebugElement = fixture.debugElement.query(By.css('.maxQty'));
+    let maxQtyField : HTMLElement = maxQtyDebugElement.nativeElement;
 
-    minQtyField.value = -1;
-    minQtyField.dispatchEvent(new Event('input'));
+    maxQtyField.value = -1;
+    maxQtyField.dispatchEvent(new Event('input'));
     tick();
     fixture.detectChanges();
 
-    minQtyDebugElement.triggerEventHandler('keyup', null);
+    maxQtyDebugElement.triggerEventHandler('ngModelChange', -1);
     tick();
     fixture.detectChanges();
 
-    minQtyField.dispatchEvent(new Event('input'));
-    tick();
-    fixture.detectChanges();
-
-    minQtyDebugElement.triggerEventHandler('keyup', null);
-    tick();
-    fixture.detectChanges();
-
-    expect(parseInt(minQtyField.value)).toBe(0);
-    expect(component.minQty).toBe(0);
+    // expect(parseInt(maxQtyField.value)).toBe(0);
+    expect(component.maxQty).toBe(0, 'maxQty value should updated');
   }));
 });

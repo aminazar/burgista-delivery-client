@@ -174,34 +174,7 @@ export class InventoryFormComponent implements OnInit {
     this.productName_Code = [];
 
     //Should get data from server
-    let t1 = new Inventory();
-    t1.id = 1;
-    t1.productName = 'frying oil';
-    t1.productCode = 'fo01';
-    t1.lastCount = new Date(2017, 1, 5);
-    t1.unopenedPack = 3;
-    t1.state = 'exist';
-    t1.shouldIncluded = true;
-    t1.shouldCountToday = false;
-
-    let t2 = new Inventory();
-    t2.id = 2;
-    t2.productName = 'ketchup sauce';
-    t2.productCode = 'ks01';
-    t2.lastCount = new Date(2017, 1, 15);
-    t2.unopenedPack = 6;
-    t2.state = 'exist';
-    t2.shouldIncluded = true;
-
-    this.inventoryModel.add(t1);
-    this.inventoryModel.add(t2);
-
-    if(this.isSameDates){
-      //Set productCodeNames list
-      this.productName_Code.push('cm91 - Cow Meat');
-      this.productName_Code.push('b17 - Bread');
-      this.productName_Code.push('t80m - Italian Tomato');
-    }
+    this.getInventoryData();
   }
 
   compareDates(){
@@ -216,7 +189,12 @@ export class InventoryFormComponent implements OnInit {
   }
 
   isCountingDatePast(countingDate){
-    if(this.currentDate > countingDate)
+    let tempDate = new Date(countingDate);
+    if(this.currentDate.getFullYear() > tempDate.getFullYear())
+      return true;
+    else if(this.currentDate.getMonth() > tempDate.getMonth())
+      return true;
+    else if(this.currentDate.getDate() > tempDate.getDate())
       return true;
     else
       return false;
@@ -253,7 +231,7 @@ export class InventoryFormComponent implements OnInit {
               tempInventory.productName = item.product_name;
               tempInventory.unopenedPack = item.product_count;
 
-              let lastCount = moment(item.last_count).format('YYYYMMDD');
+              let lastCount = moment(item.last_count).format('YYYY-MM-DD');
 
               if(lastCount === 'Invalid date')
                 tempInventory.lastCount = this.currentDate;

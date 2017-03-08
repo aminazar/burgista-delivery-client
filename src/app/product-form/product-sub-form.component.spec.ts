@@ -61,7 +61,6 @@ describe('ProductSubFormComponent', () => {
   });
 
   it('should create', () => {
-    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 

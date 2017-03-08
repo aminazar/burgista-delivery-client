@@ -49,6 +49,9 @@ export class CountingRuleComponent implements OnInit {
     let i = 0;
     for (let day in this.coefficients) {
       i++;
+      if(this.coefficients[day] < 0)
+        this.coefficients[day] = 0;
+
       if (!this.coefficients[day]) {
         this.sendError(`${day} coefficient should be a non-zero number`, 10 + i);
       }
@@ -60,6 +63,9 @@ export class CountingRuleComponent implements OnInit {
   }
 
   minChange() {
+    if(this.minQty < 0)
+      this.minQty = 0;
+
     this.minQtyChange.emit(this.minQty);
     if (this.minQty!==0&&!this.minQty) {
       this.sendError('The Min Qty should not be blank', 0);
@@ -69,6 +75,9 @@ export class CountingRuleComponent implements OnInit {
   }
 
   maxChange() {
+    if(this.maxQty < 0)
+      this.maxQty = 0;
+
     this.maxQtyChange.emit(this.maxQty);
     if (this.maxQty!==0&&!this.maxQty) {
       this.sendError('The Max Qty should not be blank', 1);
