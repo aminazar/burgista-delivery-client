@@ -9,7 +9,7 @@ import {MonthdayComponent} from "../rrule/monthday.component";
 import {By} from "@angular/platform-browser";
 import {DebugElement} from "@angular/core";
 
-describe('CountingRuleComponent', () => {
+fdescribe('CountingRuleComponent', () => {
   let component: CountingRuleComponent;
   let fixture: ComponentFixture<CountingRuleComponent>;
   let rruleStr: string = '';

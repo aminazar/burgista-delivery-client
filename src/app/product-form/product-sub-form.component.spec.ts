@@ -17,7 +17,7 @@ import {ProductModel} from "./product.model";
 import {ActionEnum} from "../unit-form/actionEnum";
 import {MessageService} from "../message.service";
 
-fdescribe('ProductSubFormComponent', () => {
+describe('ProductSubFormComponent', () => {
   let component: ProductSubFormComponent;
   let fixture: ComponentFixture<ProductSubFormComponent>;
 

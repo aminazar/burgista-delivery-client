@@ -11,6 +11,7 @@ import {RestService} from "./rest.service";
 import {LoggedInGuard} from "./login/logged-in.guard";
 import {RouterModule} from "@angular/router";
 import {MaterialModule} from "@angular/material";
+import {DatepickerModule} from "angular2-material-datepicker";
 import 'hammerjs';
 import { UnitFormComponent } from './unit-form/unit-form.component';
 import { SubFormComponent } from './unit-form/sub-form.component';
@@ -24,6 +25,8 @@ import {MessageService} from "./message.service";
 
 import { FocusDirective } from './focus.directive';
 import { OverrideFormComponent } from './override-form/override-form.component';
+import { InventoryFormComponent } from './inventory-form/inventory-form.component';
+import { DeliveryFormComponent } from './delivery-form/delivery-form.component';
 
 
 @NgModule({
@@ -41,6 +44,8 @@ import { OverrideFormComponent } from './override-form/override-form.component';
     CountingRuleComponent,
     FocusDirective,
     OverrideFormComponent,
+    InventoryFormComponent,
+    DeliveryFormComponent,
   ],
   imports: [
     BrowserModule,
@@ -49,12 +54,15 @@ import { OverrideFormComponent } from './override-form/override-form.component';
     MaterialModule.forRoot(),
     FlexLayoutModule,
     ReactiveFormsModule,
+    DatepickerModule,
     RouterModule.forRoot([
       {path: '',      component: HomeComponent, pathMatch: 'full'},
       {path: 'login', component: LoginComponent},
       {path: 'units', component: UnitFormComponent, canActivate: [LoggedInGuard]},
       {path: 'products', component: ProductFormComponent, canActivate: [LoggedInGuard]},
       {path: 'override', component: OverrideFormComponent, canActivate: [LoggedInGuard]},
+      {path: 'inventory', component: InventoryFormComponent, canActivate: [LoggedInGuard]},
+      {path: 'delivery', component: DeliveryFormComponent, canActivate: [LoggedInGuard]},
     ]),
   ],
   providers: [AuthService, RestService, LoggedInGuard, MessageService],

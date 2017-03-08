@@ -1,0 +1,75 @@
+<md-card style="background-color: #607D8B; border-radius: 7px; text-align: left; margin: 10px;">
+  <md-card-title class="cardTitle">{{unitName}} Inventory</md-card-title>
+  <md-card class="innerCard">
+    <div class="flex-container"
+         fxLayout="row" fxLayout.xs="column" fxLayout.sm="column"
+         fxLayoutAlign="center center" fxLayoutAlign.xs="start start" fxLayoutAlign.sm="start start">
+      <md-card-title class="flex-item" fxFlex="70">To Do: Inventory Takings</md-card-title>
+      <material-datepicker class="flex-item" fxFlex="30" [(date)]="selectedDate" (onSelect)="dateChanged()">
+      </material-datepicker>
+    </div>
+    <md-card>
+      <md-card-content>
+        <md-grid-list cols="6" rowHeight="50px">
+          <md-grid-tile [colspan]="1" [rowspan]="1">&nbsp;</md-grid-tile>
+          <md-grid-tile [colspan]="1" [rowspan]="1">Unopened Packs</md-grid-tile>
+          <md-grid-tile [colspan]="1" [rowspan]="1">Code</md-grid-tile>
+          <md-grid-tile [colspan]="1" [rowspan]="1">Product</md-grid-tile>
+          <md-grid-tile [colspan]="1" [rowspan]="1">Last Count</md-grid-tile>
+          <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
+        </md-grid-list>
+        <md-grid-list cols="6" rowHeight="50px" *ngIf="inventoryModel !== null && inventoryModel !== undefined && inventoryModel._inventories.length > 0">
+          <div *ngFor="let invItem of inventoryModel._inventories" [@itemState]="invItem.state">
+            <md-grid-tile *ngIf="invItem.shouldIncluded" [colspan]="1" [rowspan]="1">&nbsp;</md-grid-tile>
+            <md-grid-tile *ngIf="!invItem.shouldIncluded" [colspan]="1" [rowspan]="1">
+              <button md-mini-fab (click)="removeInventoryItem(invItem)"><i class="fa fa-times" aria-hidden="true"></i></button>
+            </md-grid-tile>
+            <md-grid-tile [colspan]="1" [rowspan]="1">
+              <md-input-container>
+                <input mdInput type="number" [(ngModel)]="invItem.unopenedPack" placeholder="Unopened Packs"
+                       [disabled]="!isSameDates"
+                       [ngClass]="[(!invItem.shouldCountToday && invItem.shouldIncluded) ? 'warnColoring' : 'normalColoring']"/>
+              </md-input-container>
+            </md-grid-tile>
+            <md-grid-tile [colspan]="1" [rowspan]="1"
+                          [ngClass]="[(!invItem.shouldCountToday && invItem.shouldIncluded) ? 'warnColoring' : 'normalColoring']">
+              {{invItem.productCode}}
+            </md-grid-tile>
+            <md-grid-tile [colspan]="1" [rowspan]="1"
+                          [ngClass]="[(!invItem.shouldCountToday && invItem.shouldIncluded) ? 'warnColoring' : 'normalColoring']">
+              {{invItem.productName}}
+            </md-grid-tile>
+            <md-grid-tile [colspan]="1" [rowspan]="1"
+                          [ngClass]="[(!invItem.shouldCountToday && invItem.shouldIncluded) ? 'warnColoring' : 'normalColoring']">
+              {{invItem.lastCount | date: 'd MMM yy'}}
+            </md-grid-tile>
+            <md-grid-tile [colspan]="1" [rowspan]="1">
+              <button md-mini-fab style="background-color: #607D8B;" *ngIf="isSameDates" [disabled]="disableInventoryItem(invItem)" (click)="submitInventoryItem(invItem)"><i class="fa fa-check" aria-hidden="true"></i></button>
+            </md-grid-tile>
+          </div>
+        </md-grid-list>
+        <md-grid-list cols="6" rowHeight="50px" *ngIf="isSameDates">
+          <md-grid-tile [colspan]="1" [rowspan]="1">&nbsp;</md-grid-tile>
+          <md-grid-tile [colspan]="1" [rowspan]="1">
+            <md-input-container>
+              <input mdInput type="number" placeholder="Unopened Packs" #unopenedPack/>
+            </md-input-container>
+          </md-grid-tile>
+          <md-grid-tile [colspan]="2" [rowspan]="1">
+            <md-input-container>
+              <input mdInput type="text" class="pnc" placeholder="Product name/code" [mdAutocomplete]="auto" [formControl]="productNameCodeCtrl" #autoNameCode/>
+              <md-autocomplete #auto="mdAutocomplete">
+                <md-option *ngFor="let nameCode of filteredNameCode | async" [value]="nameCode">
+                  {{nameCode}}
+                </md-option>
+              </md-autocomplete>
+            </md-input-container>
+          </md-grid-tile>
+          <md-grid-tile [colspan]="1" [rowspan]="1">
+          </md-grid-tile>
+          <md-grid-tile [colspan]="1" [rowspan]="1">&nbsp;</md-grid-tile>
+        </md-grid-list>
+      </md-card-content>
+    </md-card>
+  </md-card>
+</md-card>
