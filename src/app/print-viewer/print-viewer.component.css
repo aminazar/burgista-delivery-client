@@ -1,0 +1,23 @@
+@media screen {
+  #printpage, #printpage * {
+    display:none;
+  }
+}
+@media print {
+  body *{
+    visibility:hidden;
+    background: transparent;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  #printpage, #printpage *{
+    visibility:visible;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  #printpage{
+    position:absolute;
+    left:0;
+    top:0;
+  }
+}

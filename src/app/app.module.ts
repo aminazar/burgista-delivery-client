@@ -27,6 +27,8 @@ import { FocusDirective } from './focus.directive';
 import { OverrideFormComponent } from './override-form/override-form.component';
 import { InventoryFormComponent } from './inventory-form/inventory-form.component';
 import { DeliveryFormComponent } from './delivery-form/delivery-form.component';
+import { PrintViewerComponent } from './print-viewer/print-viewer.component';
+import {PrintService} from "./print.service";
 
 
 @NgModule({
@@ -46,6 +48,10 @@ import { DeliveryFormComponent } from './delivery-form/delivery-form.component';
     OverrideFormComponent,
     InventoryFormComponent,
     DeliveryFormComponent,
+    PrintViewerComponent,
+  ],
+  entryComponents: [
+    PrintViewerComponent
   ],
   imports: [
     BrowserModule,
@@ -65,7 +71,7 @@ import { DeliveryFormComponent } from './delivery-form/delivery-form.component';
       {path: 'delivery', component: DeliveryFormComponent, canActivate: [LoggedInGuard]},
     ]),
   ],
-  providers: [AuthService, RestService, LoggedInGuard, MessageService],
+  providers: [AuthService, RestService, LoggedInGuard, MessageService, PrintService],
   bootstrap: [AppComponent]
 })
 export class AppModule {

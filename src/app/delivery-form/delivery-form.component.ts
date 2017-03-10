@@ -7,8 +7,9 @@ import {Delivery} from "./delivery";
 import {FormControl} from "@angular/forms";
 import {MessageService} from "../message.service";
 import {Product} from "../product-form/product";
-import {directoryExists} from "ts-node/dist";
-
+import {MdDialog, MdDialogRef} from '@angular/material';
+import {PrintViewerComponent} from "../print-viewer/print-viewer.component";
+import {PrintService} from "../print.service";
 
 @Component({
   selector: 'app-delivery-form',
@@ -41,6 +42,7 @@ export class DeliveryFormComponent implements OnInit {
   receiverName: string = 'All';
   selectedDate: Date;
   currentDate: Date;
+  isToday: boolean = true;
   selectedIndex: number = 0;
   receivers: any[] = [];
   overallDeliveryModel: DeliveryModel;
@@ -50,12 +52,13 @@ export class DeliveryFormComponent implements OnInit {
   filteredNameCode: any;
   productNameCodeCtrl: FormControl;
 
-  constructor(private authService: AuthService, private restService: RestService, private  msgService: MessageService) { }
+  constructor(private authService: AuthService, private restService: RestService, private  msgService: MessageService, public dialog: MdDialog, private printService: PrintService) { }
 
   ngOnInit() {
     if(this.overallDeliveryModel === null || this.overallDeliveryModel === undefined)
       this.overallDeliveryModel = new DeliveryModel('All');
 
+    this.overallDeliveryModel._shouldDisabled = true;
     this.unitName = this.authService.unitName;
     this.selectedDate = new Date();
     this.currentDate = new Date();
@@ -114,7 +117,9 @@ export class DeliveryFormComponent implements OnInit {
         this.receiversDeliveryModels[item.name].add(tempDelivery);
 
         //Update overall list
-        this.updateOverallDelivery(product.code, tempDelivery, 'add');
+        this.updateOverallDelivery(product.code, tempDelivery, 'add', 'min', tempDelivery.min);
+        this.updateOverallDelivery(product.code, tempDelivery, 'add', 'max', tempDelivery.max);
+        this.updateOverallDelivery(product.code, tempDelivery, 'add', 'realDelivery', tempDelivery.realDelivery);
       }
 
       //Update receivers list
@@ -192,7 +197,12 @@ export class DeliveryFormComponent implements OnInit {
           });
 
           //Add this data to overallDeliveryModel
-          this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add');
+          this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'min', tempDelivery.min);
+          this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'max', tempDelivery.max);
+          this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'realDelivery', tempDelivery.realDelivery);
+
+          //Change deliverModel._isSubmitted to false
+          this.receiversDeliveryModels[this.receiverName]._isSubmitted = false;
         }
       },
       (err) => {
@@ -202,31 +212,33 @@ export class DeliveryFormComponent implements OnInit {
   }
 
   dateChanged(){
-
+    if(this.selectedDate.getFullYear() !== this.currentDate.getFullYear())
+      this.isToday = false;
+    else if(this.selectedDate.getMonth() !== this.currentDate.getMonth())
+      this.isToday = false;
+    else if(this.selectedDate.getDate() !== this.currentDate.getDate())
+      this.isToday = false;
+    else
+      this.isToday = true;
   }
 
   removeDeliveryItem(item: Delivery){
     //check selectedIndex
     if(this.selectedIndex === 0){
-      //Remove from overallDeliveryModel
-      this.overallDeliveryModel.deleteByCode(item.productCode);
-
-      //Remove from other receivers
-      for(let rcv of this.receivers){
-        this.receiversDeliveryModels[rcv.name].deleteByCode(item.productCode);
-      }
-
-      //Add code and name to productName_Code (for all receivers)
-      this.addProductNameCodeToAllReceivers(item.productCode + ' - ' + item.productName);
+      console.log("Error. Cannot remove added items from 'All' tab");
     }
     else{
       //Update overallDeliveryModel
-      this.updateOverallDelivery(item.productCode, item, 'sub');
+      this.updateOverallDelivery(item.productCode, item, 'sub', 'min', item.min);
+      this.updateOverallDelivery(item.productCode, item, 'sub', 'max', item.max);
+      this.updateOverallDelivery(item.productCode, item, 'sub', 'realDelivery', item.realDelivery);
 
       this.receiversDeliveryModels[this.receiverName].deleteByCode(item.productCode);
 
       //Add code and name to productName_Code (for specific receiver)
       this.productName_Code[this.receiverName].push(item.productCode + ' - ' + item.productName);
+
+      this.receiversDeliveryModels[this.receiverName]._isSubmitted = false;
     }
   }
 
@@ -234,23 +246,26 @@ export class DeliveryFormComponent implements OnInit {
     return val ? this.productName_Code[this.receiverName].filter((p) => new RegExp(val, 'gi').test(p)) : this.productName_Code[this.receiverName];
   }
 
-  checkRealDeliveryValue(value, deliveryItem: Delivery){
-    if(deliveryItem.realDelivery < deliveryItem.min)
+  checkRealDeliveryValue(event, deliveryItem: Delivery){
+    let value = parseInt(event.srcElement.value);
+
+    if(value < 0){
+      event.srcElement.value = 0;
+      deliveryItem.realDelivery = 0;
+      return;
+    }
+
+    if(value < deliveryItem.min)
       this.msgService.warn("The 'Real Delivery' value is less than 'Min' value");
-    else if(deliveryItem.realDelivery > deliveryItem.min)
+    else if(value > deliveryItem.min)
       this.msgService.warn("The 'Real Delivery' value is greater than 'Min' value");
 
     //Should update realDelivery on overallDeliveryModel
-    // if(value > deliveryItem.realDelivery){
-    //   deliveryItem.realDelivery = value;
-    //   this.updateOverallDelivery(deliveryItem.productCode, deliveryItem, 'add');
-    // }
-    // else{
-    //   deliveryItem.realDelivery = value;
-    //   this.updateOverallDelivery(deliveryItem.productCode, deliveryItem, 'sub');
-    // }
-    //
-    // console.log(value);
+    this.updateOverallDelivery(deliveryItem.productCode, deliveryItem, 'add', 'realDelivery', (value - deliveryItem.realDelivery));
+    deliveryItem.realDelivery = value;
+
+    //Change deliveryModel._isSubmitted to false
+    this.receiversDeliveryModels[this.receiverName]._isSubmitted = false;
   }
 
   tabChanged(){
@@ -269,18 +284,106 @@ export class DeliveryFormComponent implements OnInit {
     }
   }
 
-  updateOverallDelivery(code: string, delivery: Delivery, action){
+  updateOverallDelivery(code: string, delivery: Delivery, action, whichItem, changedValue: number){
     if(this.overallDeliveryModel.getByCode(code) === undefined){          //Should add a product
       this.overallDeliveryModel.add(delivery);
     }
     else{                                                                //Should update a product
-      this.overallDeliveryModel.updateDeliveryProperty(action, code, 'min', delivery.min);
-      this.overallDeliveryModel.updateDeliveryProperty(action, code, 'max', delivery.max);
-      this.overallDeliveryModel.updateDeliveryProperty(action, code, 'realDelivery', delivery.realDelivery);
+      switch (whichItem){
+        case 'min': this.overallDeliveryModel.updateDeliveryProperty(action, code, 'min', changedValue);
+          break;
+        case 'max': this.overallDeliveryModel.updateDeliveryProperty(action, code, 'max', changedValue);
+          break;
+        case 'realDelivery': this.overallDeliveryModel.updateDeliveryProperty(action, code, 'realDelivery', changedValue);
+          break;
+      }
     }
 
     //Check if in 'All' tab this product only has 0 value for 'min' and 'max' should be removed
     if(this.overallDeliveryModel.getByCode(code).min === 0 && this.overallDeliveryModel.getByCode(code).max === 0)
       this.overallDeliveryModel.deleteByCode(code);
+  }
+
+  countToday(stockDate: Date){
+    if(stockDate.getFullYear() !== this.currentDate.getFullYear())
+      return false;
+    else if(stockDate.getMonth() !== this.currentDate.getMonth())
+      return false;
+    else if(stockDate.getDate() !== this.currentDate.getDate())
+      return false;
+    else
+      return true;
+  }
+
+  printDelivery(deliveryModel: DeliveryModel){
+    if(deliveryModel._unitName === 'All'){
+      for(let rcv of this.receivers) {
+        if (!this.receiversDeliveryModels[rcv.name]._isSubmitted) {
+          this.msgService.warn(rcv.name + ' data is not submitted');
+          return;
+        }
+      }
+
+      deliveryModel._isPrinted = true;
+      this.sendForPrint(deliveryModel, true);
+    }
+    else{
+      if(deliveryModel._isSubmitted) {
+        deliveryModel._isPrinted = true;
+        deliveryModel._shouldDisabled = true;
+      }
+      else
+        this.msgService.warn('You should first submit the list');
+
+      //Check all isPrinted values to disable or enable print button in 'All' tab
+      let overallCanPrinted = true;
+
+      for(let rcv of this.receivers){
+        if(!this.receiversDeliveryModels[rcv.name]._isPrinted)
+          overallCanPrinted = false;
+      }
+
+      this.overallDeliveryModel._shouldDisabled = !overallCanPrinted;
+
+      this.sendForPrint(deliveryModel, false);
+    }
+  }
+
+  submitDelivery(deliveryModel: DeliveryModel){
+    for(let delItem of deliveryModel._deliveries){
+      if(delItem.realDelivery === null){
+        this.msgService.warn("The product '" + delItem.productName + "' has no 'realDelivery' value");
+        return;
+      }
+      else if(delItem.realDelivery === 0){
+        this.msgService.warn("The 'realDelivery' value of " + delItem.productName + " is zero");
+      }
+
+      if(delItem.id === null){
+        //Set id received from server
+        delItem.id = 10;
+        delItem.state = 'added';
+      }
+    }
+
+    deliveryModel._isSubmitted = true;
+  }
+
+  sendForPrint(deliveryModel: DeliveryModel, isAllTab: boolean){
+    //Set data for print
+    this.printService._isOverallPrint = isAllTab;
+    this.printService._unitSupplier = this.unitName;
+    this.printService._unitConsumer = (isAllTab) ? 'Aggregated' : this.receiverName;
+    this.printService._receivers = this.receivers.map(rcv => rcv.name);
+    this.printService._deliveryModels = this.receiversDeliveryModels;
+
+    let dialogRef = this.dialog.open(PrintViewerComponent,{
+      height: '600px',
+      width: '1000px'
+    });
+    dialogRef.afterClosed().subscribe(
+      (data) => this.printService.printData(),
+      (err) => console.log(err.message)
+    );
   }
 }
