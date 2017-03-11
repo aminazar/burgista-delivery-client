@@ -5,7 +5,7 @@ export class Delivery{
   id: number;
   productCode: string;
   productName: string;
-  realDelivery: number;
+  realDelivery: number = 0;
   min: number;
   max: number;
   stock: number;

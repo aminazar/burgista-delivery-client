@@ -1,0 +1,14 @@
+.notEqualValues{
+  background-color: antiquewhite;
+}
+
+.equalValues{
+}
+
+.warnColoring{
+  color: darkred;
+}
+
+.normalColoring{
+  color: black;
+}

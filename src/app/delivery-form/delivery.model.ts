@@ -6,6 +6,9 @@ import {Delivery} from "./delivery";
 export class DeliveryModel{
   _deliveries: Delivery[] = [];
   _unitName: string = '';
+  _shouldDisabled: boolean = false;
+  _isSubmitted: boolean = false;
+  _isPrinted: boolean = false;
 
   constructor(unitName: string){
     this._unitName = unitName;

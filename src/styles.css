@@ -58,3 +58,62 @@ background-color:antiquewhite !important; padding: 10px;
 .deliveryItem{
   /*width: 100px !important;*/
 }
+
+@media screen {
+  #printpage, #printpage * {
+    display:none;
+  }
+}
+@media print {
+  body *{
+    visibility:hidden;
+    background: transparent;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  #printpage, #printpage *{
+    visibility:visible;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  #printpage{
+    position:absolute;
+    left:0;
+    top:0;
+  }
+}
+
+.title{
+  font-size: 2em;
+}
+
+.subtitle{
+  font-size: 2em;
+  float: right !important;
+  display: block !important;
+}
+
+.titleBox{
+  border-style: none;
+  border-bottom-style: double;
+  border-bottom-color: black;
+  border-bottom-width: 2px;
+}
+
+.box{
+  border-bottom-style: solid;
+  border-top-style: none;
+  border-left-style: none;
+  border-right-style: none;
+
+  border-color: black;
+  border-width: 1px;
+}
+
+.normal{
+  background-color: white !important;
+}
+
+.highlight{
+  background-color: #adadad !important;
+}
