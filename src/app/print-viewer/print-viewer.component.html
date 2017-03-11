@@ -6,7 +6,7 @@
 
 <div *ngIf="!isOverallPrint">
   <div class="titleBox">
-    <md-grid-list [cols]="7" rowHeight="25px">
+    <md-grid-list [cols]="7" rowHeight="50px">
       <md-grid-tile [colspan]="1" [rowspan]="1">#</md-grid-tile>
       <md-grid-tile [colspan]="1" [rowspan]="1">Product Code</md-grid-tile>
       <md-grid-tile [colspan]="1" [rowspan]="1">Product Name</md-grid-tile>
@@ -31,5 +31,31 @@
   </div>
 </div>
 <div *ngIf="isOverallPrint">
-
+  <div class="titleBox">
+    <md-grid-list [cols]="5 + receivers.length" rowHeight="50px">
+      <md-grid-tile [colspan]="1" [rowspan]="1">#</md-grid-tile>
+      <md-grid-tile [colspan]="1" [rowspan]="1">Product Code</md-grid-tile>
+      <md-grid-tile [colspan]="1" [rowspan]="1">Product Name</md-grid-tile>
+      <md-grid-tile [colspan]="1" [rowspan]="1">Total Delivery</md-grid-tile>
+      <md-grid-tile [colspan]="1" [rowspan]="1" *ngFor="let rcvName of receivers">{{rcvName}}</md-grid-tile>
+      <md-grid-tile [colspan]="1" [rowspan]="1">TotalStock surplus/deficit</md-grid-tile>
+    </md-grid-list>
+  </div>
+  <div>
+    <md-grid-list [cols]="5 + receivers.length" rowHeight="50px">
+      <div *ngFor="let item of itemList">
+        <md-grid-tile class="box" [colspan]="1" [rowspan]="1">{{item.rowNum}}</md-grid-tile>
+        <md-grid-tile class="box" [colspan]="1" [rowspan]="1">{{item.productCode}}</md-grid-tile>
+        <md-grid-tile class="box" [colspan]="1" [rowspan]="1">{{item.productName}}</md-grid-tile>
+        <md-grid-tile class="box" [colspan]="1" [rowspan]="1">{{item.totalDelivery}}</md-grid-tile>
+        <md-grid-tile class="box" [colspan]="1" [rowspan]="1" *ngFor="let rcvName of receivers">{{item[rcvName]}}</md-grid-tile>
+        <md-grid-tile class="box" [colspan]="1" [rowspan]="1">{{item.totalStockSurplusDeficit}}</md-grid-tile>
+      </div>
+    </md-grid-list>
+  </div>
+</div>
+<br/>
+<div>
+  <button md-raised-button class="ButtonStyle" (click)="dialogRef.close('print')">Print</button>
+  <button md-raised-button class="ButtonStyle" (click)="dialogRef.close('cancel')">Cancel</button>
 </div>

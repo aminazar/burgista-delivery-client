@@ -324,28 +324,16 @@ export class DeliveryFormComponent implements OnInit {
         }
       }
 
-      deliveryModel._isPrinted = true;
       this.sendForPrint(deliveryModel, true);
     }
     else{
       if(deliveryModel._isSubmitted) {
-        deliveryModel._isPrinted = true;
         deliveryModel._shouldDisabled = true;
+
+        this.sendForPrint(deliveryModel, false);
       }
       else
         this.msgService.warn('You should first submit the list');
-
-      //Check all isPrinted values to disable or enable print button in 'All' tab
-      let overallCanPrinted = true;
-
-      for(let rcv of this.receivers){
-        if(!this.receiversDeliveryModels[rcv.name]._isPrinted)
-          overallCanPrinted = false;
-      }
-
-      this.overallDeliveryModel._shouldDisabled = !overallCanPrinted;
-
-      this.sendForPrint(deliveryModel, false);
     }
   }
 
@@ -376,14 +364,34 @@ export class DeliveryFormComponent implements OnInit {
     this.printService._unitConsumer = (isAllTab) ? 'Aggregated' : this.receiverName;
     this.printService._receivers = this.receivers.map(rcv => rcv.name);
     this.printService._deliveryModels = this.receiversDeliveryModels;
+    this.printService._deliveryModels['All'] = this.overallDeliveryModel;
 
     let dialogRef = this.dialog.open(PrintViewerComponent,{
       height: '600px',
       width: '1000px'
     });
     dialogRef.afterClosed().subscribe(
-      (data) => this.printService.printData(),
+      (data) => {
+        if(data === 'print') {
+          deliveryModel._isPrinted = true;
+          this.checkOverallPrintDisability();
+
+          this.printService.printData();
+        }
+      },
       (err) => console.log(err.message)
     );
+  }
+
+  checkOverallPrintDisability(){
+    //Check all isPrinted values to disable or enable print button in 'All' tab
+    let overallCanPrinted = true;
+
+    for(let rcv of this.receivers){
+      if(!this.receiversDeliveryModels[rcv.name]._isPrinted)
+        overallCanPrinted = false;
+    }
+
+    this.overallDeliveryModel._shouldDisabled = !overallCanPrinted;
   }
 }

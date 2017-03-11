@@ -52,7 +52,36 @@ export class PrintService{
     let result: any[] = [];
     let counter: number = 0;
 
+    for(let item of this._deliveryModels['All']._deliveries){
+      counter++;
+      let obj = {};
 
+      obj['rowNum'] = counter;
+      obj['productCode'] = item.productCode;
+      obj['productName'] = item.productName;
+
+      let totalDelivery = 0;
+      let totalStockSurplusDeficit = 0;
+
+      for(let rcvName of this._receivers){
+        let tempProduct = this._deliveryModels[rcvName]._deliveries.find((el) => {
+          return el.productCode.toLowerCase() === item.productCode.toLowerCase();
+        });
+
+        if(tempProduct === undefined)
+          obj[rcvName] = '-';
+        else {
+          obj[rcvName] = tempProduct.realDelivery;
+          totalDelivery += tempProduct.realDelivery;
+          totalStockSurplusDeficit += (tempProduct.realDelivery - tempProduct.min);
+        }
+      }
+
+      obj['totalDelivery'] = totalDelivery;
+      obj['totalStockSurplusDeficit'] = totalStockSurplusDeficit;
+
+      result.push(obj);
+    }
 
     return result;
   }
@@ -72,46 +101,100 @@ export class PrintService{
                + '</tr>'
                + '</table>';
 
-    let contentTable = '<table class="table">'
-                     + '<thead>'
-                     + '<tr>'
-                     + '<td>#</td>'
-                     + '<td>Product Code</td>'
-                     + '<td>Product Name</td>'
-                     + '<td>Real Delivery</td>'
-                     + '<td>Current Stock</td>'
-                     + '<td>Stock After Delivery</td>'
-                     + '<td>Stock surplus/deficit</td>'
-                     + '</tr>'
-                     + '</thead>'
-                     + '<tbody>';
+    let contentTable = '';
+
+    if(this._isOverallPrint){
+      contentTable = '<table class="table">'
+                   + '<thead>'
+                   + '<tr>'
+                   + '<td>#</td>'
+                   + '<td>Product Code</td>'
+                   + '<td>Product Name</td>'
+                   + '<td>Total Delivery</td>';
+
+      for(let rcvName of this._receivers){
+        contentTable += '<td>' + rcvName + '</td>';
+      }
+
+      contentTable += '<td>Total Stock surplus/deficit</td>'
+                   + '</tr>'
+                   + '</thead>'
+                   + '<tbody>';
+    }
+    else{
+      contentTable = '<table class="table">'
+                   + '<thead>'
+                   + '<tr>'
+                   + '<td>#</td>'
+                   + '<td>Product Code</td>'
+                   + '<td>Product Name</td>'
+                   + '<td>Real Delivery</td>'
+                   + '<td>Current Stock</td>'
+                   + '<td>Stock After Delivery</td>'
+                   + '<td>Stock surplus/deficit</td>'
+                   + '</tr>'
+                   + '</thead>'
+                   + '<tbody>';
+    }
 
 
 
     let innerContentTable = '';
 
-    for(let item of this.getItems()){
-      if(item.rowNum % 2 == 1){
-        innerContentTable += '<tr>'
-                          + '<td>' + item.rowNum + '</td>'
-                          + '<td>' + item.productCode + '</td>'
-                          + '<td>' + item.productName + '</td>'
-                          + '<td>' + item.realDelivery + '</td>'
-                          + '<td>' + item.currentStock + '</td>'
-                          + '<td>' + item.stockAfterDelivery + '</td>'
-                          + '<td>' + item.stockSurplusDeficit + '</td>'
-                          + '</tr>';
+    if(this._isOverallPrint){
+      for(let item of this.getItems()){
+        if(item.rowNum % 2 == 1){
+          innerContentTable += '<tr>'
+                            + '<td>' + item.rowNum + '</td>'
+                            + '<td>' + item.productCode + '</td>'
+                            + '<td>' + item.productName + '</td>'
+                            + '<td>' + item.totalDelivery + '</td>';
+
+          for(let rcvName of this._receivers)
+            innerContentTable += '<td>' + item[rcvName] + '</td>';
+
+          innerContentTable += '<td>' + item.totalStockSurplusDeficit + '</td>'
+                            + '</tr>';
+        }
+        else{
+          innerContentTable += '<tr>'
+                            + '<td class="highlight">' + item.rowNum + '</td>'
+                            + '<td class="highlight">' + item.productCode + '</td>'
+                            + '<td class="highlight">' + item.productName + '</td>'
+                            + '<td class="highlight">' + item.totalDelivery + '</td>';
+
+          for(let rcvName of this._receivers)
+            innerContentTable += '<td class="highlight">' + item[rcvName] + '</td>';
+
+          innerContentTable += '<td class="highlight">' + item.totalStockSurplusDeficit + '</td>'
+                            + '</tr>';
+        }
       }
-      else {
-        innerContentTable += '<tr>'
-                          + '<td class="highlight">' + item.rowNum + '</td>'
-                          + '<td class="highlight">' + item.productCode + '</td>'
-                          + '<td class="highlight">' + item.productName + '</td>'
-                          + '<td class="highlight">' + item.realDelivery + '</td>'
-                          + '<td class="highlight">' + item.currentStock + '</td>'
-                          + '<td class="highlight">' + item.stockAfterDelivery + '</td>'
-                          + '<td class="highlight">' + item.stockSurplusDeficit + '</td>'
-                          + '</tr>';
+    }
+    else{
+      for(let item of this.getItems()){
+        if(item.rowNum % 2 == 1){
+          innerContentTable += '<tr>'
+                            + '<td>' + item.rowNum + '</td>'
+                            + '<td>' + item.productCode + '</td>'
+                            + '<td>' + item.productName + '</td>'
+                            + '<td>' + item.realDelivery + '</td>'
+                            + '<td>' + item.currentStock + '</td>'
+                            + '<td>' + item.stockAfterDelivery + '</td>'
+                            + '<td>' + item.stockSurplusDeficit + '</td>'
+                            + '</tr>';
+        }
+        else {
+          innerContentTable += '<tr>'
+                            + '<td class="highlight">' + item.rowNum + '</td>'
+                            + '<td class="highlight">' + item.productCode + '</td>'
+                            + '<td class="highlight">' + item.productName + '</td>'
+                            + '<td class="highlight">' + item.realDelivery + '</td>'
+                            + '<td class="highlight">' + item.currentStock + '</td>'
+                            + '<td class="highlight">' + item.stockAfterDelivery + '</td>'
+                            + '<td class="highlight">' + item.stockSurplusDeficit + '</td>'
+                            + '</tr>';
+        }
       }
     }
 
