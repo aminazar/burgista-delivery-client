@@ -205,8 +205,6 @@ export class PrintService{
     printContents += '<div>' + header + '</div>';
     printContents += '<div>' + contentTable + '</div>';
 
-    console.log(printContents);
-
     let popup = window.open('', '_blank',
       'width=1000,height=600,scrollbars=no,menubar=no,toolbar=no,'
       +'location=no,status=no,titlebar=no');

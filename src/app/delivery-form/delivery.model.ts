@@ -92,4 +92,16 @@ export class DeliveryModel{
       return false;
     }
   }
+
+  static toAnyObject(delivery: Delivery, isPrinted: boolean, product_id: number): any{
+    let resObj = {};
+
+    resObj['real_delivery'] = delivery.realDelivery;
+    resObj['is_delivery_finalised'] = isPrinted;
+
+    if(product_id !== null)
+      resObj['product_id'] = product_id;
+
+    return resObj;
+  }
 }

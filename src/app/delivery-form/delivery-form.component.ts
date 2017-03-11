@@ -10,6 +10,8 @@ import {Product} from "../product-form/product";
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {PrintViewerComponent} from "../print-viewer/print-viewer.component";
 import {PrintService} from "../print.service";
+import * as moment from 'moment';
+import {BehaviorSubject} from "rxjs";
 
 @Component({
   selector: 'app-delivery-form',
@@ -63,103 +65,29 @@ export class DeliveryFormComponent implements OnInit {
     this.selectedDate = new Date();
     this.currentDate = new Date();
 
-    this.receiversDeliveryModels = {};
+    this.receiversDeliveryModels = {All: this.overallDeliveryModel};
     this.receivers = [];
 
-    //Set stub data for receiversDeliveryModels
-    let mockRcvListFromServer = [
-      {
-        products: [
-          {id: 1, code: 'fo01', name: 'Frying Oil', min: 2, max: 5, stock: 3, stockDate: new Date(2017, 0, 5)},
-          {id: 2, code: 'ks01', name: 'Ketchup Sauce', min: 5, max: 9, stock: 2, stockDate: new Date(2017, 1, 16)},
-          {id: 3, code: 'tm01', name: 'Tomato', min: 4, max: 6, stock: 7, stockDate: new Date(2017, 1, 16)},
-        ],
-        uid: 4,
-        name: 'Baker Street',
-        didCounting: true
+    //Get receivers (branches)
+    this.restService.get('unit?isBranch=true').subscribe(
+      (data) => {
+        for(let item of data){
+          let obj = {
+            id: item.uid,
+            name: item.name,
+            warn: 'no'
+          };
+
+          this.receivers.push(obj);
+        }
+
+        //Get product items from server for each receiver (branch)
+        this.getDeliveryData();
       },
-      {
-        products: [
-          {id: 4, code: 'fo01', name: 'Frying Oil', min: 3, max: 5, stock: 6, stockDate: new Date(2017, 0, 15)},
-          {id: 5, code: 'tm01', name: 'Tomato', min: 4, max: 6, stock: 7, stockDate: new Date(2017, 1, 16)},
-        ],
-        uid: 5,
-        name: 'Piccadilly',
-        didCounting: true
-      },
-      {
-        products: [
-          {id: 6, code: 'fo01', name: 'Frying Oil', min: 10, max: 14, stock: 3, stockDate: new Date(2017, 0, 5)},
-          {id: 7, code: 'ks01', name: 'Ketchup Sauce', min: 12, max: 16, stock: 2, stockDate: new Date(2017, 1, 16)},
-          {id: 8, code: 'tm01', name: 'Tomato', min: 14, max: 16, stock: 7, stockDate: new Date(2017, 2, 2)},
-        ],
-        uid: 2,
-        name: 'Prep Kitchen',
-        didCounting: true
-      },
-    ];
-
-    for (let item of mockRcvListFromServer) {
-      if (this.receiversDeliveryModels[item.name] === undefined)
-        this.receiversDeliveryModels[item.name] = new DeliveryModel(item.name);
-
-
-      for(let product of item.products){
-        let tempDelivery = new Delivery();
-        tempDelivery.id = product.id;
-        tempDelivery.productCode = product.code;
-        tempDelivery.productName = product.name;
-        tempDelivery.min = product.min;
-        tempDelivery.max = product.max;
-        tempDelivery.stock = product.stock;
-        tempDelivery.stockDate = product.stockDate;
-
-        this.receiversDeliveryModels[item.name].add(tempDelivery);
-
-        //Update overall list
-        this.updateOverallDelivery(product.code, tempDelivery, 'add', 'min', tempDelivery.min);
-        this.updateOverallDelivery(product.code, tempDelivery, 'add', 'max', tempDelivery.max);
-        this.updateOverallDelivery(product.code, tempDelivery, 'add', 'realDelivery', tempDelivery.realDelivery);
+      (err) => {
+        console.log(err.message);
       }
-
-      //Update receivers list
-      this.receivers.push({id: item.uid, name: item.name});
-    }
-
-
-    //Set stub data for got products
-    let onionProduct = new Product();
-    onionProduct.id = 1;
-    onionProduct.code = 'on80';
-    onionProduct.name = 'Onion';
-    onionProduct.minQty = 5;
-    onionProduct.maxQty = 8;
-    this.productsList.push(onionProduct);
-    this.addProductNameCodeToAllReceivers(onionProduct.code + ' - ' + onionProduct.name);
-    let oliveProduct = new Product();
-    oliveProduct.id = 2;
-    oliveProduct.code = 'ov091';
-    oliveProduct.name = 'Olive';
-    oliveProduct.minQty = 2;
-    oliveProduct.maxQty = 4;
-    this.productsList.push(oliveProduct);
-    this.addProductNameCodeToAllReceivers(oliveProduct.code + ' - ' + oliveProduct.name);
-    let oliveOilProduct = new Product();
-    oliveOilProduct.id = 3;
-    oliveOilProduct.code = 'oo92';
-    oliveOilProduct.name = 'Olive Oil';
-    oliveOilProduct.minQty = 3;
-    oliveOilProduct.maxQty = 6;
-    this.productsList.push(oliveOilProduct);
-    this.addProductNameCodeToAllReceivers(oliveOilProduct.code + ' - ' + oliveOilProduct.name);
-    let breadProduct = new Product();
-    breadProduct.id = 4;
-    breadProduct.code = 'b100';
-    breadProduct.name = 'Bread';
-    breadProduct.minQty = 60;
-    breadProduct.maxQty = 70;
-    this.productsList.push(breadProduct);
-    this.addProductNameCodeToAllReceivers(breadProduct.code + ' - ' + breadProduct.name);
+    );
 
     //Subscribe on autoComplete form
     this.productNameCodeCtrl = new FormControl();
@@ -220,6 +148,9 @@ export class DeliveryFormComponent implements OnInit {
       this.isToday = false;
     else
       this.isToday = true;
+
+    this.overallDeliveryModel.clear();
+    this.getDeliveryData();
   }
 
   removeDeliveryItem(item: Delivery){
@@ -305,6 +236,9 @@ export class DeliveryFormComponent implements OnInit {
   }
 
   countToday(stockDate: Date){
+    if(stockDate === null)
+      return true;
+
     if(stockDate.getFullYear() !== this.currentDate.getFullYear())
       return false;
     else if(stockDate.getMonth() !== this.currentDate.getMonth())
@@ -347,14 +281,38 @@ export class DeliveryFormComponent implements OnInit {
         this.msgService.warn("The 'realDelivery' value of " + delItem.productName + " is zero");
       }
 
-      if(delItem.id === null){
-        //Set id received from server
-        delItem.id = 10;
-        delItem.state = 'added';
+      deliveryModel._isSubmitted = true;
+
+      //Send data to server
+      if(delItem.id === null){                            //Should insert data
+        let branchId = this.receivers.find((el) => el.name.toLowerCase() === this.receiverName.toLowerCase()).id;
+        let productId = this.productsList.find((el) => el.code.toLowerCase() === delItem.productCode.toLowerCase()).id;
+
+        this.restService.insert('delivery/' + branchId, DeliveryModel.toAnyObject(delItem, delItem.isPrinted, productId)).subscribe(
+          (data) => {
+            delItem.state = 'added';
+            delItem.id = data;
+          },
+          (err) => {
+            deliveryModel._isSubmitted = false;
+            console.log(err.message);
+            this.msgService.error(err);
+          }
+        )
+      }
+      else{                                               //Should update data
+        this.restService.update('delivery', delItem.id, DeliveryModel.toAnyObject(delItem, delItem.isPrinted, null)).subscribe(
+          (data) => {
+            console.log('Update this item successfully');
+          },
+          (err) => {
+            deliveryModel._isSubmitted = false;
+            console.log(err.message);
+            this.msgService.error(err);
+          }
+        )
       }
     }
-
-    deliveryModel._isSubmitted = true;
   }
 
   sendForPrint(deliveryModel: DeliveryModel, isAllTab: boolean){
@@ -368,15 +326,51 @@ export class DeliveryFormComponent implements OnInit {
 
     let dialogRef = this.dialog.open(PrintViewerComponent,{
       height: '600px',
-      width: '1000px'
+      width: '1200px'
     });
     dialogRef.afterClosed().subscribe(
       (data) => {
         if(data === 'print') {
-          deliveryModel._isPrinted = true;
-          this.checkOverallPrintDisability();
+          //Update finalised this deliveries in the server
+          if(!isAllTab){
+            let doneAllItems: BehaviorSubject<boolean> = new BehaviorSubject(false);
+            let noFailure: boolean = true;
 
-          this.printService.printData();
+            let counter = 0;
+            for(let item of deliveryModel._deliveries){
+              item.isPrinted = true;
+              this.restService.update('delivery', item.id, DeliveryModel.toAnyObject(item, item.isPrinted, null)).subscribe(
+                (data) => {
+                  deliveryModel._isPrinted = deliveryModel._deliveries.map(d => d.isPrinted).reduce((a, b) => a && b);
+
+                  counter++;
+                  if(counter >= deliveryModel._deliveries.length)
+                    doneAllItems.next(true);
+                },
+                (err) => {
+                  item.isPrinted = false;
+                  deliveryModel._isPrinted = false;
+                  noFailure = false;
+
+                  counter++;
+                  if(counter >= deliveryModel._deliveries.length)
+                    doneAllItems.next(true);
+                }
+              )
+            }
+
+            doneAllItems.subscribe(
+              (data) => {
+                if(data && noFailure){
+                  this.checkOverallPrintDisability();
+                  this.printService.printData();
+                }
+              }
+            )
+          }
+          else{
+            this.printService.printData();
+          }
         }
       },
       (err) => console.log(err.message)
@@ -393,5 +387,77 @@ export class DeliveryFormComponent implements OnInit {
     }
 
     this.overallDeliveryModel._shouldDisabled = !overallCanPrinted;
+  }
+
+  getDeliveryData(){
+    let dateParam = moment(this.selectedDate).format('YYYYMMDD');
+
+    for(let rcv of this.receivers){
+      rcv.warn = 'no';
+
+      this.restService.get('delivery/' + dateParam + '/' + rcv.id).subscribe(
+        (data) => {
+          console.log(data);
+
+          this.receiversDeliveryModels[rcv.name] = new DeliveryModel(rcv.name);
+
+          for(let item of data){
+            if(item.id === null){        //Add to productList and productName_Code list
+              let tempProduct = new Product();
+              tempProduct.id = item.productId;
+              tempProduct.code = item.productCode;
+              tempProduct.name = item.productName;
+              tempProduct.minQty = item.min;
+              tempProduct.maxQty = item.max;
+
+              this.productsList.push(tempProduct);
+              this.addProductNameCodeToAllReceivers(item.productCode + ' - ' + item.productName);
+            }
+            else{                               //Add to deliveryList
+              //check stock value
+              if(typeof item.stock !== 'number')
+                rcv.warn = 'count';
+
+              //this.receiversDeliveryModels[rcv.name]._isPrinted = item.isPrinted;
+
+              let tempDelivery = new Delivery();
+              tempDelivery.id = item.id;
+              tempDelivery.productCode = item.productCode;
+              tempDelivery.productName = item.productName;
+              tempDelivery.realDelivery = item.realDelivery;
+              tempDelivery.min = item.min;
+              tempDelivery.max = item.max;
+              tempDelivery.stock = item.stock;
+              tempDelivery.isPrinted = item.isPrinted;
+              if(item.stockDate === null)
+                tempDelivery.stockDate = this.selectedDate;
+              else
+                tempDelivery.stockDate = moment(item.stockDete).toDate();
+              tempDelivery.state = 'exist';
+
+              this.receiversDeliveryModels[rcv.name].add(tempDelivery);
+
+              //Update overall list
+              this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'min', tempDelivery.min);
+              this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'max', tempDelivery.max);
+              this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'realDelivery', tempDelivery.realDelivery);
+            }
+          }
+
+          if(this.receiversDeliveryModels[rcv.name]._deliveries.length > 0)
+            this.receiversDeliveryModels[rcv.name]._isPrinted = this.receiversDeliveryModels[rcv.name]._deliveries.map(d => d.isPrinted)
+                                                                                                    .reduce((a, b) => a && b);
+          else{
+            this.receiversDeliveryModels[rcv.name]._shouldDisabled = true;
+            this.receiversDeliveryModels[rcv.name]._isPrinted = true;
+            this.receiversDeliveryModels[rcv.name]._isSubmitted = true;
+            rcv.warn = 'login';
+          }
+        },
+        (err) => {
+          console.log(err.message);
+        }
+      )
+    }
   }
 }
