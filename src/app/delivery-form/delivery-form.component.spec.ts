@@ -153,16 +153,22 @@ fdescribe('DeliveryFormComponent', () => {
     expect(component.receiverName).toBe('All');
   }));
 
-  fit("should show autoComplete element for 'Baker Street' branch", fakeAsync(() => {
+  it("should show autoComplete element for 'Baker Street' branch", fakeAsync(() => {
     component.ngOnInit();
     tick();
     fixture.detectChanges();
 
     component.selectedIndex = 1;
     component.tabChanged();
-    fixture.detectChanges();
 
+    let autoDebugElement: DeubgElement = fixture.debugElement.query(By.css('.pnc'));
 
+    expect(component.productsList['Baker Street'].length).toBe(1);
+    expect(component.isToday).toBe(true);
+    expect(component.receiversDeliveryModels['Baker Street']._shouldDisabled).toBe(false);
+    expect(component.overallDeliveryModel._isPrinted).toBe(false);
+    expect(autoDebugElement).not.toBe(null);
+    expect(component.selectedIndex).toBe(1);
     expect(component.receiverName).toBe('Baker Street');
   }));
 });

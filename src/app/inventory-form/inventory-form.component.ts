@@ -231,12 +231,16 @@ export class InventoryFormComponent implements OnInit {
               tempInventory.productName = item.product_name;
               tempInventory.unopenedPack = item.product_count;
 
-              let lastCount = moment(item.last_count).format('YYYY-MM-DD');
+              if(item.last_count === null)
+                tempInventory.lastCount = null;
+              else{
+                let lastCount = moment(item.last_count).format('YYYY-MM-DD');
 
-              if(lastCount === 'Invalid date')
-                tempInventory.lastCount = this.currentDate;
-              else
-                tempInventory.lastCount = new Date(lastCount);
+                if(lastCount === 'Invalid date')
+                  tempInventory.lastCount = this.currentDate;
+                else
+                  tempInventory.lastCount = new Date(lastCount);
+              }
 
               tempInventory.shouldCountToday = !this.isCountingDatePast(item.counting_date);
               tempInventory.shouldIncluded = true;
