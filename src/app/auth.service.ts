@@ -19,7 +19,7 @@ export class AuthService {
       .subscribe(
         res => {
           this.afterLogin(res);
-          this.router.navigate(['/']);
+          // this.router.navigate(['/']);
           this.messageService.message(`You are already logged in as ${this.user}.`)
         },
         err => {
@@ -34,8 +34,7 @@ export class AuthService {
     this.restService.update('login', null, {username: username, password: password})
       .subscribe(res => {
           this.afterLogin(res);
-          let url = this.originBeforeLogin;
-          this.router.navigate([url !== null ? url : '/']);
+          // this.router.navigate([url !== null ? url : '/']);
           this.messageService.message(`${this.user} logged in.`);
         },
         err => {
@@ -52,6 +51,24 @@ export class AuthService {
     this.unitName = data.name;
     this.userType = data.userType;
     this.authStream.next(true);
+
+    let url = this.originBeforeLogin;
+    if(url !== null && url !== '/'){
+      if(this.userType === 'branch' && url === 'delivery')
+        this.router.navigate(['inventory']);
+      else if(this.userType === 'prep' && url === 'inventory')
+        this.router.navigate(['delivery']);
+      else
+        this.router.navigate([url]);
+    }
+    else{
+      if(this.userType === 'branch')
+        this.router.navigate(['inventory']);
+      else if(this.userType === 'prep')
+        this.router.navigate(['delivery']);
+      else
+        this.router.navigate(['/']);
+    }
   }
 
   logOff() {
