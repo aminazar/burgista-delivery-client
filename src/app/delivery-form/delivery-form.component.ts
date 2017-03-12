@@ -225,6 +225,23 @@ export class DeliveryFormComponent implements OnInit {
     //Check if in 'All' tab this product only has 0 value for 'min' and 'max' should be removed
     if(this.overallDeliveryModel.getByCode(code).min === 0 && this.overallDeliveryModel.getByCode(code).max === 0)
       this.overallDeliveryModel.deleteByCode(code);
+
+
+    //Sort overallDeliveryModel._deliveries
+    this.overallDeliveryModel._deliveries.sort((a, b) => {
+      if(a.productName.toLowerCase() > b.productName.toLowerCase())
+        return 1;
+      else if(a.productName.toLowerCase() < b.productName.toLowerCase())
+        return -1;
+      else{
+        if(a.productCode.toLowerCase() > b.productCode.toLowerCase())
+          return 1;
+        else if(a.productCode.toLowerCase() < a.productCode.toLowerCase())
+          return -1;
+        else
+          return 0;
+      }
+    })
   }
 
   countToday(stockDate: Date){
@@ -449,6 +466,26 @@ export class DeliveryFormComponent implements OnInit {
             this.receiversDeliveryModels[rcv.name]._isSubmitted = true;
             rcv.warn = 'login';
           }
+
+          //Sort data
+          this.receiversDeliveryModels[rcv.name]._deliveries.sort((a, b) => {
+            if(!this.countToday(a.stockDate) && this.countToday(b.stockDate))
+              return -1;
+            else if(this.countToday(a.stockDate) && !this.countToday(b.stockDate))
+              return 1;
+            if(a.productName.toLowerCase() > b.productName.toLowerCase())
+              return 1;
+            else if(a.productName.toLowerCase() < b.productName.toLowerCase())
+              return -1;
+            else{
+              if(a.productCode.toLowerCase() > b.productCode.toLowerCase())
+                return 1;
+              else if(a.productCode.toLowerCase() < a.productCode.toLowerCase())
+                return -1;
+              else
+                return 0;
+            }
+          })
         },
         (err) => {
           console.log(err.message);
