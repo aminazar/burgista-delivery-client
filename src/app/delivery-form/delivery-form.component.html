@@ -7,7 +7,7 @@
     </material-datepicker>
   </div>
   <md-tab-group class="materialTab" [(selectedIndex)]="selectedIndex" (selectChange)="tabChanged()">
-    <md-tab label="All" *ngIf="overallDeliveryModel._deliveries !== undefined && overallDeliveryModel._deliveries.length > 0">
+    <md-tab label="All" *ngIf="overallDeliveryModel._deliveries !== undefined">
       <md-card class="innerCard">
         <md-card-title>To Do: Delivery</md-card-title>
         <md-card-content>
@@ -51,8 +51,19 @@
         </md-card-content>
       </md-card>
     </md-tab>
-    <md-tab *ngFor="let rcv of receivers" label="{{rcv.name}}">
-      <md-card class="innerCard" *ngIf="receiversDeliveryModels[rcv.name] !== undefined && receiversDeliveryModels[rcv.name] !== null">
+    <md-tab *ngFor="let rcv of receivers" class="delayedTab">
+      <template md-tab-label *ngIf="rcv.warn === 'login'">
+        <i class="fa fa-exclamation warnColoring" aria-hidden="true"></i>
+        <i class="fa fa-exclamation warnColoring" aria-hidden="true"></i> {{rcv.name}}
+      </template>
+      <template md-tab-label *ngIf="rcv.warn === 'count'">
+        <i class="fa fa-exclamation warnColoring" aria-hidden="true"></i> {{rcv.name}}
+      </template>
+      <template md-tab-label *ngIf="rcv.warn === 'no'">
+        {{rcv.name}}
+      </template>
+      <md-card class="innerCard"
+               *ngIf="receiversDeliveryModels[rcv.name] !== undefined && receiversDeliveryModels[rcv.name] !== null">
         <md-card-title>To Do: Delivery</md-card-title>
         <md-card-content>
           <md-card>
@@ -103,11 +114,11 @@
                   <md-grid-tile [colspan]="1" [rowspan]="1"
                                 [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.stock}}</md-grid-tile>
                   <md-grid-tile [colspan]="1" [rowspan]="1"
-                                [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.stockDate | date: 'd MMM yy'}}</md-grid-tile>
+                                [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.stockDate | date: 'dd MMM yy'}}</md-grid-tile>
                 </div>
               </md-grid-list>
               <md-grid-list cols="8" rowHeight="50px"
-                            *ngIf="isToday && !overallDeliveryModel._isPrinted && !receiversDeliveryModels[rcv.name]._shouldDisabled">
+                            *ngIf="isToday && !overallDeliveryModel._isPrinted && !receiversDeliveryModels[rcv.name]._shouldDisabled && productsList[rcv.name] !== undefined && productsList[rcv.name].length > 0">
                 <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
                 <md-grid-tile class="deliveryItem" [colspan]="2" [rowspan]="1">
                   <md-input-container>
@@ -132,6 +143,7 @@
         <md-card-content>
           <button md-raised-button class="ButtonStyle"
                   *ngIf="isToday"
+                  [disabled]="!receiversDeliveryModels[rcv.name]._isSubmitted || receiversDeliveryModels[rcv.name]._deliveries.length <= 0"
                   (click)="printDelivery(receiversDeliveryModels[rcv.name])">Print</button>
           <button md-raised-button class="ButtonStyle"
                   *ngIf="isToday"
