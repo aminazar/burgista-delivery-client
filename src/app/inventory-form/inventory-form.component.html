@@ -40,8 +40,14 @@
               {{invItem.productName}}
             </md-grid-tile>
             <md-grid-tile [colspan]="1" [rowspan]="1"
+                          *ngIf="invItem.lastCount !== null"
                           [ngClass]="[(!invItem.shouldCountToday && invItem.shouldIncluded) ? 'warnColoring' : 'normalColoring']">
               {{invItem.lastCount | date: 'd MMM yy'}}
+            </md-grid-tile>
+            <md-grid-tile [colspan]="1" [rowspan]="1"
+                          *ngIf="invItem.lastCount === null"
+                          [ngClass]="[(!invItem.shouldCountToday && invItem.shouldIncluded) ? 'warnColoring' : 'normalColoring']">
+              -
             </md-grid-tile>
             <md-grid-tile [colspan]="1" [rowspan]="1">
               <button md-mini-fab style="background-color: #607D8B;" *ngIf="isSameDates" [disabled]="disableInventoryItem(invItem)" (click)="submitInventoryItem(invItem)"><i class="fa fa-check" aria-hidden="true"></i></button>
