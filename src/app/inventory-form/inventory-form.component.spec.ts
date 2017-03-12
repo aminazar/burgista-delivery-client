@@ -16,7 +16,7 @@ import {DebugElement} from "@angular/core";
 import {By} from "@angular/platform-browser";
 import {Inventory} from "./inventory";
 
-fdescribe('InventoryFormComponent', () => {
+describe('InventoryFormComponent', () => {
   let component: InventoryFormComponent;
   let fixture: ComponentFixture<InventoryFormComponent>;
   let restService;

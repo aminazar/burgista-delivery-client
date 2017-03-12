@@ -118,7 +118,7 @@
                 </div>
               </md-grid-list>
               <md-grid-list cols="8" rowHeight="50px"
-                            *ngIf="isToday && !overallDeliveryModel._isPrinted && !receiversDeliveryModels[rcv.name]._shouldDisabled && productsList.length > 0">
+                            *ngIf="isToday && !overallDeliveryModel._isPrinted && !receiversDeliveryModels[rcv.name]._shouldDisabled && productsList[rcv.name] !== undefined && productsList[rcv.name].length > 0">
                 <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
                 <md-grid-tile class="deliveryItem" [colspan]="2" [rowspan]="1">
                   <md-input-container>

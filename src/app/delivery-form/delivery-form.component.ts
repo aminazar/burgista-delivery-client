@@ -50,7 +50,8 @@ export class DeliveryFormComponent implements OnInit {
   overallDeliveryModel: DeliveryModel;
   receiversDeliveryModels: any = {};
   productName_Code: any = {};
-  productsList: Product[] = [];
+  // productsList: Product[] = [];
+  productsList: any = {};
   filteredNameCode: any;
   productNameCodeCtrl: FormControl;
 
@@ -109,7 +110,7 @@ export class DeliveryFormComponent implements OnInit {
           tempDelivery.id = null;
           tempDelivery.productCode = p_code;
           tempDelivery.productName = p_name;
-          let foundProduct: Product = this.productsList.find((el) => el.code.toLowerCase() === p_code.toLowerCase());
+          let foundProduct: Product = this.productsList[this.receiverName].find((el) => el.code.toLowerCase() === p_code.toLowerCase());
           tempDelivery.min = foundProduct.minQty;
           tempDelivery.max = foundProduct.maxQty;
           tempDelivery.realDelivery = null;
@@ -206,15 +207,6 @@ export class DeliveryFormComponent implements OnInit {
       this.receiverName = this.receivers[this.selectedIndex - 1].name;
   }
 
-  addProductNameCodeToAllReceivers(nameCode: string){
-    for(let rcv of this.receivers){
-      if(this.productName_Code[rcv.name] === undefined)
-        this.productName_Code[rcv.name] = [];
-
-      this.productName_Code[rcv.name].push(nameCode);
-    }
-  }
-
   updateOverallDelivery(code: string, delivery: Delivery, action, whichItem, changedValue: number){
     if(this.overallDeliveryModel.getByCode(code) === undefined){          //Should add a product
       this.overallDeliveryModel.add(delivery);
@@ -286,7 +278,7 @@ export class DeliveryFormComponent implements OnInit {
       //Send data to server
       if(delItem.id === null){                            //Should insert data
         let branchId = this.receivers.find((el) => el.name.toLowerCase() === this.receiverName.toLowerCase()).id;
-        let productId = this.productsList.find((el) => el.code.toLowerCase() === delItem.productCode.toLowerCase()).id;
+        let productId = this.productsList[this.receiverName].find((el) => el.code.toLowerCase() === delItem.productCode.toLowerCase()).id;
 
         this.restService.insert('delivery/' + branchId, DeliveryModel.toAnyObject(delItem, delItem.isPrinted, productId)).subscribe(
           (data) => {
@@ -382,7 +374,7 @@ export class DeliveryFormComponent implements OnInit {
     let overallCanPrinted = true;
 
     for(let rcv of this.receivers){
-      if(!this.receiversDeliveryModels[rcv.name]._isPrinted)
+      if(!this.receiversDeliveryModels[rcv.name]._isPrinted && this.receiversDeliveryModels[rcv.name]._deliveries.length > 0)
         overallCanPrinted = false;
     }
 
@@ -398,6 +390,7 @@ export class DeliveryFormComponent implements OnInit {
       this.restService.get('delivery/' + dateParam + '/' + rcv.id).subscribe(
         (data) => {
           console.log(data);
+          this.productsList[rcv.name] = [];
 
           this.receiversDeliveryModels[rcv.name] = new DeliveryModel(rcv.name);
 
@@ -410,8 +403,13 @@ export class DeliveryFormComponent implements OnInit {
               tempProduct.minQty = item.min;
               tempProduct.maxQty = item.max;
 
-              this.productsList.push(tempProduct);
-              this.addProductNameCodeToAllReceivers(item.productCode + ' - ' + item.productName);
+              if(this.productsList[rcv.name] === undefined)
+                this.productsList[rcv.name] = [];
+              this.productsList[rcv.name].push(tempProduct);
+
+              if(this.productName_Code[rcv.name] === undefined)
+                this.productName_Code[rcv.name] = [];
+              this.productName_Code[rcv.name].push(item.productCode + ' - ' + item.productName);
             }
             else{                               //Add to deliveryList
               //check stock value
@@ -448,8 +446,6 @@ export class DeliveryFormComponent implements OnInit {
             this.receiversDeliveryModels[rcv.name]._isPrinted = this.receiversDeliveryModels[rcv.name]._deliveries.map(d => d.isPrinted)
                                                                                                     .reduce((a, b) => a && b);
           else{
-            this.receiversDeliveryModels[rcv.name]._shouldDisabled = true;
-            this.receiversDeliveryModels[rcv.name]._isPrinted = true;
             this.receiversDeliveryModels[rcv.name]._isSubmitted = true;
             rcv.warn = 'login';
           }
