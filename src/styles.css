@@ -1,4 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
+.fill-remaining-space {
+  flex: 1 1 auto;
+}
 a{text-decoration: none;}
 a:focus{text-decoration: none;text-weight:bold;}
 a:hover{text-decoration: none;text-weight:bold;}
@@ -57,6 +60,14 @@ background-color:antiquewhite !important; padding: 10px;
 
 .deliveryItem{
   /*width: 100px !important;*/
+}
+
+.delayedTab{
+  background: red !important;
+}
+
+.mat-tab-labels > .delayedTab{
+  background: red !important;
 }
 
 @media screen {

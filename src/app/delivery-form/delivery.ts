@@ -11,4 +11,5 @@ export class Delivery{
   stock: number;
   stockDate: Date;
   state: string = 'exist';
+  isPrinted: boolean = false;
 }
