@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {MdDialogRef} from "@angular/material";
-
+import * as moment from 'moment';
 import {PrintService} from "../print.service";
 
 @Component({
@@ -12,7 +12,7 @@ export class PrintViewerComponent implements OnInit {
   unitName_title: string = '';
   unitName_subTitle: string = '';
   isOverallPrint: boolean = false;
-  currentDate: Date = new Date();
+  currentDate: string = moment().format('D MMMM YYYY');
   receivers: string[] = [];
   itemList: any[] = [];
 
