@@ -205,8 +205,27 @@ export class InventoryFormComponent implements OnInit {
 
     this.restService.get('stock/' + dateParam).subscribe(
       (data) => {
+        console.log(data);
+
         this.inventoryModel.clear();
         this.products = [];
+
+        this.productName_Code = data.filter((el) => el.bsddid === null).sort((a, b) => {
+          if(a.product_name.toLowerCase() > b.product_name.toLowerCase())
+            return 1;
+          else if(a.product_name.toLowerCase() < b.product_name.toLowerCase())
+            return -1;
+          else{
+            if(a.product_code.toLowerCase() > b.product_code.toLowerCase())
+              return 1;
+            else if(a.product_code.toLowerCase() < b.product_code.toLowerCase())
+              return -1;
+            else
+              return 0;
+          }
+        }).map(r => `${r.product_code} - ${r.product_name}`);
+
+        console.log(this.productName_Code);
 
         for(let item of data){
           if(item.bsddid === null) {                     //Add to autoComplete list
@@ -216,7 +235,7 @@ export class InventoryFormComponent implements OnInit {
             tempProduct.name = item.product_name;
             this.products.push(tempProduct);
 
-            this.productName_Code.push(item.product_code + ' - ' + item.product_name);
+            // this.productName_Code.push(item.product_code + ' - ' + item.product_name);
           }
           else {
             if(item.counting_date === null){
@@ -250,7 +269,27 @@ export class InventoryFormComponent implements OnInit {
           }
         }
 
-        console.log(data);
+        //Sort data
+        this.inventoryModel._inventories.sort(function (a, b) {
+          if((!a.shouldCountToday && a.shouldIncluded) && !(!b.shouldCountToday && b.shouldIncluded))
+            return -1;
+          else if(!(!a.shouldCountToday && a.shouldIncluded) && (!b.shouldCountToday && b.shouldIncluded))
+            return 1;
+          else if (a.productName.toLowerCase() > b.productName.toLowerCase())
+            return 1;
+          else if (a.productName.toLowerCase() < b.productName.toLowerCase())
+            return -1;
+          else {
+            if (a.productCode.toLowerCase() > b.productCode.toLowerCase())
+              return 1;
+            else if (a.productCode.toLowerCase() < b.productCode.toLowerCase())
+              return -1;
+            else
+              return 0;
+          }
+        });
+
+        // console.log(data);
       },
       (err) => {
         console.log(err.message);
