@@ -9,5 +9,5 @@
   <a md-tab-link *ngIf="isAdmin" [routerLink]="['products']" routerLinkActive #productsLink="routerLinkActive" [active]="productsLink.isActive">Products</a>
   <a md-tab-link *ngIf="isBranch || isAdmin" [routerLink]="['override']" routerLinkActive #overrideLink="routerLinkActive" [active]="overrideLink.isActive">Override Rules</a>
   <a md-tab-link *ngIf="isBranch" [routerLink]="['inventory']" routerLinkActive #inventoryLink="routerLinkActive" [active]="inventoryLink.isActive">Inventory</a>
-  <a md-tab-link *ngIf="isPrep || isAdmin" [routerLink]="['delivery']" routerLinkActive #deliveryLink="routerLinkActive" [active]="deliveryLink.isActive">Delivery</a>
+  <a md-tab-link *ngIf="isPrep" [routerLink]="['delivery']" routerLinkActive #deliveryLink="routerLinkActive" [active]="deliveryLink.isActive">Delivery</a>
 </nav>
