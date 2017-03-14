@@ -147,7 +147,7 @@
                   (click)="printDelivery(receiversDeliveryModels[rcv.name])">Print</button>
           <button md-raised-button class="ButtonStyle"
                   *ngIf="isToday"
-                  [(disabled)]="overallDeliveryModel._isPrinted || receiversDeliveryModels[rcv.name]._shouldDisabled"
+                  [(disabled)]="overallDeliveryModel._isPrinted || receiversDeliveryModels[rcv.name]._shouldDisabled || receiversDeliveryModels[rcv.name]._isPrinted"
                   (click)="submitDelivery(receiversDeliveryModels[rcv.name])">Submit</button>
         </md-card-content>
       </md-card>
