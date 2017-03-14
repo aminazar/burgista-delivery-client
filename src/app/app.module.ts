@@ -29,6 +29,7 @@ import { InventoryFormComponent } from './inventory-form/inventory-form.componen
 import { DeliveryFormComponent } from './delivery-form/delivery-form.component';
 import { PrintViewerComponent } from './print-viewer/print-viewer.component';
 import {PrintService} from "./print.service";
+import {WindowRef} from "./WindowRef";
 
 
 @NgModule({
@@ -71,7 +72,7 @@ import {PrintService} from "./print.service";
       {path: 'delivery', component: DeliveryFormComponent, canActivate: [LoggedInGuard]},
     ]),
   ],
-  providers: [AuthService, RestService, LoggedInGuard, MessageService, PrintService],
+  providers: [AuthService, RestService, LoggedInGuard, MessageService, PrintService, WindowRef],
   bootstrap: [AppComponent]
 })
 export class AppModule {

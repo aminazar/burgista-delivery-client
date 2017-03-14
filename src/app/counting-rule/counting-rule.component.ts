@@ -12,10 +12,13 @@ export class CountingRuleComponent implements OnInit {
 
   @Input() //To have a trigger to redo validation after blanking the form after add
   set minQty(val) {
-    this._mq = val;
+    
     if (val === -12345678){
+      this._mq = null;
       this.ngOnInit()
     }
+    else
+      this._mq = val;
   }
 
   get minQty() {

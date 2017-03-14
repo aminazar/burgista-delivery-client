@@ -1,7 +1,9 @@
 /**
  * Created by Ali on 3/8/2017.
  */
-import {Injectable} from "@angular/core";
+import {Injectable, AfterViewInit} from "@angular/core";
+import { WindowRef } from './WindowRef';
+import {MessageService} from "./message.service";
 
 @Injectable()
 export class PrintService{
@@ -12,9 +14,10 @@ export class PrintService{
   _deliveryModels: any = {};
   _showWarningMessage: boolean = true;
   currentDate: Date = new Date();
+  _window:any;
 
-  constructor(){
-
+  constructor(private messageService:MessageService, private winRef: WindowRef) {
+    this._window = winRef.nativeWindow;
   }
 
   getItems(): any[]{
@@ -206,20 +209,24 @@ export class PrintService{
     printContents += '<div>' + header + '</div>';
     printContents += '<div>' + contentTable + '</div>';
 
-    let popup = window.open('', '_blank',
+    let popup = this._window.open('', '_blank',
       'width=1000,height=600,scrollbars=no,menubar=no,toolbar=no,'
       +'location=no,status=no,titlebar=no');
+    if(!popup) {
+      this.messageService.warn('Print pop-up is blocked by browser. Enable pop-ups from this page.')
+    }
+    else {
+      popup.window.focus();
+      popup.document.write('<!DOCTYPE><html><head>'
+        + '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"  media="screen, print" />'
+        + '<style type="text/css" media="print, screen">'
+        + '@page{margin: 2mm;  /* this affects the margin in the printer settings */} html{color: black;margin: 5px;  /* this affects the margin on the html before sending to printer */} body{margin: 2mm 5mm 2mm 5mm; /* margin you want for the content */-webkit-print-color-adjust: exact;} .title{font-size: 2em;font-weight: normal;}.subtitle{font-size: 2em;font-weight: bold;}.highlight{background-color: #adadad !important;}.normal{background-color: white !important;}.table .highlight{background-color: #adadad !important;}'
+        + '</style>'
+        + '</head><body onload="window.print()"><div class="container">'
+        + printContents + '</div></body></html>');
 
-    popup.window.focus();
-    popup.document.write('<!DOCTYPE><html><head>'
-                       + '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"  media="screen, print" />'
-                       + '<style type="text/css" media="print, screen">'
-                       + '@page{margin: 2mm;  /* this affects the margin in the printer settings */} html{color: black;margin: 5px;  /* this affects the margin on the html before sending to printer */} body{margin: 2mm 5mm 2mm 5mm; /* margin you want for the content */-webkit-print-color-adjust: exact;} .title{font-size: 2em;font-weight: normal;}.subtitle{font-size: 2em;font-weight: bold;}.highlight{background-color: #adadad !important;}.normal{background-color: white !important;}.table .highlight{background-color: #adadad !important;}'
-                       + '</style>'
-                       + '</head><body onload="window.print()"><div class="container">'
-                       + printContents + '</div></body></html>');
-
-    popup.document.close();
+      popup.document.close();
+    }
   }
 
   private getMonthName(monthNo: number){

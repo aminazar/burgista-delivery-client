@@ -129,7 +129,7 @@ export class RRuleComponent implements OnInit {
     else {
       this.text = '';
     }
-    this.RRuleStrChange.emit({value: this.rule.toString(), error: this.validate()});
+    this.RRuleStrChange.emit({value: this.rule.options.freq ? this.rule.toString() : '', error: this.validate()});
   }
 
   validate() {
