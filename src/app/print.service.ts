@@ -10,6 +10,7 @@ export class PrintService{
   _isOverallPrint: boolean = false;
   _receivers: string[] = [];
   _deliveryModels: any = {};
+  _showWarningMessage: boolean = true;
   currentDate: Date = new Date();
 
   constructor(){

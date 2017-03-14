@@ -55,6 +55,15 @@
   </div>
 </div>
 <br/>
+<div style="color: darkred" *ngIf="showWarningMessage">
+  <div>
+    <label>Warning: Hitting print button will finalised delivery numbers.</label>
+  </div>
+  <div>
+    <label>Please make sure all values are correct</label>
+  </div>
+</div>
+<br/>
 <div>
   <button md-raised-button class="ButtonStyle" (click)="dialogRef.close('print')">Print</button>
   <button md-raised-button class="ButtonStyle" (click)="dialogRef.close('cancel')">Cancel</button>

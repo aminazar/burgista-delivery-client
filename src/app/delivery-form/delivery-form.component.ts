@@ -332,6 +332,7 @@ export class DeliveryFormComponent implements OnInit {
     this.printService._receivers = this.receivers.map(rcv => rcv.name);
     this.printService._deliveryModels = this.receiversDeliveryModels;
     this.printService._deliveryModels['All'] = this.overallDeliveryModel;
+    this.printService._showWarningMessage = !this.receiversDeliveryModels[this.receiverName]._isPrinted;
 
     let dialogRef = this.dialog.open(PrintViewerComponent,{
       height: '600px',
@@ -466,6 +467,10 @@ export class DeliveryFormComponent implements OnInit {
             this.receiversDeliveryModels[rcv.name]._isSubmitted = true;
             rcv.warn = 'login';
           }
+
+
+          if(this.receiversDeliveryModels[rcv.name]._isPrinted)
+            this.receiversDeliveryModels[rcv.name]._isSubmitted = true;
 
           //Sort data
           this.receiversDeliveryModels[rcv.name]._deliveries.sort((a, b) => {
