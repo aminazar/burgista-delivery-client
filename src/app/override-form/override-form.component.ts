@@ -14,6 +14,8 @@ import {Product} from "../product-form/product";
   styleUrls: ['./override-form.component.css']
 })
 export class OverrideFormComponent implements OnInit {
+  @ViewChild('autoNameCode') autoNameCode;
+
   isAdmin: boolean = false;
   productModels: ProductModel[] = [];
   filteredProductModel: ProductModel;
@@ -29,6 +31,7 @@ export class OverrideFormComponent implements OnInit {
   deleteIsDisable: boolean = false;
   selectedIndex: number = 0;
   hasCountingRuleError: boolean = false;
+  selectedProduct: string = '';
   ae = ActionEnum;
 
   constructor(private restService: RestService, private authService: AuthService, private messageService: MessageService) {
@@ -112,10 +115,12 @@ export class OverrideFormComponent implements OnInit {
           else
             this.filteredProductModel.setProduct(this.getProduct(data));
 
+          this.selectedProduct = this.filteredProductModel._product.name;
           this.isFiltered = true;
           oneItemInList = true;
         }
         else {
+          this.selectedProduct = '';
           this.isFiltered = false;
           oneItemInList = false;
         }
@@ -139,10 +144,13 @@ export class OverrideFormComponent implements OnInit {
             else
               this.filteredProductModel.setProduct(fullMatch._product);
 
+            this.selectedProduct = this.filteredProductModel._product.name;
             this.isFiltered = true;
           }
-          else
+          else {
+            this.selectedProduct = '';
             this.isFiltered = false;
+          }
         }
       },
       (err) => {
@@ -292,6 +300,12 @@ export class OverrideFormComponent implements OnInit {
     this.isFiltered = false;
 
     this.loadBranchProducts();
+
+    if(this.selectedProduct !== null && this.selectedProduct !== ''){
+      this.autoNameCode.value = this.selectedProduct;
+      this.productModelCtrl.setValue(this.selectedProduct);
+      this.isFiltered = true;
+    }
   }
 
   loadBranchProducts(){
@@ -377,5 +391,13 @@ export class OverrideFormComponent implements OnInit {
     return this.productModels.find((p) => {
       return p._product.code.toLowerCase() == nameCode[0].toLowerCase();
     })._product;
+  }
+
+  showProductList($event){
+    if(this.productModelCtrl.value === null)
+      this.productModelCtrl.setValue('');
+    else{
+      $event.target.select();
+    }
   }
 }

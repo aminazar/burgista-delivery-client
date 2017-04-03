@@ -10,7 +10,7 @@
       <md-card class="innerCard">
         <md-card-content>
           <md-input-container>
-            <input mdInput type="text" class="pnc" placeholder="Product name/code" [mdAutocomplete]="auto" [formControl]="productModelCtrl" #autoNameCode/>
+            <input mdInput type="text" class="pnc" placeholder="Product name/code" [mdAutocomplete]="auto" [formControl]="productModelCtrl" #autoNameCode (focus)="showProductList($event)"/>
             <md-autocomplete #auto="mdAutocomplete">
               <md-option *ngFor="let nameCode of filteredNameCode | async" [value]="nameCode">
                 {{nameCode}}

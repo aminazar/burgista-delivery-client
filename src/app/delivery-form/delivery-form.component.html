@@ -123,7 +123,7 @@
                 <md-grid-tile class="deliveryItem" [colspan]="2" [rowspan]="1">
                   <md-input-container>
                     <input mdInput type="text" [(disabled)]="receiversDeliveryModels[rcv.name]._shouldDisabled"
-                           class="pnc" placeholder="Product name/code" [mdAutocomplete]="auto" [formControl]="productNameCodeCtrl" #autoNameCode/>
+                           class="pnc" placeholder="Product name/code" [mdAutocomplete]="auto" [formControl]="productNameCodeCtrl" (focus)="showProductList()" (blur)="clearInput($event)"/>
                     <md-autocomplete #auto="mdAutocomplete">
                       <md-option *ngFor="let nameCode of filteredNameCode | async" [value]="nameCode">
                         {{nameCode}}
