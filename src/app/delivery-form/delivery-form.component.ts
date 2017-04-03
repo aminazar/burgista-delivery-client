@@ -38,7 +38,7 @@ import {BehaviorSubject} from "rxjs";
   ],
 })
 export class DeliveryFormComponent implements OnInit {
-  @ViewChild('autoNameCode') autoNameCode;
+  // @ViewChild('autoNameCode') autoNameCode;
 
   unitName: string;
   receiverName: string = 'All';
@@ -119,7 +119,7 @@ export class DeliveryFormComponent implements OnInit {
 
           this.receiversDeliveryModels[this.receiverName].add(tempDelivery);
 
-          this.autoNameCode.nativeElement.value = null;
+          // this.autoNameCode.nativeElement.value = null;
 
           this.productName_Code[this.receiverName] = this.productName_Code[this.receiverName].filter((el) => {
             return el.toLowerCase() !== tempNameObj.toLowerCase();
@@ -497,5 +497,15 @@ export class DeliveryFormComponent implements OnInit {
         }
       )
     }
+  }
+
+  showProductList(){
+    this.productNameCodeCtrl.setValue('');
+  }
+
+  clearInput($event){
+    setTimeout(function () {
+      $event.target.value = '';
+    }, 50);
   }
 }

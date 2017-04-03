@@ -43,6 +43,7 @@ export class InventoryFormComponent implements OnInit {
   currentDate;
   selectedDate;
   isSameDates: boolean = true;
+  submitShouldDisabled: boolean = true;
   products: Product[] = [];
   productName_Code: string[] = [];
   filteredNameCode: any;
@@ -147,6 +148,12 @@ export class InventoryFormComponent implements OnInit {
     }
   }
 
+  submitInventories(){
+    for(let invItem of this.inventoryModel._inventories){
+      this.submitInventoryItem(invItem);
+    }
+  }
+
   removeInventoryItem(inventoryItem: Inventory){
     inventoryItem.state = 'delete';
 
@@ -161,7 +168,7 @@ export class InventoryFormComponent implements OnInit {
   }
 
   disableInventoryItem(inventoryItem: Inventory){
-    if(inventoryItem.unopenedPack === null || inventoryItem.unopenedPack <= 0)
+    if(inventoryItem.unopenedPack === null || inventoryItem.unopenedPack < 0)
       return true;
 
     return false;
@@ -205,7 +212,7 @@ export class InventoryFormComponent implements OnInit {
 
     this.restService.get('stock/' + dateParam).subscribe(
       (data) => {
-        console.log(data);
+        // console.log(data);
 
         this.inventoryModel.clear();
         this.products = [];
@@ -225,7 +232,7 @@ export class InventoryFormComponent implements OnInit {
           }
         }).map(r => `${r.product_code} - ${r.product_name}`);
 
-        console.log(this.productName_Code);
+        // console.log(this.productName_Code);
 
         for(let item of data){
           if(item.bsddid === null) {                     //Add to autoComplete list
@@ -295,5 +302,18 @@ export class InventoryFormComponent implements OnInit {
         console.log(err.message);
       }
     )
+  }
+
+  checkDisability(){
+    let noValue: boolean = false;
+
+    for(let invItem of this.inventoryModel._inventories){
+      if(this.disableInventoryItem(invItem)){
+        noValue = true;
+        break;
+      }
+    }
+
+    this.submitShouldDisabled = noValue;
   }
 }

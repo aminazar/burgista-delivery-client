@@ -1,4 +1,4 @@
-import {Component, OnInit, isDevMode, ViewChild} from '@angular/core';
+import {Component, OnInit, isDevMode, ViewChild, ElementRef} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
 import {FormControl} from "@angular/forms";
 
@@ -28,7 +28,7 @@ export class ProductFormComponent implements OnInit {
 
   @ViewChild('autoNameCode') autoNameCode;
 
-  constructor(private restService: RestService, private messageService: MessageService) {
+  constructor(private restService: RestService, private messageService: MessageService, private elementRef: ElementRef) {
   }
 
   ngOnInit() {
@@ -358,5 +358,13 @@ export class ProductFormComponent implements OnInit {
     return this.productModels.find((p) => {
       return p._product.code.toLowerCase() == nameCode[0].toLowerCase();
     });
+  }
+
+  showProductList($event){
+    if(this.productModelCtrl.value === null)
+      this.productModelCtrl.setValue('');
+    else{
+      $event.target.select();
+    }
   }
 }

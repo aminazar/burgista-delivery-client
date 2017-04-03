@@ -28,7 +28,7 @@
       <md-card [ngClass]="[(isFiltered && filteredProductModel._product.isOverridden) ? 'innerCardOverride' : 'innerCard']">
         <md-card-content>
           <md-input-container>
-            <input mdInput type="text" class="pnc" placeholder="Product name/code" [mdAutocomplete]="auto" [formControl]="productModelCtrl"/>
+            <input mdInput type="text" class="pnc" placeholder="Product name/code" [mdAutocomplete]="auto" [formControl]="productModelCtrl" (focus)="showProductList($event)" #autoNameCode/>
             <md-autocomplete #auto="mdAutocomplete">
               <md-option *ngFor="let nameCode of filteredNameCode | async" [value]="nameCode">
                 {{nameCode}}
