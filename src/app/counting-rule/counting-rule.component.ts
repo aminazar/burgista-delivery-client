@@ -71,6 +71,7 @@ export class CountingRuleComponent implements OnInit {
     //   this.sendError('The Min Qty should not be blank', 0);
     // }
     // else this.sendError('', 0);
+    this.sendError('', 0);
     this.checkMinMax()
   }
 
@@ -83,14 +84,17 @@ export class CountingRuleComponent implements OnInit {
     //   this.sendError('The Max Qty should not be blank', 1);
     // }
     // else this.sendError('', 1);
+    this.sendError('', 1);
     this.checkMinMax()
   }
 
   recurChange(event) {
-    if(event.error)
-      this.sendError(`Recursion rule warning: ${event.error}`, 2)
-    else this.sendError('', 2);
     this.recursionRuleChange.emit(event.value);
+
+    if(event.error)
+      this.sendError(`Recursion rule warning: ${event.error}`, 2);
+    else
+      this.sendError('', 2);
   }
 
   checkMinMax() {
