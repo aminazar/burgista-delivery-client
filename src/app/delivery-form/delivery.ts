@@ -6,6 +6,8 @@ export class Delivery{
   productCode: string;
   productName: string;
   realDelivery: number = 0;
+  minDelivery: number = 0;
+  maxDelivery: number = 0;
   min: number;
   max: number;
   stock: number;

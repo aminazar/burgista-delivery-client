@@ -40,6 +40,13 @@
                   <md-grid-tile [colspan]="1" [rowspan]="1">{{delItem.max}}</md-grid-tile>
                 </div>
               </md-grid-list>
+              <md-grid-list cols="6" rowHeight="50px">
+                <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
+                <md-grid-tile [colspan]="2" [rowspan]="1">Sum</md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1">{{receiversSumDeliveries['All'].realDelivery}}</md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1">{{receiversSumDeliveries['All'].min}}</md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1">{{receiversSumDeliveries['All'].max}}</md-grid-tile>
+              </md-grid-list>
             </md-card-content>
           </md-card>
         </md-card-content>
@@ -68,17 +75,19 @@
         <md-card-content>
           <md-card>
             <md-card-content>
-              <md-grid-list cols="8" rowHeight="50px">
+              <md-grid-list cols="10" rowHeight="50px">
                 <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
                 <md-grid-tile class="deliveryItem" [colspan]="1" [rowspan]="1">Code</md-grid-tile>
                 <md-grid-tile class="deliveryItem" [colspan]="1" [rowspan]="1">Product</md-grid-tile>
-                <md-grid-tile class="deliveryItem" [colspan]="1" [rowspan]="1">RealDelivery</md-grid-tile>
+                <md-grid-tile class="deliveryItem" [colspan]="1" [rowspan]="1">Real Delivery</md-grid-tile>
+                <md-grid-tile class="deliveryItem" [colspan]="1" [rowspan]="1">Max Delivery</md-grid-tile>
+                <md-grid-tile class="deliveryItem" [colspan]="1" [rowspan]="1">Min Delivery</md-grid-tile>
                 <md-grid-tile [colspan]="1" [rowspan]="1">Min</md-grid-tile>
                 <md-grid-tile [colspan]="1" [rowspan]="1">Max</md-grid-tile>
                 <md-grid-tile [colspan]="1" [rowspan]="1">Stock</md-grid-tile>
                 <md-grid-tile [colspan]="1" [rowspan]="1">Stock Date</md-grid-tile>
               </md-grid-list>
-              <md-grid-list cols="8" rowHeight="50px">
+              <md-grid-list cols="10" rowHeight="50px">
                 <div *ngFor="let delItem of receiversDeliveryModels[rcv.name]._deliveries">
                   <md-grid-tile [colspan]="1" [rowspan]="1" *ngIf="delItem.id !== null && delItem.state !== 'added'"></md-grid-tile>
                   <md-grid-tile [colspan]="1" [rowspan]="1" *ngIf="delItem.id === null && !receiversDeliveryModels[rcv.name]._isPrinted">
@@ -108,6 +117,10 @@
                     </md-input-container>
                   </md-grid-tile>
                   <md-grid-tile [colspan]="1" [rowspan]="1"
+                                [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.minDelivery}}</md-grid-tile>
+                  <md-grid-tile [colspan]="1" [rowspan]="1"
+                                [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.maxDelivery}}</md-grid-tile>
+                  <md-grid-tile [colspan]="1" [rowspan]="1"
                                 [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.min}}</md-grid-tile>
                   <md-grid-tile [colspan]="1" [rowspan]="1"
                                 [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.max}}</md-grid-tile>
@@ -117,7 +130,18 @@
                                 [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.stockDate | date: 'dd MMM yy'}}</md-grid-tile>
                 </div>
               </md-grid-list>
-              <md-grid-list cols="8" rowHeight="50px"
+              <md-grid-list cols="10" rowHeight="50px">
+                <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
+                <md-grid-tile class="deliveryItem" [colspan]="2" [rowspan]="1">Sum</md-grid-tile>
+                <md-grid-tile class="deliveryItem" [colspan]="1" [rowspan]="1">{{receiversSumDeliveries[rcv.name].realDelivery}}</md-grid-tile>
+                <md-grid-tile class="deliveryItem" [colspan]="1" [rowspan]="1">{{receiversSumDeliveries[rcv.name].minDelivery}}</md-grid-tile>
+                <md-grid-tile class="deliveryItem" [colspan]="1" [rowspan]="1">{{receiversSumDeliveries[rcv.name].maxDelivery}}</md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1">{{receiversSumDeliveries[rcv.name].min}}</md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1">{{receiversSumDeliveries[rcv.name].max}}</md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1">{{receiversSumDeliveries[rcv.name].stock}}</md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1">-</md-grid-tile>
+              </md-grid-list>
+              <md-grid-list cols="10" rowHeight="50px"
                             *ngIf="isToday && !overallDeliveryModel._isPrinted && !receiversDeliveryModels[rcv.name]._shouldDisabled && productsList[rcv.name] !== undefined && productsList[rcv.name].length > 0">
                 <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
                 <md-grid-tile class="deliveryItem" [colspan]="2" [rowspan]="1">
@@ -131,6 +155,8 @@
                     </md-autocomplete>
                   </md-input-container>
                 </md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
+                <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
                 <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
                 <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
                 <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
