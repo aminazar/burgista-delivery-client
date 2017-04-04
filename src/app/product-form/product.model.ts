@@ -34,16 +34,27 @@ export class ProductModel {
   }
 
   isDifferent(product: Product) : boolean {
+    let isDiff: boolean = false;
+    let isNull: boolean = false;
+
     for(let prop in product){
       if(prop === 'coefficients'){
         for(let day in product.coefficients){
+          if(product.coefficients[day] === null)
+            isNull = true;
           if(this._product.coefficients[day] !== product.coefficients[day])
-            return true;
+            isDiff = true;
         }
       }
-      else if(this._product[prop] !== product[prop])
-        return true;
+      else{
+        if(product[prop] === null)
+          isNull = true;
+        if(this._product[prop] !== product[prop])
+          isDiff = true;
+      }
     }
+
+    return (isDiff && !isNull);
   }
 
   getDifferentValues(product: Product){
