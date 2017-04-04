@@ -52,14 +52,27 @@ export class AuthService {
     this.userType = data.userType;
     this.authStream.next(true);
 
-    let url = this.originBeforeLogin;
+    let url: string = this.originBeforeLogin;
+
     if(url !== null && url !== '/'){
-      if(this.userType === 'branch' && url === 'delivery')
-        this.router.navigate(['inventory']);
-      else if(this.userType === 'prep' && url === 'inventory')
-        this.router.navigate(['delivery']);
-      else
-        this.router.navigate([url]);
+      if(this.userType === 'branch'){
+        if(url.indexOf('inventory') !== -1 || url.indexOf('override') !== -1)
+          this.router.navigate([url]);
+        else
+          this.router.navigate(['inventory']);
+      }
+      else if(this.userType === 'prep'){
+        if(url.indexOf('delivery') !== -1)
+          this.router.navigate([url]);
+        else
+          this.router.navigate(['delivery']);
+      }
+      else if(this.userType === 'admin'){
+        if(url.indexOf('units') !== -1 || url.indexOf('products') !== -1 || url.indexOf('override') !== -1)
+          this.router.navigate([url]);
+        else
+          this.router.navigate(['']);
+      }
     }
     else{
       if(this.userType === 'branch')
