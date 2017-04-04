@@ -74,6 +74,7 @@ export class DeliveryFormComponent implements OnInit {
     tempAllDelivery.max = 0;
     tempAllDelivery.minDelivery = 0;
     tempAllDelivery.maxDelivery = 0;
+    tempAllDelivery.stock = 0;
     this.receiversSumDeliveries = {All: tempAllDelivery};
     this.receivers = [];
 
@@ -122,7 +123,9 @@ export class DeliveryFormComponent implements OnInit {
           tempDelivery.min = foundProduct.minQty;
           tempDelivery.max = foundProduct.maxQty;
           tempDelivery.realDelivery = null;
-          tempDelivery.stock = null;
+          tempDelivery.stock = 0;
+          tempDelivery.minDelivery = (tempDelivery.min - tempDelivery.stock) < 0 ? 0 : (tempDelivery.min - tempDelivery.stock);
+          tempDelivery.maxDelivery = tempDelivery.max - tempDelivery.stock;
           tempDelivery.stockDate = this.currentDate;
 
           this.receiversDeliveryModels[this.receiverName].add(tempDelivery);
@@ -139,6 +142,9 @@ export class DeliveryFormComponent implements OnInit {
           this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'min', tempDelivery.min);
           this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'max', tempDelivery.max);
           this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'realDelivery', tempDelivery.realDelivery);
+          this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'minDelivery', tempDelivery.minDelivery);
+          this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'maxDelivery', tempDelivery.maxDelivery);
+          this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'stock', tempDelivery.stock);
 
           //Change deliverModel._isSubmitted to false
           this.receiversDeliveryModels[this.receiverName]._isSubmitted = false;
@@ -174,6 +180,9 @@ export class DeliveryFormComponent implements OnInit {
       this.updateOverallDelivery(item.productCode, item, 'sub', 'min', item.min);
       this.updateOverallDelivery(item.productCode, item, 'sub', 'max', item.max);
       this.updateOverallDelivery(item.productCode, item, 'sub', 'realDelivery', item.realDelivery);
+      this.updateOverallDelivery(item.productCode, item, 'sub', 'minDelivery', item.minDelivery);
+      this.updateOverallDelivery(item.productCode, item, 'sub', 'maxDelivery', item.maxDelivery);
+      this.updateOverallDelivery(item.productCode, item, 'sub', 'stock', item.stock);
 
       this.receiversDeliveryModels[this.receiverName].deleteByCode(item.productCode);
       this.calSumRow(this.receiverName, item, 'sub');
@@ -201,8 +210,8 @@ export class DeliveryFormComponent implements OnInit {
 
     if(value < deliveryItem.min)
       this.msgService.warn("The 'Real Delivery' value is less than 'Min' value");
-    else if(value > deliveryItem.min)
-      this.msgService.warn("The 'Real Delivery' value is greater than 'Min' value");
+    else if(value > deliveryItem.maxDelivery)
+      this.msgService.warn("The 'Real Delivery' value is greater than 'Max Delivery' value");
 
     //Should update realDelivery on overallDeliveryModel
     this.updateOverallDelivery(deliveryItem.productCode, deliveryItem, 'add', 'realDelivery', (value - deliveryItem.realDelivery));
@@ -236,6 +245,12 @@ export class DeliveryFormComponent implements OnInit {
         case 'max': this.overallDeliveryModel.updateDeliveryProperty(action, code, 'max', changedValue);
           break;
         case 'realDelivery': this.overallDeliveryModel.updateDeliveryProperty(action, code, 'realDelivery', changedValue);
+          break;
+        case 'minDelivery': this.overallDeliveryModel.updateDeliveryProperty(action, code, 'minDelivery', changedValue);
+          break;
+        case 'maxDelivery': this.overallDeliveryModel.updateDeliveryProperty(action, code, 'maxDelivery', changedValue);
+          break;
+        case 'stock': this.overallDeliveryModel.updateDeliveryProperty(action, code, 'stock', changedValue);
           break;
       }
     }
@@ -468,12 +483,12 @@ export class DeliveryFormComponent implements OnInit {
               tempDelivery.id = item.id;
               tempDelivery.productCode = item.productCode;
               tempDelivery.productName = item.productName;
-              tempDelivery.realDelivery = item.stock;
+              tempDelivery.realDelivery = (item.min - item.stock) < 0 ? 0 : (item.min - item.stock);
               tempDelivery.minDelivery = (item.min - item.stock) < 0 ? 0 : (item.min - item.stock);
               tempDelivery.maxDelivery = item.max - item.stock;
               tempDelivery.min = item.min;
               tempDelivery.max = item.max;
-              tempDelivery.stock = item.stock;
+              tempDelivery.stock = (item.stock === null) ? 0 : item.stock;
               tempDelivery.isPrinted = item.isPrinted;
               if(item.stockDate === null)
                 tempDelivery.stockDate = this.selectedDate;
@@ -486,9 +501,17 @@ export class DeliveryFormComponent implements OnInit {
               this.calSumRow('All', tempDelivery, 'add');
 
               //Update overall list
-              this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'min', tempDelivery.min);
-              this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'max', tempDelivery.max);
-              this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'realDelivery', tempDelivery.realDelivery);
+              if(this.overallDeliveryModel.getByCode(item.productCode) === undefined){          //Should add a product
+                this.overallDeliveryModel.add(tempDelivery);
+              }
+              else{
+                this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'min', tempDelivery.min);
+                this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'max', tempDelivery.max);
+                this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'realDelivery', tempDelivery.realDelivery);
+                this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'minDelivery', tempDelivery.minDelivery);
+                this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'maxDelivery', tempDelivery.maxDelivery);
+                this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'stock', tempDelivery.stock);
+              }
             }
           }
 
