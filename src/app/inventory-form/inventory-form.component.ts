@@ -316,4 +316,8 @@ export class InventoryFormComponent implements OnInit {
 
     this.submitShouldDisabled = noValue;
   }
+
+  showProductList(){
+    this.productNameCodeCtrl.setValue('');
+  }
 }
