@@ -84,8 +84,18 @@
       <template md-tab-label *ngIf="rcv.warn === 'no'">
         {{rcv.name}}
       </template>
+      <div *ngIf="isWaiting[rcv.name]" class="waiting">
+        <div class="flex-container waiting" fxLayout="row" fxLayoutAlign="center center">
+          <div class="flex-item" fxFlex="33"></div>
+          <div class="flex-item" fxFlx="33">
+            <i style="color: white !important;" class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>
+            <span class="sr-only">Loading...</span>
+          </div>
+          <div class="flex-item" fxFlex="33"></div>
+        </div>
+      </div>
       <md-card class="innerCard"
-               *ngIf="receiversDeliveryModels[rcv.name] !== undefined && receiversDeliveryModels[rcv.name] !== null">
+               *ngIf="!isWaiting[rcv.name] && receiversDeliveryModels[rcv.name] !== undefined && receiversDeliveryModels[rcv.name] !== null">
         <md-card-title>To Do: Delivery</md-card-title>
         <md-card-content>
           <md-card style="min-width: 600px !important; overflow-x: auto;">

@@ -40,6 +40,7 @@ import {BehaviorSubject} from "rxjs";
 export class DeliveryFormComponent implements OnInit {
   // @ViewChild('autoNameCode') autoNameCode;
 
+  isWaiting: any = {};
   unitName: string;
   receiverName: string = 'All';
   selectedDate: Date;
@@ -89,6 +90,7 @@ export class DeliveryFormComponent implements OnInit {
           };
 
           this.receivers.push(obj);
+          this.isWaiting[obj.name] = false;
         }
 
         //Get product items from server for each receiver (branch)
@@ -438,9 +440,13 @@ export class DeliveryFormComponent implements OnInit {
     for(let rcv of this.receivers){
       rcv.warn = 'no';
 
+      //Turn on waiting (Show spinner)
+      this.isWaiting[rcv.name] = true;
+
       this.restService.get('delivery/' + dateParam + '/' + rcv.id).subscribe(
         (data) => {
-          console.log(data);
+          // console.log(data);
+          this.isWaiting[rcv.name] = false;
           this.productsList[rcv.name] = [];
 
           this.receiversDeliveryModels[rcv.name] = new DeliveryModel(rcv.name);
@@ -523,7 +529,6 @@ export class DeliveryFormComponent implements OnInit {
             // rcv.warn = 'login';
           }
 
-
           if(this.receiversDeliveryModels[rcv.name]._isPrinted)
             this.receiversDeliveryModels[rcv.name]._isSubmitted = true;
 
@@ -548,6 +553,7 @@ export class DeliveryFormComponent implements OnInit {
           })
         },
         (err) => {
+          this.isWaiting[rcv.name] = false;
           console.log(err.message);
         }
       )
