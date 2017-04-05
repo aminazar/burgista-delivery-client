@@ -37,11 +37,7 @@
                     </td>
                     <td>{{delItem.productCode}}</td>
                     <td>{{delItem.productName}}</td>
-                    <td>
-                      <md-input-container>
-                        <input mdInput type="number" disabled="disabled" placeholder="Real Delivery" [(ngModel)]="delItem.realDelivery"/>
-                      </md-input-container>
-                    </td>
+                    <td>{{delItem.realDelivery}}</td>
                     <td *ngIf="delItem.minDelivery !== null">{{delItem.minDelivery}}</td>
                     <td *ngIf="delItem.minDelivery === null"><i class="fa fa-question warnColoring" aria-hidden="true"></i></td>
                     <td *ngIf="delItem.maxDelivery !== null">{{delItem.maxDelivery}}</td>
@@ -147,7 +143,7 @@
                     <md-input-container>
                       <input mdInput type="number"
                              min="0"
-                             [ngClass]="[((delItem.minDelivery > delItem.realDelivery || delItem.maxDelivery < delItem.realDelivery ) && isToday) ? 'notEqualValues' : 'equalValues']"
+                             [ngClass]="[(rcv.warn ||((delItem.minDelivery > delItem.realDelivery || delItem.maxDelivery < delItem.realDelivery ) && isToday)) ? 'notEqualValues' : 'equalValues']"
                              [(disabled)]="!isToday || overallDeliveryModel._isPrinted || receiversDeliveryModels[rcv.name]._shouldDisabled"
                              placeholder="Real Delivery"
                              [ngModel]="delItem.realDelivery"
