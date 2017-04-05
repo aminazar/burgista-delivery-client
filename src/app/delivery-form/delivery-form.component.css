@@ -12,3 +12,9 @@
 .normalColoring{
   color: black;
 }
+
+.waiting{
+  margin-top: 60px !important;
+  margin-bottom: 60px !important;
+  align-content: center !important;
+}
