@@ -18,3 +18,9 @@
   margin-bottom: 60px !important;
   align-content: center !important;
 }
+
+.waitingMessage{
+  color: white;
+  font-weight: bold;
+  text-align: center;
+}
