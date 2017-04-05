@@ -42,11 +42,14 @@
                         <input mdInput type="number" disabled="disabled" placeholder="Real Delivery" [(ngModel)]="delItem.realDelivery"/>
                       </md-input-container>
                     </td>
-                    <td>{{delItem.minDelivery}}</td>
-                    <td>{{delItem.maxDelivery}}</td>
+                    <td *ngIf="delItem.minDelivery !== null">{{delItem.minDelivery}}</td>
+                    <td *ngIf="delItem.minDelivery === null"><i class="fa fa-question warnColoring" aria-hidden="true"></i></td>
+                    <td *ngIf="delItem.maxDelivery !== null">{{delItem.maxDelivery}}</td>
+                    <td *ngIf="delItem.maxDelivery === null"><i class="fa fa-question warnColoring" aria-hidden="true"></i></td>
                     <td>{{delItem.min}}</td>
                     <td>{{delItem.max}}</td>
-                    <td>{{delItem.stock}}</td>
+                    <td *ngIf="delItem.stock !== null">{{delItem.stock}}</td>
+                    <td *ngIf="delItem.stock === null"><i class="fa fa-question warnColoring" aria-hidden="true"></i></td>
                 </tr>
                   <br/>
                   <br/>
@@ -54,11 +57,14 @@
                     <td></td>
                     <td colspan="2">Sum</td>
                     <td>{{receiversSumDeliveries['All'].realDelivery}}</td>
-                    <td>{{receiversSumDeliveries['All'].minDelivery}}</td>
-                    <td>{{receiversSumDeliveries['All'].maxDelivery}}</td>
+                    <td *ngIf="receiversSumDeliveries['All'].minDelivery !== null">{{receiversSumDeliveries['All'].minDelivery}}</td>
+                    <td *ngIf="receiversSumDeliveries['All'].minDelivery === null"><i class="fa fa-question warnColoring" aria-hidden="true"></i></td>
+                    <td *ngIf="receiversSumDeliveries['All'].maxDelivery !== null">{{receiversSumDeliveries['All'].maxDelivery}}</td>
+                    <td *ngIf="receiversSumDeliveries['All'].maxDelivery === null"><i class="fa fa-question warnColoring" aria-hidden="true"></i></td>
                     <td>{{receiversSumDeliveries['All'].min}}</td>
                     <td>{{receiversSumDeliveries['All'].max}}</td>
-                    <td>{{receiversSumDeliveries['All'].stock}}</td>
+                    <td *ngIf="receiversSumDeliveries['All'].stock !== null">{{receiversSumDeliveries['All'].stock}}</td>
+                    <td *ngIf="receiversSumDeliveries['All'].stock === null"><i class="fa fa-question warnColoring" aria-hidden="true"></i></td>
                   </tr>
                 </tbody>
               </table>
@@ -141,20 +147,28 @@
                     <md-input-container>
                       <input mdInput type="number"
                              min="0"
-                             [ngClass]="[((delItem.min > delItem.realDelivery || delItem.maxDelivery < delItem.realDelivery ) && isToday) ? 'notEqualValues' : 'equalValues']"
+                             [ngClass]="[((delItem.minDelivery > delItem.realDelivery || delItem.maxDelivery < delItem.realDelivery ) && isToday) ? 'notEqualValues' : 'equalValues']"
                              [(disabled)]="!isToday || overallDeliveryModel._isPrinted || receiversDeliveryModels[rcv.name]._shouldDisabled"
                              placeholder="Real Delivery"
                              [ngModel]="delItem.realDelivery"
                              (change)="checkRealDeliveryValue($event, delItem)"/>
                     </md-input-container>
                   </td>
-                  <td class="column"
+                  <td class="column" *ngIf="delItem.stock !== null"
                       [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
                     {{delItem.minDelivery}}
                   </td>
-                  <td class="column"
+                  <td class="column" *ngIf="delItem.stock === null"
+                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                    <i class="fa fa-question warnColoring" aria-hidden="true"></i>
+                  </td>
+                  <td class="column" *ngIf="delItem.stock !== null"
                       [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
                     {{delItem.maxDelivery}}
+                  </td>
+                  <td class="column" *ngIf="delItem.stock === null"
+                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                    <i class="fa fa-question warnColoring" aria-hidden="true"></i>
                   </td>
                   <td class="column"
                       [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.min}}
@@ -162,9 +176,13 @@
                   <td class="column"
                       [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.max}}
                   </td>
-                  <td class="column"
+                  <td class="column" *ngIf="delItem.stock !== null"
                       [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
                     {{delItem.stock}}
+                  </td>
+                  <td class="column" *ngIf="delItem.stock === null"
+                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                    <i class="fa fa-question warnColoring" aria-hidden="true"></i>
                   </td>
                   <td style="min-width: 80px !important;" class="column"
                       [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
@@ -175,13 +193,28 @@
                 <br/>
                 <tr>
                   <td class="buttonItem"></td>
-                  <td class="codeItem" colspan="2">Sum</td>
-                  <td class="nameItem">{{receiversSumDeliveries[rcv.name].realDelivery}}</td>
-                  <td class="inputItem">{{receiversSumDeliveries[rcv.name].minDelivery}}</td>
-                  <td class="column">{{receiversSumDeliveries[rcv.name].maxDelivery}}</td>
+                  <td class="nameItem" colspan="2">Sum</td>
+                  <td class="inputItem">{{receiversSumDeliveries[rcv.name].realDelivery}}</td>
+                  <td class="column" *ngIf="!rcv.warn">
+                    {{receiversSumDeliveries[rcv.name].minDelivery}}
+                  </td>
+                  <td class="column" *ngIf="rcv.warn">
+                    <i class="fa fa-question warnColoring" aria-hidden="true"></i>
+                  </td>
+                  <td class="column" *ngIf="!rcv.warn">
+                    {{receiversSumDeliveries[rcv.name].maxDelivery}}
+                  </td>
+                  <td class="column" *ngIf="rcv.warn">
+                    <i class="fa fa-question warnColoring" aria-hidden="true"></i>
+                  </td>
                   <td class="column">{{receiversSumDeliveries[rcv.name].min}}</td>
                   <td class="column">{{receiversSumDeliveries[rcv.name].max}}</td>
-                  <td class="column">{{receiversSumDeliveries[rcv.name].stock}}</td>
+                  <td class="column" *ngIf="!rcv.warn">
+                    {{receiversSumDeliveries[rcv.name].stock}}
+                  </td>
+                  <td class="column" *ngIf="rcv.warn">
+                    <i class="fa fa-question warnColoring" aria-hidden="true"></i>
+                  </td>
                   <td style="min-width: 80px !important;" class="column">-</td>
                 </tr>
                 <tr

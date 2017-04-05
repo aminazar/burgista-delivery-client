@@ -248,11 +248,26 @@ export class DeliveryFormComponent implements OnInit {
           break;
         case 'realDelivery': this.overallDeliveryModel.updateDeliveryProperty(action, code, 'realDelivery', changedValue);
           break;
-        case 'minDelivery': this.overallDeliveryModel.updateDeliveryProperty(action, code, 'minDelivery', changedValue);
+        case 'minDelivery': {
+          if(delivery.stock === null)
+            changedValue = null;
+
+          this.overallDeliveryModel.updateDeliveryProperty(action, code, 'minDelivery', changedValue);
+        }
           break;
-        case 'maxDelivery': this.overallDeliveryModel.updateDeliveryProperty(action, code, 'maxDelivery', changedValue);
+        case 'maxDelivery': {
+          if(delivery.stock === null)
+            changedValue = null;
+
+          this.overallDeliveryModel.updateDeliveryProperty(action, code, 'maxDelivery', changedValue);
+        }
           break;
-        case 'stock': this.overallDeliveryModel.updateDeliveryProperty(action, code, 'stock', changedValue);
+        case 'stock': {
+          if(delivery.stock === null)
+            changedValue = null;
+
+          this.overallDeliveryModel.updateDeliveryProperty(action, code, 'stock', changedValue);
+        }
           break;
       }
     }
@@ -489,12 +504,15 @@ export class DeliveryFormComponent implements OnInit {
               tempDelivery.id = item.id;
               tempDelivery.productCode = item.productCode;
               tempDelivery.productName = item.productName;
-              tempDelivery.realDelivery = (item.min - item.stock) < 0 ? 0 : (item.min - item.stock);
+              if(item.stock === null)
+                tempDelivery.realDelivery = null;
+              else
+                tempDelivery.realDelivery = (item.min - item.stock) < 0 ? 0 : (item.min - item.stock);
               tempDelivery.minDelivery = (item.min - item.stock) < 0 ? 0 : (item.min - item.stock);
               tempDelivery.maxDelivery = item.max - item.stock;
               tempDelivery.min = item.min;
               tempDelivery.max = item.max;
-              tempDelivery.stock = (item.stock === null) ? 0 : item.stock;
+              tempDelivery.stock = item.stock;
               tempDelivery.isPrinted = item.isPrinted;
               if(item.stockDate === null)
                 tempDelivery.stockDate = this.selectedDate;
@@ -574,10 +592,19 @@ export class DeliveryFormComponent implements OnInit {
     if(operation === 'add'){
       this.receiversSumDeliveries[rcvName].min += delivery.min;
       this.receiversSumDeliveries[rcvName].max += delivery.max;
-      this.receiversSumDeliveries[rcvName].minDelivery += delivery.minDelivery;
-      this.receiversSumDeliveries[rcvName].maxDelivery += delivery.maxDelivery;
+      if(delivery.stock === null)
+        this.receiversSumDeliveries[rcvName].minDelivery = null;
+      else
+        this.receiversSumDeliveries[rcvName].minDelivery += delivery.minDelivery;
+      if(delivery.stock === null)
+        this.receiversSumDeliveries[rcvName].maxDelivery = null;
+      else
+        this.receiversSumDeliveries[rcvName].maxDelivery += delivery.maxDelivery;
       this.receiversSumDeliveries[rcvName].realDelivery += delivery.realDelivery;
-      this.receiversSumDeliveries[rcvName].stock += delivery.stock;
+      if(delivery.stock === null)
+        this.receiversSumDeliveries[rcvName].stock = null;
+      else
+        this.receiversSumDeliveries[rcvName].stock += (delivery.stock === null) ? 0 : delivery.stock;
     }
     else{
       this.receiversSumDeliveries[rcvName].min -= delivery.min;
@@ -585,7 +612,7 @@ export class DeliveryFormComponent implements OnInit {
       this.receiversSumDeliveries[rcvName].minDelivery -= delivery.minDelivery;
       this.receiversSumDeliveries[rcvName].maxDelivery -= delivery.maxDelivery;
       this.receiversSumDeliveries[rcvName].realDelivery -= delivery.realDelivery;
-      this.receiversSumDeliveries[rcvName].stock -= delivery.stock;
+      this.receiversSumDeliveries[rcvName].stock -= (delivery.stock === null) ? 0 : delivery.stock;
     }
   }
 }
