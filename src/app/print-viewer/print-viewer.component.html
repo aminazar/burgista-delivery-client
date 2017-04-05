@@ -5,54 +5,54 @@
 <div class="title" style="font-weight: bold">{{unitName_subTitle}} Delivery Note</div>
 
 <div *ngIf="!isOverallPrint">
-  <div class="titleBox">
-    <md-grid-list [cols]="7" rowHeight="50px">
-      <md-grid-tile [colspan]="1" [rowspan]="1">#</md-grid-tile>
-      <md-grid-tile [colspan]="1" [rowspan]="1">Product Code</md-grid-tile>
-      <md-grid-tile [colspan]="1" [rowspan]="1">Product Name</md-grid-tile>
-      <md-grid-tile [colspan]="1" [rowspan]="1">Real Delivery</md-grid-tile>
-      <md-grid-tile [colspan]="1" [rowspan]="1">Current Stock</md-grid-tile>
-      <md-grid-tile [colspan]="1" [rowspan]="1">Stock After Delivery</md-grid-tile>
-      <md-grid-tile [colspan]="1" [rowspan]="1">Stock surplus/deficit</md-grid-tile>
-    </md-grid-list>
-  </div>
-  <div>
-    <md-grid-list [cols]="7" rowHeight="50px">
-      <div *ngFor="let item of itemList">
-        <md-grid-tile class="box" [colspan]="1" [rowspan]="1">{{item.rowNum}}</md-grid-tile>
-        <md-grid-tile class="box" [colspan]="1" [rowspan]="1">{{item.productCode}}</md-grid-tile>
-        <md-grid-tile class="box" [colspan]="1" [rowspan]="1">{{item.productName}}</md-grid-tile>
-        <md-grid-tile class="box" [colspan]="1" [rowspan]="1">{{item.realDelivery}}</md-grid-tile>
-        <md-grid-tile class="box" [colspan]="1" [rowspan]="1">{{item.currentStock}}</md-grid-tile>
-        <md-grid-tile class="box" [colspan]="1" [rowspan]="1">{{item.stockAfterDelivery}}</md-grid-tile>
-        <md-grid-tile class="box" [colspan]="1" [rowspan]="1">{{item.stockSurplusDeficit}}</md-grid-tile>
-      </div>
-    </md-grid-list>
-  </div>
+  <table class="table">
+    <thead class="titleBox">
+      <tr>
+      <td>#</td>
+      <td>Product Code</td>
+      <td>Product Name</td>
+      <td>Real Delivery</td>
+      <td>Current Stock</td>
+      <td>Stock After Delivery</td>
+      <td>Stock surplus/deficit</td>
+    </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of itemList">
+      <td class="box">{{item.rowNum}}</td>
+      <td class="box">{{item.productCode}}</td>
+      <td class="box">{{item.productName}}</td>
+      <td class="box">{{item.realDelivery}}</td>
+      <td class="box">{{item.currentStock}}</td>
+      <td class="box">{{item.stockAfterDelivery}}</td>
+      <td class="box">{{item.stockSurplusDeficit}}</td>
+    </tr>
+    </tbody>
+  </table>
 </div>
 <div *ngIf="isOverallPrint">
-  <div class="titleBox">
-    <md-grid-list [cols]="5 + receivers.length" rowHeight="50px">
-      <md-grid-tile [colspan]="1" [rowspan]="1">#</md-grid-tile>
-      <md-grid-tile [colspan]="1" [rowspan]="1">Product Code</md-grid-tile>
-      <md-grid-tile [colspan]="1" [rowspan]="1">Product Name</md-grid-tile>
-      <md-grid-tile [colspan]="1" [rowspan]="1">Total Delivery</md-grid-tile>
-      <md-grid-tile [colspan]="1" [rowspan]="1" *ngFor="let rcvName of receivers">{{rcvName}}</md-grid-tile>
-      <md-grid-tile [colspan]="1" [rowspan]="1">TotalStock surplus/deficit</md-grid-tile>
-    </md-grid-list>
-  </div>
-  <div>
-    <md-grid-list [cols]="5 + receivers.length" rowHeight="50px">
-      <div *ngFor="let item of itemList">
-        <md-grid-tile class="box" [colspan]="1" [rowspan]="1">{{item.rowNum}}</md-grid-tile>
-        <md-grid-tile class="box" [colspan]="1" [rowspan]="1">{{item.productCode}}</md-grid-tile>
-        <md-grid-tile class="box" [colspan]="1" [rowspan]="1">{{item.productName}}</md-grid-tile>
-        <md-grid-tile class="box" [colspan]="1" [rowspan]="1">{{item.totalDelivery}}</md-grid-tile>
-        <md-grid-tile class="box" [colspan]="1" [rowspan]="1" *ngFor="let rcvName of receivers">{{item[rcvName]}}</md-grid-tile>
-        <md-grid-tile class="box" [colspan]="1" [rowspan]="1">{{item.totalStockSurplusDeficit}}</md-grid-tile>
-      </div>
-    </md-grid-list>
-  </div>
+  <table class="table">
+    <thead class="titleBox">
+      <tr>
+        <td>#</td>
+        <td>Product Code</td>
+        <td>Product Name</td>
+        <td>Total Delivery</td>
+        <td *ngFor="let rcvName of receivers">{{rcvName}}</td>
+        <td>Total Stock surplus/deficit</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of itemList">
+        <td class="box">{{item.rowNum}}</td>
+        <td class="box">{{item.productCode}}</td>
+        <td class="box">{{item.productName}}</td>
+        <td class="box">{{item.totalDelivery}}</td>
+        <td class="box" *ngFor="let rcvName of receivers">{{item[rcvName]}}</td>
+        <td class="box">{{item.totalStockSurplusDeficit}}</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 <br/>
 <div style="color: darkred" *ngIf="showWarningMessage">
