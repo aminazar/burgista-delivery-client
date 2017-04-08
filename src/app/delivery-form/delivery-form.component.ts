@@ -286,7 +286,7 @@ export class DeliveryFormComponent implements OnInit {
   }
 
   filterProducts(val: string) {
-    return val ? this.productName_Code[this.receiverName].filter((p) => new RegExp(val, 'gi').test(p)) : this.productName_Code[this.receiverName];
+    return val ? this.productName_Code[this.receiverName].filter((p) => new RegExp(val.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'gi').test(p)) : this.productName_Code[this.receiverName];
   }
 
   checkRealDeliveryValue(event, deliveryItem: Delivery){
@@ -298,7 +298,7 @@ export class DeliveryFormComponent implements OnInit {
       return;
     }
 
-    if(value < deliveryItem.min)
+    if(value < deliveryItem.minDelivery)
       this.msgService.warn("The 'Real Delivery' value is less than 'Min' value");
     else if(value > deliveryItem.maxDelivery)
       this.msgService.warn("The 'Real Delivery' value is greater than 'Max Delivery' value");
@@ -596,8 +596,10 @@ export class DeliveryFormComponent implements OnInit {
               tempDelivery.productName = item.productName;
               if(item.stock === null)
                 tempDelivery.realDelivery = null;
+              else if(item.realDelivery ===null)
+                tempDelivery.realDelivery = (item.max - item.stock) < 0 ? 0 : (item.max - item.stock);
               else
-                tempDelivery.realDelivery = (item.min - item.stock) < 0 ? 0 : (item.min - item.stock);
+                tempDelivery.realDelivery = item.realDelivery;
               tempDelivery.minDelivery = (item.min - item.stock) < 0 ? 0 : (item.min - item.stock);
               tempDelivery.maxDelivery = item.max - item.stock;
               tempDelivery.min = item.min;
