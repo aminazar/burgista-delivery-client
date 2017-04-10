@@ -129,7 +129,7 @@ export class DeliveryFormComponent implements OnInit {
           tempDelivery.stock = 0;
           tempDelivery.minDelivery = (tempDelivery.min - tempDelivery.stock) < 0 ? 0 : (tempDelivery.min - tempDelivery.stock);
           tempDelivery.maxDelivery = tempDelivery.max - tempDelivery.stock;
-          tempDelivery.stockDate = this.currentDate;
+          tempDelivery.stockDate = moment(tempDelivery.stockDate).format('dd MMM YY');
 
           this.receiversDeliveryModels[this.receiverName].add(tempDelivery);
           this.calSumRow(this.receiverName, tempDelivery, 'add');
@@ -382,15 +382,11 @@ export class DeliveryFormComponent implements OnInit {
     })
   }
 
-  countToday(stockDate: Date){
+  countToday(stockDate: string){
     if(stockDate === null)
-      return true;
+      return false;
 
-    if(stockDate.getFullYear() !== this.currentDate.getFullYear())
-      return false;
-    else if(stockDate.getMonth() !== this.currentDate.getMonth())
-      return false;
-    else if(stockDate.getDate() !== this.currentDate.getDate())
+    if(moment(stockDate).format('YYMMDD')!== moment(this.currentDate).format('YYMMDD'))
       return false;
     else
       return true;
@@ -589,7 +585,6 @@ export class DeliveryFormComponent implements OnInit {
               //   rcv.warn = 'count';
 
               //this.receiversDeliveryModels[rcv.name]._isPrinted = item.isPrinted;
-
               let tempDelivery = new Delivery();
               tempDelivery.id = item.id;
               tempDelivery.productCode = item.productCode;
@@ -607,9 +602,9 @@ export class DeliveryFormComponent implements OnInit {
               tempDelivery.stock = item.stock;
               tempDelivery.isPrinted = item.isPrinted;
               if(item.stockDate === null)
-                tempDelivery.stockDate = this.selectedDate;
+                tempDelivery.stockDate = null;
               else
-                tempDelivery.stockDate = moment(item.stockDete).toDate();
+                tempDelivery.stockDate = moment(item.stockDate).format('DD MMM YY');
               tempDelivery.state = 'exist';
 
               this.receiversDeliveryModels[rcv.name].add(tempDelivery);
