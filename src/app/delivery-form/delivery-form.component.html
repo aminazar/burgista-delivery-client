@@ -148,7 +148,7 @@
                       <input mdInput type="number"
                              min="0"
                              [ngClass]="[(rcv.warn ||((delItem.minDelivery > delItem.realDelivery || delItem.maxDelivery < delItem.realDelivery ) && isToday)) ? 'notEqualValues' : 'equalValues']"
-                             [(disabled)]="!isToday || delItem.isPrinted || receiversDeliveryModels[rcv.name]._shouldDisabled"
+                             [(disabled)]="!isToday || delItem.isPrinted"
                              placeholder="Real Delivery"
                              [ngModel]="delItem.realDelivery"
                              (change)="checkRealDeliveryValue($event, delItem)"/>

@@ -589,7 +589,7 @@ export class DeliveryFormComponent implements OnInit {
               tempDelivery.id = item.id;
               tempDelivery.productCode = item.productCode;
               tempDelivery.productName = item.productName;
-              if(item.stock === null)
+              if(item.stock === null && item.realDelivery === null)
                 tempDelivery.realDelivery = null;
               else if(item.realDelivery ===null)
                 tempDelivery.realDelivery = (item.max - item.stock) < 0 ? 0 : (item.max - item.stock);

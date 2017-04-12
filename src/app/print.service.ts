@@ -4,6 +4,7 @@
 import {Injectable, AfterViewInit} from "@angular/core";
 import { WindowRef } from './WindowRef';
 import {MessageService} from "./message.service";
+import * as moment from 'moment';
 
 @Injectable()
 export class PrintService{
@@ -42,7 +43,7 @@ export class PrintService{
       obj['realDelivery'] = item.realDelivery;
       obj['currentStock'] = item.stock;
       obj['stockAfterDelivery'] = item.realDelivery + item.stock;
-      obj['stockSurplusDeficit'] = item.realDelivery - item.min;
+      obj['stockSurplusDeficit'] = item.realDelivery - item.minDelivery;
 
       result.push(obj);
     }
@@ -77,7 +78,7 @@ export class PrintService{
         else {
           obj[rcvName] = tempProduct.realDelivery;
           totalDelivery += tempProduct.realDelivery;
-          totalStockSurplusDeficit += (tempProduct.realDelivery - tempProduct.min);
+          totalStockSurplusDeficit += (tempProduct.realDelivery - tempProduct.minDelivery);
         }
       }
 
@@ -94,27 +95,27 @@ export class PrintService{
     let printContents: string = '';
 
     //Set Title
-    let dateFormatted = this.currentDate.getDate() + " " + this.getMonthName(this.currentDate.getMonth()) + " " + this.currentDate.getFullYear();
-    let header = '<table width="100%">'
-               + '<tr>'
-               + '<td width="70%" style="float: left; text-align: left; vertical-align: top"><label class="title">Burgista Bros - ' + this._unitSupplier + '</label></td>'
-               + '<td width="30%" style="float: right; text-align: right; vertical-align: top"><label class="title">' + dateFormatted + '</label></td>'
-               + '</tr>'
-               + '<tr>'
-               + '<td style="float: left; text-align: left"><label class="subtitle">' + this._unitConsumer + ' Delivery Note</label></td>'
-               + '</tr>'
-               + '</table>';
+    let dateFormatted = moment(this.currentDate).format('ddd D MMM YYYY');
+    let header = `<table width="100%">
+                  <tr>
+                  <td width="70%" style="float: left; text-align: left; vertical-align: top"><label class="title">Burgista Bros - ${this._unitSupplier}</label></td>
+                  <td width="30%" style="float: right; text-align: right; vertical-align: top"><label class="title">${dateFormatted}</label></td>
+                  </tr>
+                  <tr>
+                  <td style="float: left; text-align: left"><label class="subtitle">${this._unitConsumer} Delivery Note</label></td>
+                  </tr>
+                  </table>`;
 
     let contentTable = '';
 
     if(this._isOverallPrint){
-      contentTable = '<table class="table">'
-                   + '<thead>'
-                   + '<tr>'
-                   + '<td>#</td>'
-                   + '<td>Product Code</td>'
-                   + '<td>Product Name</td>'
-                   + '<td>Total Delivery</td>';
+      contentTable = `<table class="table">
+                      <thead>
+                      <tr>
+                      <td>#</td>
+                      <td>Product Code</td>
+                      <td>Product Name</td>
+                      <td>Total Delivery</td>`;
 
       for(let rcvName of this._receivers){
         contentTable += '<td>' + rcvName + '</td>';
@@ -178,26 +179,26 @@ export class PrintService{
     else{
       for(let item of this.getItems()){
         if(item.rowNum % 2 == 1){
-          innerContentTable += '<tr>'
-                            + '<td>' + item.rowNum + '</td>'
-                            + '<td>' + item.productCode + '</td>'
-                            + '<td>' + item.productName + '</td>'
-                            + '<td>' + item.realDelivery + '</td>'
-                            + '<td>' + item.currentStock + '</td>'
-                            + '<td>' + item.stockAfterDelivery + '</td>'
-                            + '<td>' + item.stockSurplusDeficit + '</td>'
-                            + '</tr>';
+          innerContentTable += `<tr>
+                                <td>${item.rowNum}</td>
+                                <td>${item.productCode}</td>
+                                <td>${item.productName}</td>
+                                <td>${item.realDelivery}</td>
+                                <td>${item.currentStock === null ? 'N/A' : item.currentStock}</td>
+                                <td>${item.currentStock === null ? 'N/A' :item.stockAfterDelivery}</td>
+                                <td>${item.currentStock === null ? 'N/A' :item.stockSurplusDeficit}</td>
+                                </tr>`;
         }
         else {
-          innerContentTable += '<tr>'
-                            + '<td class="highlight">' + item.rowNum + '</td>'
-                            + '<td class="highlight">' + item.productCode + '</td>'
-                            + '<td class="highlight">' + item.productName + '</td>'
-                            + '<td class="highlight">' + item.realDelivery + '</td>'
-                            + '<td class="highlight">' + item.currentStock + '</td>'
-                            + '<td class="highlight">' + item.stockAfterDelivery + '</td>'
-                            + '<td class="highlight">' + item.stockSurplusDeficit + '</td>'
-                            + '</tr>';
+          innerContentTable += `<tr>
+                                <td class="highlight">${item.rowNum}</td>
+                                <td class="highlight">${item.productCode}</td>
+                                <td class="highlight">${item.productName}</td>
+                                <td class="highlight">${item.realDelivery}</td>
+                                <td class="highlight">${item.currentStock === null ? 'N/A' : item.currentStock}</td>
+                                <td class="highlight">${item.currentStock === null ? 'N/A' :item.stockAfterDelivery}</td>
+                                <td class="highlight">${item.currentStock === null ? 'N/A' :item.stockSurplusDeficit}</td>
+                                </tr>`;
         }
       }
     }

@@ -195,6 +195,7 @@ export class OverrideFormComponent implements OnInit {
     this.restService.update('override', this.filteredProductModel._product.id + restUrl,
                             ProductModel.toAnyObjectOverride(tempProductModel[0].getDifferentValues(this.filteredProductModel._product))).subscribe(
       (data) => {
+        this.filteredProductModel._product = tempProductModel[0]._product;
         this.filteredProductModel._product.isOverridden = true;
 
         //Update productModels list
@@ -298,16 +299,15 @@ export class OverrideFormComponent implements OnInit {
     this.filteredProductModel = null;
     this.isFiltered = false;
 
-    this.loadBranchProducts();
-
-    if(this.selectedProduct !== null && this.selectedProduct !== ''){
-      this.autoNameCode.value = this.selectedProduct;
-      this.productModelCtrl.setValue(this.selectedProduct);
-      this.isFiltered = true;
-    }
+    this.loadBranchProducts(()=>{
+      if(this.selectedProduct !== null && this.selectedProduct !== ''){
+        this.productModelCtrl.setValue(this.selectedProduct);
+        this.productModelCtrl.markAsTouched();
+      }
+    });
   }
 
-  loadBranchProducts(){
+  loadBranchProducts(callback=()=>{}){
     if(this.isAdmin){
       this.restService.get('override?uid=' + this.branchList[this.selectedIndex].id).subscribe(
         (data) => {
@@ -328,7 +328,7 @@ export class OverrideFormComponent implements OnInit {
           }
 
           this.refreshDropDown();
-
+          callback();
         },
         (err) => {
           console.log(err.message);
