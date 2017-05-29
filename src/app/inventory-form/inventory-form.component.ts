@@ -304,7 +304,11 @@ export class InventoryFormComponent implements OnInit {
     )
   }
 
-  checkDisability(){
+  checkDisability(item){
+    //Check the value to be non negative
+    if(item.unopenedPack < 0)
+      item.unopenedPack = 0;
+
     let noValue: boolean = false;
 
     for(let invItem of this.inventoryModel._inventories){

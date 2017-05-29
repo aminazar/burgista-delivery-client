@@ -201,3 +201,16 @@ a:hover{text-decoration: none;text-weight:bold;}
 .highlight{
   background-color: #adadad !important;
 }
+
+tbody {
+  display:block;
+  overflow:auto;
+}
+thead, tbody tr {
+  display:table;
+  width:100%;
+  table-layout:fixed;
+}
+thead {
+  width: calc( 100% - 1em )
+}
