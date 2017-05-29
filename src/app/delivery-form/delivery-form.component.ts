@@ -129,7 +129,7 @@ export class DeliveryFormComponent implements OnInit {
           tempDelivery.stock = 0;
           tempDelivery.minDelivery = (tempDelivery.min - tempDelivery.stock) < 0 ? 0 : (tempDelivery.min - tempDelivery.stock);
           tempDelivery.maxDelivery = tempDelivery.max - tempDelivery.stock;
-          tempDelivery.stockDate = this.currentDate;
+          tempDelivery.stockDate = moment(tempDelivery.stockDate).format('dd MMM YY');
 
           this.receiversDeliveryModels[this.receiverName].add(tempDelivery);
           this.calSumRow(this.receiverName, tempDelivery, 'add');
@@ -286,7 +286,7 @@ export class DeliveryFormComponent implements OnInit {
   }
 
   filterProducts(val: string) {
-    return val ? this.productName_Code[this.receiverName].filter((p) => new RegExp(val, 'gi').test(p)) : this.productName_Code[this.receiverName];
+    return val ? this.productName_Code[this.receiverName].filter((p) => new RegExp(val.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'gi').test(p)) : this.productName_Code[this.receiverName];
   }
 
   checkRealDeliveryValue(event, deliveryItem: Delivery){
@@ -298,7 +298,7 @@ export class DeliveryFormComponent implements OnInit {
       return;
     }
 
-    if(value < deliveryItem.min)
+    if(value < deliveryItem.minDelivery)
       this.msgService.warn("The 'Real Delivery' value is less than 'Min' value");
     else if(value > deliveryItem.maxDelivery)
       this.msgService.warn("The 'Real Delivery' value is greater than 'Max Delivery' value");
@@ -382,15 +382,11 @@ export class DeliveryFormComponent implements OnInit {
     })
   }
 
-  countToday(stockDate: Date){
+  countToday(stockDate: string){
     if(stockDate === null)
-      return true;
+      return false;
 
-    if(stockDate.getFullYear() !== this.currentDate.getFullYear())
-      return false;
-    else if(stockDate.getMonth() !== this.currentDate.getMonth())
-      return false;
-    else if(stockDate.getDate() !== this.currentDate.getDate())
+    if(moment(stockDate).format('YYMMDD')!== moment(this.currentDate).format('YYMMDD'))
       return false;
     else
       return true;
@@ -589,15 +585,16 @@ export class DeliveryFormComponent implements OnInit {
               //   rcv.warn = 'count';
 
               //this.receiversDeliveryModels[rcv.name]._isPrinted = item.isPrinted;
-
               let tempDelivery = new Delivery();
               tempDelivery.id = item.id;
               tempDelivery.productCode = item.productCode;
               tempDelivery.productName = item.productName;
-              if(item.stock === null)
+              if(item.stock === null && item.realDelivery === null)
                 tempDelivery.realDelivery = null;
+              else if(item.realDelivery ===null)
+                tempDelivery.realDelivery = (item.max - item.stock) < 0 ? 0 : (item.max - item.stock);
               else
-                tempDelivery.realDelivery = (item.min - item.stock) < 0 ? 0 : (item.min - item.stock);
+                tempDelivery.realDelivery = item.realDelivery;
               tempDelivery.minDelivery = (item.min - item.stock) < 0 ? 0 : (item.min - item.stock);
               tempDelivery.maxDelivery = item.max - item.stock;
               tempDelivery.min = item.min;
@@ -605,9 +602,9 @@ export class DeliveryFormComponent implements OnInit {
               tempDelivery.stock = item.stock;
               tempDelivery.isPrinted = item.isPrinted;
               if(item.stockDate === null)
-                tempDelivery.stockDate = this.selectedDate;
+                tempDelivery.stockDate = null;
               else
-                tempDelivery.stockDate = moment(item.stockDete).toDate();
+                tempDelivery.stockDate = moment(item.stockDate).format('DD MMM YY');
               tempDelivery.state = 'exist';
 
               this.receiversDeliveryModels[rcv.name].add(tempDelivery);

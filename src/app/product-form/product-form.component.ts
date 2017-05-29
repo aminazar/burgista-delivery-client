@@ -7,6 +7,7 @@ import {ProductModel} from "./product.model";
 import {ActionEnum} from "../unit-form/actionEnum";
 import {RestService} from "../rest.service";
 import {MessageService} from "../message.service";
+import {isNullOrUndefined} from "util";
 
 @Component({
   selector: 'app-product-form',
@@ -43,9 +44,6 @@ export class ProductFormComponent implements OnInit {
 
           this.productModels.push(tempProductModel);
 
-          // this.productName_Code.unshift(tempProduct.name);
-          // this.productName_Code.push(tempProduct.code);
-
           if (!this.productNames.find((n) => n === tempProduct.name))
             this.productNames.push(tempProduct.name);
 
@@ -53,13 +51,7 @@ export class ProductFormComponent implements OnInit {
             this.productCodes.push(tempProduct.code);
         }
 
-        this.productNames.sort();
-        this.productCodes.sort();
-
-        this.productName_Code = [];
-        this.productName_Code = this.productName_Code.concat(this.productNames);
-        this.productName_Code = this.productName_Code.concat(this.productCodes);
-        // this.sortProductModelList();
+        this.refreshProductsDropDown();
 
       },
       (err) => {
@@ -78,7 +70,6 @@ export class ProductFormComponent implements OnInit {
       (data) => {
         if (data.length === 1) {
           this.isFiltered = false;
-
           // if(this.filteredProductModel == null)
           //   this.filteredProductModel = new ProductModel(this.getProduct(data));
           // else
@@ -127,6 +118,11 @@ export class ProductFormComponent implements OnInit {
         console.log(err.message);
       }
     );
+  }
+
+  private refreshProductsDropDown() {
+    this.productName_Code = [];
+    this.productNames.forEach((el, ind) => this.productName_Code.push(`[${this.productCodes[ind]}] ${el}`));
   }
 
   doClickedAction(value) {
@@ -184,15 +180,7 @@ export class ProductFormComponent implements OnInit {
         this.productNames.push(tempProductModel._product.name);
         this.productCodes.push(tempProductModel._product.code);
 
-        this.productNames.sort();
-        this.productCodes.sort();
-
-        this.productName_Code = [];
-        this.productName_Code = this.productName_Code.concat(this.productNames);
-        this.productName_Code = this.productName_Code.concat(this.productCodes);
-
-        //Sort productModels
-        // this.sortProductModelList();
+        this.refreshProductsDropDown();
 
         this.disableEnable(product.id, ActionEnum.add, false);
 
@@ -230,9 +218,7 @@ export class ProductFormComponent implements OnInit {
           return el !== deletedProductModel[0]._product.code;
         });
 
-        this.productName_Code = [];
-        this.productName_Code = this.productName_Code.concat(this.productNames);
-        this.productName_Code = this.productName_Code.concat(this.productCodes);
+        this.refreshProductsDropDown();
 
         this.isFiltered = false;
         this.filteredProductModel = null;
@@ -294,12 +280,7 @@ export class ProductFormComponent implements OnInit {
         let tempCodeIndex = this.productCodes.findIndex((el) => el === lastCode);
         this.productCodes[tempCodeIndex] = product.code;
 
-        this.productName_Code = [];
-        this.productNames.sort();
-        this.productCodes.sort();
-        this.productName_Code = this.productName_Code.concat(this.productNames);
-        this.productName_Code = this.productName_Code.concat(this.productCodes);
-
+        this.refreshProductsDropDown();
 
         this.disableEnable(productId, ActionEnum.update, false);
         this.messageService.message(`'${name}' is updated in products.`);
@@ -342,22 +323,14 @@ export class ProductFormComponent implements OnInit {
   }
 
   filterProducts(val: string) {
-    return val ? this.productName_Code.filter((p) => new RegExp(val, 'gi').test(p)) : this.productName_Code;
+    return val ? this.productName_Code.filter((p) => new RegExp(val.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'gi').test(p)) : this.productName_Code;
   }
 
   getProduct(nameCode: string) {
     let tempProductModel: ProductModel;
 
-    tempProductModel = this.productModels.find((p) => {
-      return p._product.name.toLowerCase() == nameCode[0].toLowerCase();
-    });
-
-    if (tempProductModel !== null && tempProductModel !== undefined)
-      return tempProductModel;
-
-    return this.productModels.find((p) => {
-      return p._product.code.toLowerCase() == nameCode[0].toLowerCase();
-    });
+    tempProductModel = this.productModels[this.productName_Code.findIndex(nc=>nameCode[0]===nc)];
+    return tempProductModel;
   }
 
   showProductList($event){

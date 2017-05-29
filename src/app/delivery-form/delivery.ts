@@ -11,7 +11,7 @@ export class Delivery{
   min: number;
   max: number;
   stock: number;
-  stockDate: Date;
+  stockDate: string;
   state: string = 'exist';
   isPrinted: boolean = false;
 }

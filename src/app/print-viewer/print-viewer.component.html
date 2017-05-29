@@ -23,7 +23,7 @@
       <td class="box">{{item.productCode}}</td>
       <td class="box">{{item.productName}}</td>
       <td class="box">{{item.realDelivery}}</td>
-      <td class="box">{{item.currentStock}}</td>
+      <td class="box">{{item.currentStock===null ? 'NA' : item.currentStock}}</td>
       <td class="box">{{item.stockAfterDelivery}}</td>
       <td class="box">{{item.stockSurplusDeficit}}</td>
     </tr>

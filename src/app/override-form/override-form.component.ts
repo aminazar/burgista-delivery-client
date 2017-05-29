@@ -83,13 +83,7 @@ export class OverrideFormComponent implements OnInit {
               this.productCodes.push(tempProduct.code);
           }
 
-          this.productNames.sort();
-          this.productCodes.sort();
-
-          this.productName_Code = [];
-          this.productName_Code = this.productName_Code.concat(this.productNames);
-          this.productName_Code = this.productName_Code.concat(this.productCodes);
-          // this.sortProductModelList();
+          this.refreshDropDown();
 
         },
         (err) => {
@@ -115,7 +109,7 @@ export class OverrideFormComponent implements OnInit {
           else
             this.filteredProductModel.setProduct(this.getProduct(data));
 
-          this.selectedProduct = this.filteredProductModel._product.name;
+          this.selectedProduct = `[${this.filteredProductModel._product.code}] ${this.filteredProductModel._product.name}`;
           this.isFiltered = true;
           oneItemInList = true;
         }
@@ -159,6 +153,11 @@ export class OverrideFormComponent implements OnInit {
     );
   }
 
+  private refreshDropDown() {
+    this.productName_Code = [];
+    this.productNames.forEach((el, ind) => this.productName_Code.push(`[${this.productCodes[ind]}] ${el}`));
+  }
+
   doClickedAction(type: ActionEnum) {
     if(!this.isFiltered || this.filteredProductModel === null){
       this.messageService.message('You should first choose product to override');
@@ -196,6 +195,7 @@ export class OverrideFormComponent implements OnInit {
     this.restService.update('override', this.filteredProductModel._product.id + restUrl,
                             ProductModel.toAnyObjectOverride(tempProductModel[0].getDifferentValues(this.filteredProductModel._product))).subscribe(
       (data) => {
+        this.filteredProductModel._product = tempProductModel[0]._product;
         this.filteredProductModel._product.isOverridden = true;
 
         //Update productModels list
@@ -299,16 +299,15 @@ export class OverrideFormComponent implements OnInit {
     this.filteredProductModel = null;
     this.isFiltered = false;
 
-    this.loadBranchProducts();
-
-    if(this.selectedProduct !== null && this.selectedProduct !== ''){
-      this.autoNameCode.value = this.selectedProduct;
-      this.productModelCtrl.setValue(this.selectedProduct);
-      this.isFiltered = true;
-    }
+    this.loadBranchProducts(()=>{
+      if(this.selectedProduct !== null && this.selectedProduct !== ''){
+        this.productModelCtrl.setValue(this.selectedProduct);
+        this.productModelCtrl.markAsTouched();
+      }
+    });
   }
 
-  loadBranchProducts(){
+  loadBranchProducts(callback=()=>{}){
     if(this.isAdmin){
       this.restService.get('override?uid=' + this.branchList[this.selectedIndex].id).subscribe(
         (data) => {
@@ -328,14 +327,8 @@ export class OverrideFormComponent implements OnInit {
               this.productCodes.push(tempProduct.code);
           }
 
-          this.productNames.sort();
-          this.productCodes.sort();
-
-          this.productName_Code = [];
-          this.productName_Code = this.productName_Code.concat(this.productNames);
-          this.productName_Code = this.productName_Code.concat(this.productCodes);
-          // this.sortProductModelList();
-
+          this.refreshDropDown();
+          callback();
         },
         (err) => {
           console.log(err.message);
@@ -375,22 +368,14 @@ export class OverrideFormComponent implements OnInit {
   }
 
   filterProducts(val: string) {
-    return val ? this.productName_Code.filter((p) => new RegExp(val, 'gi').test(p)) : this.productName_Code;
+    return val ? this.productName_Code.filter((p) => new RegExp(val.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'gi').test(p)) : this.productName_Code;
   }
 
   getProduct(nameCode: string) : Product{
-    let tempProductModel: ProductModel = null;
+    let tempProductModel: ProductModel;
 
-    tempProductModel = this.productModels.find((p) => {
-      return p._product.name.toLowerCase() == nameCode[0].toLowerCase();
-    });
-
-    if (tempProductModel !== null && tempProductModel !== undefined)
-      return tempProductModel._product;
-
-    return this.productModels.find((p) => {
-      return p._product.code.toLowerCase() == nameCode[0].toLowerCase();
-    })._product;
+    tempProductModel = this.productModels[this.productName_Code.findIndex(nc=>nameCode[0]===nc)];
+    return tempProductModel._product;
   }
 
   showProductList($event){
