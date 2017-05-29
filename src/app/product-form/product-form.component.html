@@ -9,14 +9,32 @@
     <md-tab label="Modify">
       <md-card class="innerCard">
         <md-card-content>
-          <md-input-container style="width: 100%;">
-            <input mdInput type="text" class="pnc" placeholder="Product name/code" [mdAutocomplete]="auto" [formControl]="productModelCtrl" #autoNameCode (focus)="showProductList($event)"/>
-            <md-autocomplete #auto="mdAutocomplete">
-              <md-option *ngFor="let nameCode of filteredNameCode | async" [value]="nameCode">
-                {{nameCode}}
-              </md-option>
-            </md-autocomplete>
-          </md-input-container>
+          <md-grid-list cols="2" rowHeight="50px">
+            <md-grid-tile colspan="1" style="margin-right: 5px;">
+              <md-input-container style="width: 100%;">
+                <input mdInput type="text" class="pnc" placeholder="Product name"
+                       [mdAutocomplete]="autoName" [formControl]="productModelCtrlName"
+                       #autoNameInput (focus)="showProductList($event, 'name')"/>
+                <md-autocomplete #autoName="mdAutocomplete">
+                  <md-option *ngFor="let name of filteredName | async" [value]="name">
+                    {{name}}
+                  </md-option>
+                </md-autocomplete>
+              </md-input-container>
+            </md-grid-tile>
+            <md-grid-tile colspan="1" style="margin-left: 5px;">
+              <md-input-container style="width: 100%">
+                <input mdInput type="text" class="pnc" placeholder="Product code"
+                       [mdAutocomplete]="autoCode" [formControl]="productModelCtrlCode"
+                       #autoCodeInput (focus)="showProductList($event, 'code')"/>
+                <md-autocomplete #autoCode="mdAutocomplete">
+                  <md-option *ngFor="let code of filteredCode | async" [value]="code">
+                    {{code}}
+                  </md-option>
+                </md-autocomplete>
+              </md-input-container>
+            </md-grid-tile>
+          </md-grid-list>
         </md-card-content>
         <app-product-sub-form *ngIf="isFiltered" [isAdd]="false" [actionIsSuccess]="actionIsSuccess" [productModel]="filteredProductModel" (action)="doClickedAction($event)"></app-product-sub-form>
       </md-card>
