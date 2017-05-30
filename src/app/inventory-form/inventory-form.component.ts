@@ -149,9 +149,35 @@ export class InventoryFormComponent implements OnInit {
   }
 
   submitInventories(){
+    let newItems = [];
+    let oldItems = [];
+
     for(let invItem of this.inventoryModel._inventories){
-      this.submitInventoryItem(invItem);
+      // this.submitInventoryItem(invItem);
+      if(invItem.id === null){    //Add to newItems
+        newItems.push(InventoryModel.toAnyObject(invItem));
+      }
+      else{                       //Add to oldItems
+        oldItems.push(InventoryModel.toAnyObject(invItem));
+      }
     }
+
+    //Send to server
+    let sendData = {
+      'insert': newItems,
+      'update': oldItems
+    };
+
+    this.restService.insert('stock/batch', sendData).subscribe(
+      (data) => {
+        setTimeout(
+          () => this.inventoryModel._inventories = []
+          , 500);
+      },
+      (err) => {
+        console.log(err);
+      }
+    )
   }
 
   removeInventoryItem(inventoryItem: Inventory){
