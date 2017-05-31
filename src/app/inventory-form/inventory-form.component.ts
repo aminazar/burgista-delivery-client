@@ -48,6 +48,7 @@ export class InventoryFormComponent implements OnInit {
   productName_Code: string[] = [];
   filteredNameCode: any;
   productNameCodeCtrl: FormControl;
+  waiting: boolean = false;
 
   constructor(private authService: AuthService, private restService: RestService) { }
 
@@ -168,13 +169,18 @@ export class InventoryFormComponent implements OnInit {
       'update': oldItems
     };
 
+    this.waiting = true;
+
     this.restService.insert('stock/batch', sendData).subscribe(
       (data) => {
         setTimeout(
-          () => this.inventoryModel._inventories = []
-          , 500);
+          () => {
+            this.inventoryModel._inventories = [];
+            this.waiting = false;
+          }, 500);
       },
       (err) => {
+        this.waiting = false;
         console.log(err);
       }
     )
@@ -261,6 +267,8 @@ export class InventoryFormComponent implements OnInit {
         // console.log(this.productName_Code);
 
         for(let item of data){
+          this.checkDisability(item);
+
           if(item.bsddid === null) {                     //Add to autoComplete list
             let tempProduct = new Product();
             tempProduct.id = item.pid;
