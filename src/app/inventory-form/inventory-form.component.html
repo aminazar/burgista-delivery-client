@@ -85,7 +85,7 @@
     <md-card-content>
       <button md-raised-button class="ButtonStyle"
               *ngIf="isSameDates"
-              [(disabled)]="submitShouldDisabled"
+              [(disabled)]="submitShouldDisabled || waiting"
               (click)="submitInventories()">Submit</button>
     </md-card-content>
   </md-card>
