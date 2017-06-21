@@ -1,9 +1,17 @@
 <span class="FormTitleStyle">{{formTitle}}</span>
 <md-card>
   <md-radio-group class="RadioButtonStyle" [(ngModel)]="unit.is_branch" id="isBranch" (change)="disabilityStatus()">
-
     <md-radio-button [value]="true">Branch</md-radio-button>
     <md-radio-button [value]="false">Prep Unit</md-radio-button>
+  </md-radio-group>
+  <br>
+  <md-radio-group *ngIf="unit.is_branch !== null && unit.is_branch" class="RadioButtonStyle" [(ngModel)]="unit.is_kitchen" id="isKitchen" (change)="disabilityStatus()">
+    <md-radio-button [value]="false">Front</md-radio-button>
+    <md-radio-button [value]="true">Kitchen</md-radio-button>
+  </md-radio-group>
+  <md-radio-group *ngIf="unit.is_branch !== null &&!unit.is_branch" class="RadioButtonStyle" [(ngModel)]="unit.is_kitchen" id="isKitchen2" (change)="disabilityStatus()">
+    <md-radio-button [value]="false">Main Depot</md-radio-button>
+    <md-radio-button [value]="true">Prep Kitchen</md-radio-button>
   </md-radio-group>
   <br>
   <md-input-container>

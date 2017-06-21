@@ -19,6 +19,7 @@ export class UnitModel {
     this._unit.username = unit.username;
     this._unit.password = unit.password;
     this._unit.is_branch = unit.is_branch;
+    this._unit.is_kitchen = unit.is_kitchen;
   }
 
   isDifferent(unit: Unit): boolean {
@@ -29,6 +30,8 @@ export class UnitModel {
     else if (unit.username !== this._unit.username)
       return true;
     else if (unit.is_branch !== this._unit.is_branch)
+      return true;
+    else if (unit.is_kitchen !== this._unit.is_kitchen)
       return true;
     else
       return false;
@@ -49,6 +52,9 @@ export class UnitModel {
     if(unit.is_branch !== this._unit.is_branch)
       diffValues['is_branch'] = unit.is_branch;
 
+    if(unit.is_kitchen !== this._unit.is_kitchen)
+      diffValues['is_kitchen'] = unit.is_kitchen;
+
     return diffValues;
   }
 
@@ -58,5 +64,6 @@ export class UnitModel {
     this._unit.username = unit.username;
     this._unit.password = unit.password;
     this._unit.is_branch = unit.is_branch;
+    this._unit.is_kitchen = unit.is_kitchen;
   }
 }

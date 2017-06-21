@@ -39,6 +39,7 @@ export class SubFormComponent implements OnInit {
             this.unit.username = '';
             this.unit.password = '';
             this.unit.is_branch = null;
+            this.unit.is_kitchen = null;
           }
 
           this.disabilityStatus();
@@ -57,18 +58,21 @@ export class SubFormComponent implements OnInit {
       this.unit.username = '';
       this.unit.password = '';
       this.unit.is_branch = null;
+      this.unit.is_kitchen = null;
     }
     else {
       this.unit.id = this.unitModel._unit.id;
       this.unit.name = this.unitModel._unit.name;
       this.unit.username = this.unitModel._unit.username;
       this.unit.is_branch = this.unitModel._unit.is_branch;
+      this.unit.is_kitchen = this.unitModel._unit.is_kitchen;
       this.unit.password = '';
 
       if(this.unit.is_branch)
         this.formTitle = this.unit.name + ' - Branch';
       else
         this.formTitle = this.unit.name + ' - Prep Unit';
+      console.log(this.unitModel);
     }
   }
 
