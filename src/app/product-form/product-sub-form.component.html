@@ -15,6 +15,9 @@
         <md-select placeholder="Measuring Units" class="measuringUnit" [(ngModel)]="product.measuringUnit" (change)="disabilityStatus()">
           <md-option *ngFor="let mu of measuringUnits" [value]="mu">{{mu}}</md-option>
         </md-select>
+        <md-input-container>
+          <input mdInput type="number" class="size" placeholder="Price (£)" [(ngModel)]="product.price" (keyup)="disabilityStatus()"/>
+        </md-input-container>
         <div>
           <span>Preparation Unit</span>
           <md-radio-group class="prepUnitId" [(ngModel)]="product.prep_unit_id" (change)="disabilityStatus()">

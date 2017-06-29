@@ -142,6 +142,7 @@ export class ProductSubFormComponent implements OnInit {
       this.product.prep_unit_id = this.tempProductModel._product.prep_unit_id;
       this.product.maxQty = this.tempProductModel._product.maxQty;
       this.product.minQty = this.tempProductModel._product.minQty;
+      this.product.price = this.tempProductModel._product.price;
 
       for (let day in this.tempProductModel._product.coefficients) {
         this.product.coefficients[day] = this.tempProductModel._product.coefficients[day];
@@ -210,13 +211,15 @@ export class ProductSubFormComponent implements OnInit {
   }
 
   shouldDisableUpdateBtn(): boolean {
-    if (this._isUpdating === true)
+    if (this._isUpdating === true) {
       return true;
-    else {
-      if (this.productModel.isDifferent(this.product) === true)
+    } else {
+      if (this.productModel.isDifferent(this.product) === true) {
+        console.log('product has been changed');
         return !this.isCorrectFormData();
-      else
+      } else {
         return true;
+      }
     }
   }
 
