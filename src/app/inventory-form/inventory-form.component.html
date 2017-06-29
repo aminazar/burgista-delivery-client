@@ -14,41 +14,42 @@
           <table class="table">
             <thead>
               <tr>
-                <td class="buttonItem">&nbsp;</td>
-                <td class="inputItem">Unopened Packs</td>
-                <td class="codeItem">Code</td>
-                <td class="nameItem">Product</td>
-                <td style="min-width: 80px !important;" class="column">Last Count</td>
+                <td class="buttonItem col-xs-1">&nbsp;</td>
+                <td class="inputItem col-xs-3">Unopened Packs</td>
+                <td class="codeItem col-xs-3">Code</td>
+                <td class="nameItem col-xs-3">Product</td>
+                <td style="min-width: 80px !important;" class="column col-xs-2">Last Count</td>
               </tr>
             </thead>
-            <tbody *ngIf="inventoryModel !== null && inventoryModel !== undefined && inventoryModel._inventories.length > 0">
+            <tbody style="height: 200px;" *ngIf="inventoryModel !== null && inventoryModel !== undefined && inventoryModel._inventories.length > 0">
               <tr *ngFor="let invItem of inventoryModel._inventories" [@itemState]="invItem.state">
-                  <td class="buttonItem" *ngIf="invItem.shouldIncluded">&nbsp;</td>
-                  <td class="buttonItem" *ngIf="!invItem.shouldIncluded">
+                  <td class="buttonItem col-xs-1" *ngIf="invItem.shouldIncluded">&nbsp;</td>
+                  <td class="buttonItem col-xs-1" *ngIf="!invItem.shouldIncluded">
                     <button md-mini-fab (click)="removeInventoryItem(invItem)"><i class="fa fa-times" aria-hidden="true"></i></button>
                   </td>
-                  <td class="inputItem">
+                  <td class="inputItem col-xs-3">
                     <md-input-container>
                       <input mdInput type="number" [(ngModel)]="invItem.unopenedPack" placeholder="Unopened Packs"
-                             (ngModelChange)="checkDisability()"
+                             (ngModelChange)="checkDisability(invItem)"
                              [disabled]="!isSameDates"
+                             min="0"
                              [ngClass]="[(!invItem.shouldCountToday && invItem.shouldIncluded) ? 'warnColoring' : 'normalColoring']"/>
                     </md-input-container>
                   </td>
-                  <td class="codeItem"
+                  <td class="codeItem col-xs-3"
                                 [ngClass]="[(!invItem.shouldCountToday && invItem.shouldIncluded) ? 'warnColoring' : 'normalColoring']">
                     {{invItem.productCode}}
                   </td>
-                  <td class="nameItem"
+                  <td class="nameItem col-xs-3"
                                 [ngClass]="[(!invItem.shouldCountToday && invItem.shouldIncluded) ? 'warnColoring' : 'normalColoring']">
                     {{invItem.productName}}
                   </td>
-                  <td class="column"
+                  <td class="column col-xs-2"
                                 *ngIf="invItem.lastCount !== null"
                                 [ngClass]="[(!invItem.shouldCountToday && invItem.shouldIncluded) ? 'warnColoring' : 'normalColoring']">
                     {{invItem.lastCount | date: 'd MMM yy'}}
                   </td>
-                  <td style="min-width: 80px !important;" class="column"
+                  <td style="min-width: 80px !important;" class="column col-xs-2"
                                 *ngIf="invItem.lastCount === null"
                                 [ngClass]="[(!invItem.shouldCountToday && invItem.shouldIncluded) ? 'warnColoring' : 'normalColoring']">
                     -
@@ -58,13 +59,13 @@
           </table>
           <table class="table">
             <tr *ngIf="isSameDates">
-              <td class="buttonItem">&nbsp;</td>
-              <td class="inputItem">
+              <td class="buttonItem col-xs-1">&nbsp;</td>
+              <td class="inputItem col-xs-3">
                 <md-input-container>
                   <input mdInput type="number" placeholder="Unopened Packs" #unopenedPack/>
                 </md-input-container>
               </td>
-              <td class="inputItem" colspan="2">
+              <td class="inputItem col-xs-7" colspan="2">
                 <md-input-container>
                   <input mdInput type="text" class="pnc" placeholder="Product name/code" [mdAutocomplete]="auto" [formControl]="productNameCodeCtrl" #autoNameCode (focus)="showProductList()"/>
                   <md-autocomplete #auto="mdAutocomplete">
@@ -74,7 +75,7 @@
                   </md-autocomplete>
                 </md-input-container>
               </td>
-              <td style="min-width: 80px !important;" class="column">
+              <td style="min-width: 80px !important;" class="column col-xs-1">
               </td>
             </tr>
           </table>
@@ -84,7 +85,7 @@
     <md-card-content>
       <button md-raised-button class="ButtonStyle"
               *ngIf="isSameDates"
-              [(disabled)]="submitShouldDisabled"
+              [(disabled)]="submitShouldDisabled || waiting"
               (click)="submitInventories()">Submit</button>
     </md-card-content>
   </md-card>

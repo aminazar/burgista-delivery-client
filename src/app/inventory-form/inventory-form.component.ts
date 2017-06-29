@@ -48,6 +48,7 @@ export class InventoryFormComponent implements OnInit {
   productName_Code: string[] = [];
   filteredNameCode: any;
   productNameCodeCtrl: FormControl;
+  waiting: boolean = false;
 
   constructor(private authService: AuthService, private restService: RestService) { }
 
@@ -149,9 +150,40 @@ export class InventoryFormComponent implements OnInit {
   }
 
   submitInventories(){
+    let newItems = [];
+    let oldItems = [];
+
     for(let invItem of this.inventoryModel._inventories){
-      this.submitInventoryItem(invItem);
+      // this.submitInventoryItem(invItem);
+      if(invItem.id === null){    //Add to newItems
+        newItems.push(InventoryModel.toAnyObject(invItem));
+      }
+      else{                       //Add to oldItems
+        oldItems.push(InventoryModel.toAnyObject(invItem));
+      }
     }
+
+    //Send to server
+    let sendData = {
+      'insert': newItems,
+      'update': oldItems
+    };
+
+    this.waiting = true;
+
+    this.restService.insert('stock/batch', sendData).subscribe(
+      (data) => {
+        setTimeout(
+          () => {
+            this.inventoryModel._inventories = [];
+            this.waiting = false;
+          }, 500);
+      },
+      (err) => {
+        this.waiting = false;
+        console.log(err);
+      }
+    )
   }
 
   removeInventoryItem(inventoryItem: Inventory){
@@ -235,6 +267,8 @@ export class InventoryFormComponent implements OnInit {
         // console.log(this.productName_Code);
 
         for(let item of data){
+          this.checkDisability(item);
+
           if(item.bsddid === null) {                     //Add to autoComplete list
             let tempProduct = new Product();
             tempProduct.id = item.pid;
@@ -304,7 +338,11 @@ export class InventoryFormComponent implements OnInit {
     )
   }
 
-  checkDisability(){
+  checkDisability(item){
+    //Check the value to be non negative
+    if(item.unopenedPack < 0)
+      item.unopenedPack = 0;
+
     let noValue: boolean = false;
 
     for(let invItem of this.inventoryModel._inventories){

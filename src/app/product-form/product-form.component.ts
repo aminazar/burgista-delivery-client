@@ -8,6 +8,7 @@ import {ActionEnum} from "../unit-form/actionEnum";
 import {RestService} from "../rest.service";
 import {MessageService} from "../message.service";
 import {isNullOrUndefined} from "util";
+import {constructDependencies} from "@angular/core/src/di/reflective_provider";
 
 @Component({
   selector: 'app-product-form',
@@ -20,14 +21,19 @@ export class ProductFormComponent implements OnInit {
   productModels: ProductModel[] = [];
   filteredProductModel: ProductModel;
   filteredNameCode: any;
+  filteredName: any;
+  filteredCode: any;
   isFiltered: boolean = false;
-  productModelCtrl: FormControl;
+  productModelCtrlName: FormControl;
+  productModelCtrlCode: FormControl;
   productName_Code: string[] = [];
   productNames: string[] = [];
   productCodes: string[] = [];
   selectedIndex: number = 0;
+  nameChose: boolean = false;
+  codeChose: boolean = false;
 
-  @ViewChild('autoNameCode') autoNameCode;
+  @ViewChild('autoNameInput') autoNameInput;
 
   constructor(private restService: RestService, private messageService: MessageService, private elementRef: ElementRef) {
   }
@@ -59,28 +65,43 @@ export class ProductFormComponent implements OnInit {
       }
     );
 
-    this.productModelCtrl = new FormControl();
-    this.filteredNameCode = this.productModelCtrl.valueChanges
+    this.productModelCtrlName = new FormControl();
+    this.productModelCtrlCode = new FormControl();
+
+    this.filteredName = this.productModelCtrlName.valueChanges
       .startWith(null)
-      .map((name_code) => this.filterProducts(name_code));
+      .map((name) => this.filterProducts(name, 'name'));
+    this.filteredCode = this.productModelCtrlCode.valueChanges
+      .startWith(null)
+      .map((code) => this.filterProducts(code, 'code'));
 
     let oneItemInList: boolean = false;
 
-    this.filteredNameCode.subscribe(
+    this.filteredName.subscribe(
       (data) => {
         if (data.length === 1) {
+          if(!oneItemInList) {
+            this.codeChose = false;
+            this.nameChose = false;
+          }
+
           this.isFiltered = false;
           // if(this.filteredProductModel == null)
           //   this.filteredProductModel = new ProductModel(this.getProduct(data));
           // else
           //   this.filteredProductModel.setProduct(this.getProduct(data));
 
-          this.filteredProductModel = this.getProduct(data);
+          this.filteredProductModel = this.getProduct(data, 'name');
+          this.nameChose = true;
+          oneItemInList = true;
+
+          if(!this.codeChose)
+            this.productModelCtrlCode.setValue(this.filteredProductModel._product.code);
 
           this.isFiltered = true;
-          oneItemInList = true;
         }
         else{
+          this.nameChose = false;
           this.isFiltered = false;
           oneItemInList = false;
         }
@@ -90,19 +111,54 @@ export class ProductFormComponent implements OnInit {
       }
     );
 
-    this.productModelCtrl.valueChanges.subscribe(
+    this.filteredCode.subscribe(
+        (data) => {
+          if (data.length === 1) {
+            if(!oneItemInList) {
+              this.codeChose = false;
+              this.nameChose = false;
+            }
+
+            this.isFiltered = false;
+            // if(this.filteredProductModel == null)
+            //   this.filteredProductModel = new ProductModel(this.getProduct(data));
+            // else
+            //   this.filteredProductModel.setProduct(this.getProduct(data));
+
+            this.filteredProductModel = this.getProduct(data, 'code');
+            this.codeChose = true;
+            oneItemInList = true;
+
+            if(!this.nameChose)
+              this.productModelCtrlName.setValue(this.filteredProductModel._product.name);
+
+            this.isFiltered = true;
+          }
+          else{
+            this.codeChose = false;
+            this.isFiltered = false;
+            oneItemInList = false;
+          }
+        },
+        (err) => {
+          console.log(err.message);
+        }
+    );
+
+    this.productModelCtrlName.valueChanges.subscribe(
       (data) => {
         if(!oneItemInList) {
           let fullMatch = this.productModels.find((el) => {
-            return (el._product.name.toLowerCase() == this.productModelCtrl.value.toLowerCase())
-              || (el._product.code.toLowerCase() == this.productModelCtrl.value.toLowerCase());
+            return (el._product.name.toLowerCase() == this.productModelCtrlName.value.toLowerCase());
           });
 
           if (fullMatch !== null && fullMatch !== undefined) {
             this.isFiltered = false;
 
             this.filteredProductModel = fullMatch;
-
+            this.nameChose = true;
+            if(!this.codeChose)
+              this.productModelCtrlCode.setValue(this.filteredProductModel._product.code);
             // if (this.filteredProductModel == null)
             //   this.filteredProductModel = fullMatch;
             // else
@@ -110,19 +166,56 @@ export class ProductFormComponent implements OnInit {
 
             this.isFiltered = true;
           }
-          else
+          else {
             this.isFiltered = false;
+            this.nameChose = false;
+          }
         }
       },
       (err) => {
         console.log(err.message);
       }
     );
+
+    this.productModelCtrlCode.valueChanges.subscribe(
+        (data) => {
+          if(!oneItemInList) {
+            let fullMatch = this.productModels.find((el) => {
+              return (el._product.code.toLowerCase() == this.productModelCtrlCode.value.toLowerCase());
+            });
+
+            if (fullMatch !== null && fullMatch !== undefined) {
+              this.isFiltered = false;
+
+              this.filteredProductModel = fullMatch;
+              this.codeChose = true;
+              if(!this.nameChose)
+                this.productModelCtrlName.setValue(this.filteredProductModel._product.name);
+              // if (this.filteredProductModel == null)
+              //   this.filteredProductModel = fullMatch;
+              // else
+              //   this.filteredProductModel =fullMatch._product);
+
+              this.isFiltered = true;
+            }
+            else {
+              this.isFiltered = false;
+              this.codeChose = false;
+            }
+          }
+        },
+        (err) => {
+          console.log(err.message);
+        }
+    );
   }
 
   private refreshProductsDropDown() {
     this.productName_Code = [];
-    this.productNames.forEach((el, ind) => this.productName_Code.push(`[${this.productCodes[ind]}] ${el}`));
+    // this.productNames.forEach((el, ind) => this.productName_Code.push(`[${this.productCodes[ind]}] ${el}`));
+
+    this.productNames.forEach((el) => this.productName_Code.push(el));
+    this.productCodes.forEach((el) => this.productName_Code.push(el));
   }
 
   doClickedAction(value) {
@@ -222,7 +315,7 @@ export class ProductFormComponent implements OnInit {
 
         this.isFiltered = false;
         this.filteredProductModel = null;
-        this.productModelCtrl.setValue('');
+        this.productModelCtrlName.setValue('');
 
         this.messageService.message(`Product is deleted.`);
         //ToDo: adding prop message
@@ -322,22 +415,77 @@ export class ProductFormComponent implements OnInit {
       tempProductModel.waiting.next(tempWaitingObj);
   }
 
-  filterProducts(val: string) {
-    return val ? this.productName_Code.filter((p) => new RegExp(val.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'gi').test(p)) : this.productName_Code;
+  filterProducts(val: string, filterKind) {
+    let res = [];
+
+    if(filterKind === 'name'){
+      res = val ? this.productNames.filter((p) => new RegExp(val.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'gi').test(p)) : this.productNames;
+      if(res.length > 0){
+        // console.log('Names:', res);
+        // console.log(this.filteredCode);
+        this.filteredCode.source = this.getProductCode(res);
+        // console.log('Get Codes:', this.getProductCode(res));
+      }
+    }
+    else if(filterKind === 'code'){
+      res = val ? this.productCodes.filter((p) => new RegExp(val.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'gi').test(p)) : this.productCodes;
+      if(res.length > 0) {
+        // console.log('Codes:', res);
+        this.filteredName.source = this.getProductName(res);
+        // console.log('Get Names:', this.getProductName(res));
+      }
+    }
+
+    return res;
   }
 
-  getProduct(nameCode: string) {
+  getProductName(list){
+    let result = [];
+
+    list.forEach((el) => {
+      result.push(this.productModels.find((pm) => pm._product.code == el)._product.name);
+    });
+
+    return result;
+  }
+
+  getProductCode(list){
+    let result = [];
+
+    list.forEach((el) => {
+      result.push(this.productModels.find((pm) => pm._product.name == el)._product.code);
+    });
+
+    return result;
+  }
+
+  getProduct(nameCode: string, selectorKind) {
     let tempProductModel: ProductModel;
 
-    tempProductModel = this.productModels[this.productName_Code.findIndex(nc=>nameCode[0]===nc)];
+    if(selectorKind === 'name')
+      tempProductModel = this.productModels[this.productName_Code.findIndex(nc=>nameCode[0]===nc)];
+    else if(selectorKind === 'code')
+      tempProductModel = this.productModels[this.productName_Code.findIndex(nc=>nameCode[0]===nc) - this.productNames.length];
+
     return tempProductModel;
   }
 
-  showProductList($event){
-    if(this.productModelCtrl.value === null)
-      this.productModelCtrl.setValue('');
-    else{
-      $event.target.select();
+  showProductList($event, filterKind){
+    if(filterKind === 'name'){
+      if(this.productModelCtrlName.value === null){
+        this.productModelCtrlName.setValue('');
+      }
+      else{
+        $event.target.select();
+      }
+    }
+    else if(filterKind === 'code'){
+      if(this.productModelCtrlCode.value === null) {
+        this.productModelCtrlCode.setValue('');
+      }
+      else{
+        $event.target.select();
+      }
     }
   }
 }

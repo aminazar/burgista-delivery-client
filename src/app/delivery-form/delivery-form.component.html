@@ -90,16 +90,6 @@
       <template md-tab-label *ngIf="rcv.warn === 'no'">
         {{rcv.name}}
       </template>
-      <!--<div *ngIf="isWaiting[rcv.name]" class="waiting">-->
-        <!--<div class="flex-container waiting" fxLayout="row" fxLayoutAlign="center center">-->
-          <!--<div class="flex-item" fxFlex="33"></div>-->
-          <!--<div class="flex-item" fxFlx="33">-->
-            <!--<i style="color: white !important;" class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>-->
-            <!--<span class="sr-only">Loading...</span>-->
-          <!--</div>-->
-          <!--<div class="flex-item" fxFlex="33"></div>-->
-        <!--</div>-->
-      <!--</div>-->
       <md-card class="innerCard"
                *ngIf="!isWaiting[rcv.name] && receiversDeliveryModels[rcv.name] !== undefined && receiversDeliveryModels[rcv.name] !== null">
         <md-card-title>To Do: Delivery</md-card-title>
@@ -121,10 +111,10 @@
                   <td>Stock Date</td>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody style="height: 200px;">
                 <tr *ngFor="let delItem of receiversDeliveryModels[rcv.name]._deliveries">
                   <td class="buttonItem" *ngIf="delItem.id !== null && delItem.state !== 'added'"></td>
-                  <td class="buttonItem" *ngIf="delItem.id === null && !receiversDeliveryModels[rcv.name]._isPrinted">
+                  <td class="buttonItem" *ngIf="delItem.id === null">
                     <button md-mini-fab
                             (click)="removeDeliveryItem(delItem)">
                       <i class="fa fa-times" aria-hidden="true"></i>
@@ -148,7 +138,7 @@
                       <input mdInput type="number"
                              min="0"
                              [ngClass]="[(rcv.warn ||((delItem.minDelivery > delItem.realDelivery || delItem.maxDelivery < delItem.realDelivery ) && isToday)) ? 'notEqualValues' : 'equalValues']"
-                             [(disabled)]="!isToday || delItem.isPrinted"
+                             [(disabled)]="!isToday"
                              placeholder="Real Delivery"
                              [ngModel]="delItem.realDelivery"
                              (change)="checkRealDeliveryValue($event, delItem)"/>
@@ -218,7 +208,7 @@
                   <td style="min-width: 80px !important;" class="column">-</td>
                 </tr>
                 <tr
-                  *ngIf="isToday && !overallDeliveryModel._isPrinted && !receiversDeliveryModels[rcv.name]._isPrinted && !receiversDeliveryModels[rcv.name]._shouldDisabled && productsList[rcv.name] !== undefined && productsList[rcv.name].length > 0">
+                  *ngIf="isToday && !receiversDeliveryModels[rcv.name]._shouldDisabled && productsList[rcv.name] !== undefined && productsList[rcv.name].length > 0">
                   <td class="buttonItem"></td>
                   <td class="codeItem" colspan="2">
                     <md-input-container>
@@ -253,7 +243,6 @@
                   (click)="printDelivery(receiversDeliveryModels[rcv.name])">Print</button>
           <button md-raised-button class="ButtonStyle"
                   *ngIf="isToday"
-                  [(disabled)]="overallDeliveryModel._isPrinted || receiversDeliveryModels[rcv.name]._shouldDisabled || receiversDeliveryModels[rcv.name]._isPrinted"
                   (click)="submitDelivery(receiversDeliveryModels[rcv.name])">Submit</button>
         </md-card-content>
       </md-card>
