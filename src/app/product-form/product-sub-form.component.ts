@@ -215,7 +215,6 @@ export class ProductSubFormComponent implements OnInit {
       return true;
     } else {
       if (this.productModel.isDifferent(this.product) === true) {
-        console.log('product has been changed');
         return !this.isCorrectFormData();
       } else {
         return true;

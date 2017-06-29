@@ -247,8 +247,6 @@ export class ProductModel {
           break;
       }
     }
-    console.log('importing product');
-    console.log(tempProduct);
 
     return tempProduct;
   }
