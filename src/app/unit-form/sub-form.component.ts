@@ -72,7 +72,6 @@ export class SubFormComponent implements OnInit {
         this.formTitle = this.unit.name + ' - Branch';
       else
         this.formTitle = this.unit.name + ' - Prep Unit';
-      console.log(this.unitModel);
     }
   }
 
