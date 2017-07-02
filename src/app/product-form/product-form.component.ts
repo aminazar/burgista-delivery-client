@@ -126,6 +126,7 @@ export class ProductFormComponent implements OnInit {
             //   this.filteredProductModel.setProduct(this.getProduct(data));
 
             this.filteredProductModel = this.getProduct(data, 'code');
+            console.log(this.filteredProductModel);
             this.codeChose = true;
             oneItemInList = true;
 

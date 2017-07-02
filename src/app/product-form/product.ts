@@ -23,4 +23,5 @@ export class Product {
     Usage: 1
   };
   isOverridden: boolean = false;
+  price: number;
 }

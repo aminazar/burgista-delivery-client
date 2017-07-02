@@ -26,14 +26,14 @@ export class ProductModel {
     this._product.prep_unit_id = product.prep_unit_id;
     this._product.minQty = product.minQty;
     this._product.maxQty = product.maxQty;
-
+    this._product.price = product.price;
     for(let day in product.coefficients)
       this._product.coefficients[day] = product.coefficients[day];
 
     this._product.countingRecursion = product.countingRecursion;
   }
 
-  isDifferent(product: Product) : boolean {
+  isDifferent(product: Product): boolean {
     let isDiff: boolean = false;
     let isNull: boolean = false;
 
@@ -57,7 +57,7 @@ export class ProductModel {
     return (isDiff && !isNull);
   }
 
-  getDifferentValues(product: Product){
+  getDifferentValues(product: Product) { // finds changed values of an object and return those new values as a new object
     let diffValue = {};
 
     for(let prop in product){
@@ -78,9 +78,10 @@ export class ProductModel {
     return diffValue;
   }
 
-  setProduct(product: Product){
-    if(this._product == null)
+  setProduct(product: Product) {
+    if (this._product == null) {
       this._product = new Product();
+    }
 
     this._product.isOverridden = product.isOverridden;
     this._product.id = product.id;
@@ -91,6 +92,7 @@ export class ProductModel {
     this._product.prep_unit_id = product.prep_unit_id;
     this._product.minQty = product.minQty;
     this._product.maxQty = product.maxQty;
+    this._product.price = product.price;
 
     for(let day in product.coefficients)
       this._product.coefficients[day] = product.coefficients[day];
@@ -118,6 +120,8 @@ export class ProductModel {
         case 'minQty': resObj['default_min'] = product.minQty;
           break;
         case 'maxQty': resObj['default_max'] = product.maxQty;
+          break;
+        case 'price': resObj['price'] = product.price;
           break;
         case 'countingRecursion': resObj['default_date_rule'] = product.countingRecursion;
           break;
@@ -150,11 +154,11 @@ export class ProductModel {
     return resObj;
   }
 
-  static toAnyObjectOverride(product) : any {
+  static toAnyObjectOverride(product): any { // I don't know either I should add price to this method or not!
     let resObj = {};
 
     for(let prop in product){
-      switch (prop){
+      switch (prop) {
         case 'id': resObj['pid'] = product.id;
           break;
         case 'minQty': resObj['min'] = product.minQty;
@@ -163,7 +167,7 @@ export class ProductModel {
           break;
         case 'countingRecursion': resObj['date_rule'] = product.countingRecursion;
           break;
-        case 'coefficients':{
+        case 'coefficients': {
           for(let day in product.coefficients){
             switch (day){
               case 'Monday': resObj['mon_multiple'] = product.coefficients.Monday;
@@ -192,8 +196,8 @@ export class ProductModel {
     return resObj;
   }
 
-  static fromAnyObject(object: any) : Product {
-    let tempProduct : Product = new Product();
+  static fromAnyObject(object: any): Product {
+    let tempProduct: Product = new Product();
 
     for(let prop in object){
       switch (prop){
@@ -215,6 +219,14 @@ export class ProductModel {
           break;
         case 'default_max': tempProduct.maxQty = object[prop];
           break;
+        case 'price': {
+          if (object.price) {
+            tempProduct.price = parseInt(object.price.startsWith('$') ? object.price.substring(1) : object.price, 10);
+          } else {
+            tempProduct.price = null;
+          }
+          break;
+        }
         case 'default_date_rule': tempProduct.countingRecursion = object[prop];
           break;
         case 'default_mon_multiple': tempProduct.coefficients.Monday = object[prop];

@@ -43,6 +43,7 @@ export class DeliveryFormComponent implements OnInit {
   dataIsReady: boolean = false;
   isWaiting: any = {};
   unitName: string;
+  isKitchen: boolean;
   receiverName: string = 'All';
   selectedDate: Date;
   currentDate: Date;
@@ -66,6 +67,7 @@ export class DeliveryFormComponent implements OnInit {
 
     this.overallDeliveryModel._shouldDisabled = true;
     this.unitName = this.authService.unitName;
+    this.isKitchen = this.authService.isKitchen;
     this.selectedDate = new Date();
     this.currentDate = new Date();
 
@@ -81,7 +83,7 @@ export class DeliveryFormComponent implements OnInit {
     this.receivers = [];
 
     //Get receivers (branches)
-    this.restService.get('unit?isBranch=true').subscribe(
+    this.restService.get('unit?isBranch=true&isKitchen=' + this.isKitchen).subscribe(
       (data) => {
         for(let item of data){
           let obj = {

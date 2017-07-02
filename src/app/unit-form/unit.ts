@@ -7,4 +7,5 @@ export class Unit {
   username: string;
   password: string;
   is_branch: boolean;
+  is_kitchen: boolean;
 }

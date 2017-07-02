@@ -11,6 +11,7 @@ export class AuthService {
   public user = '';
   public userType = '';
   public unitName = '';
+  public isKitchen: boolean;
   auth$ = this.authStream.asObservable();
   originBeforeLogin = '/';
 
@@ -50,6 +51,7 @@ export class AuthService {
     this.user = data.user;
     this.unitName = data.name;
     this.userType = data.userType;
+    this.isKitchen = data.isKitchen;
     this.authStream.next(true);
 
     let url: string = this.originBeforeLogin;
