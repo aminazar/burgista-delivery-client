@@ -70,7 +70,7 @@ export class AuthService {
           this.router.navigate(['delivery']);
       }
       else if(this.userType === 'admin'){
-        if(url.indexOf('units') !== -1 || url.indexOf('products') !== -1 || url.indexOf('override') !== -1)
+        if(url.indexOf('units') !== -1 || url.indexOf('products') !== -1 || url.indexOf('override') !== -1 || url.indexOf('reports') !== -1)
           this.router.navigate([url]);
         else
           this.router.navigate(['']);
