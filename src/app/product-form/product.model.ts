@@ -198,7 +198,6 @@ export class ProductModel {
 
   static fromAnyObject(object: any): Product {
     let tempProduct: Product = new Product();
-
     for(let prop in object){
       switch (prop){
         case 'isOverridden': tempProduct.isOverridden = true;
@@ -221,7 +220,7 @@ export class ProductModel {
           break;
         case 'price': {
           if (object.price) {
-            tempProduct.price = parseInt(object.price.startsWith('$') ? object.price.substring(1) : object.price, 10);
+            tempProduct.price = parseFloat(object.price.startsWith('$') ? object.price.substring(1) : object.price);
           } else {
             tempProduct.price = null;
           }

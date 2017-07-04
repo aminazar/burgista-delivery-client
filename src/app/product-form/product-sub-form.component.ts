@@ -77,6 +77,7 @@ export class ProductSubFormComponent implements OnInit {
             this.product.prep_unit_id = null;
             this.product.minQty = -12345678;
             this.product.maxQty = null;
+            this.product.price = null;
 
             for (let day in this.product.coefficients) {
               this.product.coefficients[day] = 1;
@@ -116,12 +117,12 @@ export class ProductSubFormComponent implements OnInit {
       this.product.countingRecursion = '';
       this.product.minQty = null;
       this.product.maxQty = null;
+      this.product.price = null;
 
       for (let day in this.product.coefficients) {
         this.product.coefficients[day] = 1;
       }
-    }
-    else {
+    } else {
       this.productModel.waiting.subscribe(
         (data) => {
           this._isUpdating = data.updating;

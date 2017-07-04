@@ -40,7 +40,7 @@ export class OverrideFormComponent implements OnInit {
   ngOnInit() {
     this.isAdmin = (this.authService.userType === 'admin') ? true : false;
 
-    if (this.isAdmin) {         //Fetch all branches and products (with/without overridden values)
+    if (this.isAdmin) { // Fetch all branches and products (with/without overridden values)
       this.restService.get('unit?isBranch=true').subscribe(
         (data) => {
           this.branchList = [];
@@ -60,9 +60,8 @@ export class OverrideFormComponent implements OnInit {
           console.log(err.message);
         }
       );
-    }
-    else{                     //get products (with overridden values) for branch;
-      this.restService.get('override').subscribe(
+    } else {// get products (with overridden values) for branch;
+      this.restService.get('override?uid=' + this.authService.unit_id).subscribe(
         (data) => {
           this.productModels = [];
 
@@ -103,17 +102,19 @@ export class OverrideFormComponent implements OnInit {
 
     this.filteredNameCode.subscribe(
       (data) => {
+        console.log('####');
+        console.log(data);
         if (data.length === 1) {
-          if(this.filteredProductModel == null)
+          if (this.filteredProductModel == null) {
             this.filteredProductModel = new ProductModel(this.getProduct(data));
-          else
+          } else {
             this.filteredProductModel.setProduct(this.getProduct(data));
+          }
 
           this.selectedProduct = `[${this.filteredProductModel._product.code}] ${this.filteredProductModel._product.name}`;
           this.isFiltered = true;
           oneItemInList = true;
-        }
-        else {
+        } else {
           this.selectedProduct = '';
           this.isFiltered = false;
           oneItemInList = false;
@@ -127,10 +128,13 @@ export class OverrideFormComponent implements OnInit {
     this.productModelCtrl.valueChanges.subscribe(
       (data) => {
         if (!oneItemInList) {
-          let fullMatch = this.productModels.find((el) => {
-            return (el._product.name.toLowerCase() == this.productModelCtrl.value.toLowerCase())
-              || (el._product.code.toLowerCase() == this.productModelCtrl.value.toLowerCase());
-          });
+          let fullMatch;
+          if (this.productModelCtrl.value) {
+            fullMatch = this.productModels.find((el) => {
+              return (el._product.name.toLowerCase() == this.productModelCtrl.value.toLowerCase())
+                || (el._product.code.toLowerCase() == this.productModelCtrl.value.toLowerCase());
+            });
+          }
 
           if (fullMatch !== null && fullMatch !== undefined) {
             if(this.filteredProductModel == null)
@@ -140,8 +144,7 @@ export class OverrideFormComponent implements OnInit {
 
             this.selectedProduct = this.filteredProductModel._product.name;
             this.isFiltered = true;
-          }
-          else {
+          } else {
             this.selectedProduct = '';
             this.isFiltered = false;
           }
@@ -156,6 +159,8 @@ export class OverrideFormComponent implements OnInit {
   private refreshDropDown() {
     this.productName_Code = [];
     this.productNames.forEach((el, ind) => this.productName_Code.push(`[${this.productCodes[ind]}] ${el}`));
+    console.log(this.productName_Code);
+    this.productModelCtrl.reset();
   }
 
   doClickedAction(type: ActionEnum) {
@@ -298,7 +303,7 @@ export class OverrideFormComponent implements OnInit {
   changedTab(){
     this.filteredProductModel = null;
     this.isFiltered = false;
-
+    console.log('tab changed');
     this.loadBranchProducts(()=>{
       if(this.selectedProduct !== null && this.selectedProduct !== ''){
         this.productModelCtrl.setValue(this.selectedProduct);
@@ -307,24 +312,20 @@ export class OverrideFormComponent implements OnInit {
     });
   }
 
-  loadBranchProducts(callback=()=>{}){
-    if(this.isAdmin){
+  loadBranchProducts(callback= () => {}) {
+    if (this.isAdmin) {
       this.restService.get('override?uid=' + this.branchList[this.selectedIndex].id).subscribe(
         (data) => {
           this.productModels = [];
+          this.productNames = [];
+          this.productCodes = [];
 
           for (let productObj of data) {
             let tempProduct = ProductModel.fromAnyObject(productObj);
-
             let tempProductModel = new ProductModel(tempProduct);
-
             this.productModels.push(tempProductModel);
-
-            if (!this.productNames.find((n) => n === tempProduct.name))
-              this.productNames.push(tempProduct.name);
-
-            if (!this.productCodes.find((c) => c === tempProduct.code))
-              this.productCodes.push(tempProduct.code);
+            this.productNames.push(tempProduct.name);
+            this.productCodes.push(tempProduct.code);
           }
 
           this.refreshDropDown();
@@ -368,7 +369,8 @@ export class OverrideFormComponent implements OnInit {
   }
 
   filterProducts(val: string) {
-    return val ? this.productName_Code.filter((p) => new RegExp(val.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'gi').test(p)) : this.productName_Code;
+    return val ? this.productName_Code.filter((p) => new RegExp(val.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'gi').test(p))
+      : this.productName_Code;
   }
 
   getProduct(nameCode: string) : Product{
