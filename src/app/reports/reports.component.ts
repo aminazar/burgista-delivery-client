@@ -6,6 +6,7 @@ import {MessageService} from '../message.service';
 import {UnitModel} from '../unit-form/unit.model';
 import {Unit} from '../unit-form/unit';
 import * as moment from 'moment';
+import {sendRequest} from "selenium-webdriver/http";
 // import {Product} from '../product-form/product';
 @Component({
   selector: 'app-reports',
@@ -23,7 +24,7 @@ export class ReportsComponent implements OnInit {
   startDate: Date;
   endDate: Date;
   deliveryReportBtnDisabled = true;
-
+  inventoryReportBtnDisabled = true;
   constructor(private restService: RestService, private messageService: MessageService) {
   }
 
@@ -68,21 +69,12 @@ export class ReportsComponent implements OnInit {
         }
       }
     );
-    // let today = moment().format('YYYY-MM-DD');
-    // this.restService.get('stock/' + today + '?uid=5').subscribe(
-    //   (data) => {
-    //     console.log(data);
-    //   },
-    //   (error) => {
-    //     console.log(error);
-    //   }
-    // );
   }
 
   loadDataForProductsReport () {
     let today = moment().format('YYYY-MM-DD');
     if (this.branchIdForProductReport === 0) { // no branch selected -> all products
-      this.restService.get('product').subscribe(
+      this.restService.get('reports/all_products/').subscribe(
         (data) => {
           this.downloadCSV(this.convertAllProductsToCSV(data), 'all-products-' + today + '.csv');
         },
@@ -91,7 +83,7 @@ export class ReportsComponent implements OnInit {
         }
       );
     } else { // a branch is selected
-      this.restService.get('override?uid=' + this.branchIdForProductReport).subscribe(
+      this.restService.get('reports/products/' + this.branchIdForProductReport).subscribe(
         (data) => {
           let branch = this.branches.find(unit => {
             return unit.id === this.branchIdForProductReport;
@@ -107,7 +99,43 @@ export class ReportsComponent implements OnInit {
   }
 
   prepareInventoryCountingReport() {
-    console.log('under construction');
+    if (!this.branchIdForInventoryReport) {
+      alert('Please select a branch');
+      return;
+    }
+    this.restService.get('reports/inventory_counting/' + this.branchIdForInventoryReport).subscribe(
+      (data) => {
+        console.log(data);
+        let branch = this.branches.find(unit => {
+          return unit.id === this.branchIdForInventoryReport;
+        });
+        let today = moment().format('YYYY-MM-DD');
+        let filename = branch.name + '-inventory-counting-report-' + today + '.csv';
+        this.downloadCSV(this.wrapInventoryCountingReportResults(data), filename);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+
+  }
+
+  wrapInventoryCountingReportResults(rows) {
+    let keys = ['Product Name', 'Product Code', 'Last Counted', 'Inventory Count', 'Next Count Date',
+      'Estimate Stock Availability', 'Branch Name'];
+    let data = rows.map(r => {
+      return {
+        'Product Name': r.product_name,
+        'Product Code': r.product_code,
+        'Branch Name': r.branch_name,
+        'Last Counted': moment(r.last_counted).format('ddd DD MMM YYYY'),
+        'Inventory Count': r.product_count,
+        'Next Count Date': moment(r.next_count_date).format('ddd DD MMM YYYY'),
+        'Estimate Stock Availability': r.estimate
+      };
+    });
+    console.log(data);
+    return this.convertToCSV(keys, data);
   }
 
   checkDisabilityStatus() {
@@ -115,6 +143,11 @@ export class ReportsComponent implements OnInit {
       this.deliveryReportBtnDisabled = false;
     } else {
       this.deliveryReportBtnDisabled = true;
+    }
+    if (this.branchIdForInventoryReport) {
+      this.inventoryReportBtnDisabled = false;
+    } else {
+      this.inventoryReportBtnDisabled = true;
     }
   }
 
@@ -140,6 +173,7 @@ export class ReportsComponent implements OnInit {
       }
     );
   }
+
   wrapDeliveryReportResults(rows) {
     let keys = ['Product Name', 'Product Code', 'Delivered To', 'Date', 'Quantity', 'Product Price', 'Subtotal'];
     let data = rows.map(r => {
@@ -149,12 +183,12 @@ export class ReportsComponent implements OnInit {
         'Delivered To': r.branch_name,
         'Date' : moment(r.counting_date).format('YYYY-MM-DD'),
         'Quantity': r.real_delivery,
-        'Product Price': r.product_price ? '£' + r.product_price.substring(1) : '',
-        'Subtotal': r.subtotal ? '£' + r.subtotal.substring(1) : 0,
+        'Product Price': r.product_price ? '£' + r.product_price : '',
+        'Subtotal': r.subtotal ? '£' + r.subtotal : 0,
       };
     });
     let total = rows.reduce((sum, r) => { // finding total
-      return sum + (r.subtotal ? parseInt(r.subtotal.substring(1), 10) : 0);
+      return sum + (r.subtotal ? parseInt(r.subtotal, 10) : 0);
     }, 0);
     data.push({
       'Product Name': 'Total',
@@ -168,11 +202,9 @@ export class ReportsComponent implements OnInit {
     products = products.filter(product => {
       return product.prep_unit_is_kitchen === branch.is_kitchen;
     });
-    console.log('filtered');
-    console.log(products);
     let keys = ['Product Id', 'Name', 'Code', 'Size', 'Measuring Unit', 'Price', 'Preparing Unit Name', 'Min Quantity', 'Max Quantity',
       'Usage', 'Is Overridden', 'Monday Coef.', 'Tuesday Coef.', 'Wednesday Coef.', 'Thursday Coef.', 'Friday Coef.', 'Friday Coef.',
-      'Saturday Coef.', 'Sunday Coef.'];
+      'Saturday Coef.', 'Sunday Coef.', 'Inventory Counting Recursion'];
     let data = products.map(p => {
       return {
         'Product Id': p.pid,
@@ -185,6 +217,7 @@ export class ReportsComponent implements OnInit {
         'Min Quantity': p.default_min,
         'Max Quantity': p.default_max,
         'Is Overridden': typeof p.isOverridden !== 'undefined' ? p.isOverridden : false,
+        'Inventory Counting Recursion': p.recursion,
         'Usage': p.default_usage,
         'Monday Coef.': p.default_mon_multiple,
         'Tuesday Coef.': p.default_tue_multiple,
@@ -203,8 +236,7 @@ export class ReportsComponent implements OnInit {
   convertAllProductsToCSV(products) {
     let keys = ['Product Id', 'Name', 'Code', 'Size', 'Measuring Unit', 'Price', 'Preparing Unit Name', 'Min Quantity', 'Max Quantity',
       'Usage', 'Monday Coef.', 'Tuesday Coef.', 'Wednesday Coef.', 'Thursday Coef.', 'Friday Coef.', 'Friday Coef.',
-      'Saturday Coef.', 'Sunday Coef.'];
-    console.log(products);
+      'Saturday Coef.', 'Sunday Coef.', 'Inventory Counting Recursion'];
     let data = products.map(p => {
       return {
         'Product Id': p.pid,
@@ -224,6 +256,7 @@ export class ReportsComponent implements OnInit {
         'Friday Coef.': p.default_fri_multiple,
         'Saturday Coef.': p.default_sat_multiple,
         'Sunday Coef.': p.default_sun_multiple,
+        'Inventory Counting Recursion': p.recursion,
       };
     });
     return this.convertToCSV(keys, data);

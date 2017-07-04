@@ -44,12 +44,12 @@
     <h2>Inventory Counting Report</h2>
     <div class="row">
       <div class="col-xs-3 col-lg-2">
-        <md-select placeholder="Branch" class="branch" [(ngModel)]="branchIdForInventoryReport">
+        <md-select placeholder="Branch" class="branch" [(ngModel)]="branchIdForInventoryReport" (change)="checkDisabilityStatus()">
           <md-option *ngFor="let branch of branchesWithoutAllOption" [value]="branch.id">{{branch.name}}</md-option>
         </md-select>
       </div>
       <div class="col-xs-9 col-sm-6 col-lg-4">
-        <button type="button" class="btn btn-default btn-block" (click)="prepareInventoryCountingReport()">
+        <button type="button" class="btn btn-default btn-block" (click)="prepareInventoryCountingReport()" [disabled]="inventoryReportBtnDisabled">
           <i class="fa fa-download" aria-hidden="true"></i> Download inventory counting report
         </button>
       </div>
