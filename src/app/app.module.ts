@@ -30,6 +30,7 @@ import { DeliveryFormComponent } from './delivery-form/delivery-form.component';
 import { PrintViewerComponent } from './print-viewer/print-viewer.component';
 import {PrintService} from "./print.service";
 import {WindowRef} from "./WindowRef";
+import { ReportsComponent } from './reports/reports.component';
 
 
 @NgModule({
@@ -50,6 +51,7 @@ import {WindowRef} from "./WindowRef";
     InventoryFormComponent,
     DeliveryFormComponent,
     PrintViewerComponent,
+    ReportsComponent,
   ],
   entryComponents: [
     PrintViewerComponent
@@ -70,6 +72,7 @@ import {WindowRef} from "./WindowRef";
       {path: 'override', component: OverrideFormComponent, canActivate: [LoggedInGuard]},
       {path: 'inventory', component: InventoryFormComponent, canActivate: [LoggedInGuard]},
       {path: 'delivery', component: DeliveryFormComponent, canActivate: [LoggedInGuard]},
+      {path: 'reports', component: ReportsComponent, canActivate: [LoggedInGuard]}
     ]),
   ],
   providers: [AuthService, RestService, LoggedInGuard, MessageService, PrintService, WindowRef],

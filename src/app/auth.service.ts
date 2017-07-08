@@ -12,6 +12,7 @@ export class AuthService {
   public userType = '';
   public unitName = '';
   public isKitchen: boolean;
+  public unit_id : number;
   auth$ = this.authStream.asObservable();
   originBeforeLogin = '/';
 
@@ -52,6 +53,7 @@ export class AuthService {
     this.unitName = data.name;
     this.userType = data.userType;
     this.isKitchen = data.isKitchen;
+    this.unit_id = data.uid;
     this.authStream.next(true);
 
     let url: string = this.originBeforeLogin;
@@ -70,7 +72,7 @@ export class AuthService {
           this.router.navigate(['delivery']);
       }
       else if(this.userType === 'admin'){
-        if(url.indexOf('units') !== -1 || url.indexOf('products') !== -1 || url.indexOf('override') !== -1)
+        if(url.indexOf('units') !== -1 || url.indexOf('products') !== -1 || url.indexOf('override') !== -1 || url.indexOf('reports') !== -1)
           this.router.navigate([url]);
         else
           this.router.navigate(['']);

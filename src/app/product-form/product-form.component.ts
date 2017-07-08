@@ -58,7 +58,6 @@ export class ProductFormComponent implements OnInit {
         }
 
         this.refreshProductsDropDown();
-
       },
       (err) => {
         console.log(err.message);
