@@ -100,12 +100,11 @@ export class ReportsComponent implements OnInit {
 
   prepareInventoryCountingReport() {
     if (!this.branchIdForInventoryReport) {
-      alert('Please select a branch');
+      this.messageService.message('Please select a branch');
       return;
     }
     this.restService.get('reports/inventory_counting/' + this.branchIdForInventoryReport).subscribe(
       (data) => {
-        console.log(data);
         let branch = this.branches.find(unit => {
           return unit.id === this.branchIdForInventoryReport;
         });
@@ -134,7 +133,6 @@ export class ReportsComponent implements OnInit {
         'Estimate Stock Availability': r.estimate
       };
     });
-    console.log(data);
     return this.convertToCSV(keys, data);
   }
 
@@ -153,11 +151,17 @@ export class ReportsComponent implements OnInit {
 
   prepareDeliveryReport() {
     if (!this.startDate || !this.endDate) {
-      alert('Please select a date range');
+      this.messageService.message('Please select a date range');
       return;
     }
-    let start_date = moment(this.startDate).format('YYYY-MM-DD');
-    let end_date = moment(this.endDate).format('YYYY-MM-DD');
+    let startDateObj = moment(this.startDate);
+    let endDateObj = moment(this.endDate);
+    if (startDateObj.isAfter(endDateObj)) {
+      this.messageService.warn('Selected date range is not valid');
+      return;
+    }
+    let start_date = startDateObj.format('YYYY-MM-DD');
+    let end_date = endDateObj.format('YYYY-MM-DD');
     let url: string;
     if (this.branchIdForDeliveryReport === 0) { // no branch selected, query for all branches
         url = 'reports/delivery/' + start_date + '/' + end_date;
@@ -188,11 +192,11 @@ export class ReportsComponent implements OnInit {
       };
     });
     let total = rows.reduce((sum, r) => { // finding total
-      return sum + (r.subtotal ? parseInt(r.subtotal, 10) : 0);
+      return sum + (r.subtotal ? parseFloat(r.subtotal) : 0);
     }, 0);
     data.push({
       'Product Name': 'Total',
-      'Subtotal': '£' + total
+      'Subtotal': '£' + total.toFixed(2)
     });
     return this.convertToCSV(keys, data);
   }
@@ -256,7 +260,7 @@ export class ReportsComponent implements OnInit {
         'Friday Coef.': p.default_fri_multiple,
         'Saturday Coef.': p.default_sat_multiple,
         'Sunday Coef.': p.default_sun_multiple,
-        'Inventory Counting Recursion': p.recursion,
+        'Inventory Counting Recursion': p.recursion.replace(/,/g, ' - ') // it should not include ','
       };
     });
     return this.convertToCSV(keys, data);
