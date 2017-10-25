@@ -43,7 +43,7 @@ export class PrintService{
       obj['realDelivery'] = item.realDelivery;
       obj['currentStock'] = item.stock;
       obj['stockAfterDelivery'] = item.realDelivery + item.stock;
-      obj['stockSurplusDeficit'] = item.realDelivery - item.minDelivery;
+      obj['stockSurplusDeficit'] = item.realDelivery + item.stock - item.max;
 
       result.push(obj);
     }

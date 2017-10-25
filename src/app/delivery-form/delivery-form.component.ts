@@ -419,11 +419,11 @@ export class DeliveryFormComponent implements OnInit {
   submitDelivery(deliveryModel: DeliveryModel){
     for(let delItem of deliveryModel._deliveries){
       if(delItem.realDelivery === null){
-        this.msgService.warn("The product '" + delItem.productName + "' has no 'realDelivery' value");
+        this.msgService.warn("Delivery data are submitted, but delivery value of '" + delItem.productName + "' was blank.");
         return;
       }
       else if(delItem.realDelivery === 0){
-        this.msgService.warn("The 'realDelivery' value of " + delItem.productName + " is zero");
+        this.msgService.warn("Delivery data are submitted, but delivery value of '" + delItem.productName + "' was zero");
       }
 
       deliveryModel._isSubmitted = true;
@@ -437,6 +437,7 @@ export class DeliveryFormComponent implements OnInit {
           (data) => {
             delItem.state = 'added';
             delItem.id = data;
+            this.msgService.message('Delivery data are submitted');
           },
           (err) => {
             deliveryModel._isSubmitted = false;
@@ -598,7 +599,7 @@ export class DeliveryFormComponent implements OnInit {
               else
                 tempDelivery.realDelivery = item.realDelivery;
               tempDelivery.minDelivery = (item.min - item.stock) < 0 ? 0 : (item.min - item.stock);
-              tempDelivery.maxDelivery = item.max - item.stock;
+              tempDelivery.maxDelivery = item.max - item.stock >= 0 ? item.max - item.stock : 0;
               tempDelivery.min = item.min;
               tempDelivery.max = item.max;
               tempDelivery.stock = item.stock;
