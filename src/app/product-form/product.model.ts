@@ -20,6 +20,7 @@ export class ProductModel {
     this._product.isOverridden = product.isOverridden;
     this._product.id = product.id;
     this._product.name = product.name;
+    this._product.price = product.price;
     this._product.code = product.code;
     this._product.size = product.size;
     this._product.measuringUnit = product.measuringUnit;
@@ -220,7 +221,7 @@ export class ProductModel {
           break;
         case 'price': {
           if (object.price) {
-            tempProduct.price = parseFloat(object.price.startsWith('$') ? object.price.substring(1) : object.price);
+            tempProduct.price = parseFloat(object.price.substring(1));
           } else {
             tempProduct.price = null;
           }

@@ -42,7 +42,6 @@ export class ProductFormComponent implements OnInit {
     this.restService.get('product').subscribe(
       (data) => {
         this.productModels = [];
-
         for (let productObj of data) {
           let tempProduct = ProductModel.fromAnyObject(productObj);
 
