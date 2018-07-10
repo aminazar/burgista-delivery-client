@@ -4,24 +4,24 @@
 
 import {Inventory} from "./inventory";
 
-export class InventoryModel{
+export class InventoryModel {
   _inventories: Inventory[] = [];
   _unitName: string = '';
 
-  constructor(unitName: string){
+  constructor(unitName: string) {
     this._unitName = unitName;
     this._inventories = [];
   }
 
-  clear(){
+  clear() {
     this._inventories = [];
   }
 
-  add(item: Inventory){
+  add(item: Inventory) {
     this._inventories.push(item);
   }
 
-  get(id): Inventory{
+  get(id): Inventory {
     return this._inventories.find((el) => {
       return el.id === id;
     });
@@ -33,13 +33,13 @@ export class InventoryModel{
     });
   }
 
-  delete(id){
+  delete(id) {
     this._inventories = this._inventories.filter((el) => {
       return el.id !== id;
     });
   }
 
-  static toAnyObject(inventory: Inventory): any{
+  static toAnyObject(inventory: Inventory): any {
     let resObj = {};
 
     resObj['bsddid'] = inventory.id;
@@ -52,11 +52,11 @@ export class InventoryModel{
     return resObj;
   }
 
-  static fromAnyObject(object: any): Inventory{
+  static fromAnyObject(object: any): Inventory {
     let resInventory = new Inventory();
 
-    for(let prop in object){
-      switch (prop){
+    for (let prop in object) {
+      switch (prop) {
         case 'bsddid': resInventory.id = object[prop];
           break;
         case 'product_code': resInventory.productCode = object[prop];
