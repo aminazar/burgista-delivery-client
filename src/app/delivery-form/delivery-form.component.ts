@@ -68,13 +68,13 @@ export class DeliveryFormComponent implements OnInit {
     this.overallDeliveryModel._shouldDisabled = true;
     this.unitName = this.authService.unitName;
     this.isKitchen = this.authService.isKitchen;
+    this.currentDate = new Date();
+    this.selectedDate = new Date();
     this.restService.get('date').subscribe(d => {
       this.currentDate = new Date(d);
       this.selectedDate = new Date(d);
     }, err => {
       console.error(err);
-      this.currentDate = new Date();
-      this.selectedDate = new Date();
     });
 
 
@@ -477,6 +477,7 @@ export class DeliveryFormComponent implements OnInit {
     this.printService._deliveryModels = this.receiversDeliveryModels;
     this.printService._deliveryModels['All'] = this.overallDeliveryModel;
     this.printService._showWarningMessage = !this.receiversDeliveryModels[this.receiverName]._isPrinted;
+    this.printService.currentDate = this.currentDate;
 
     let dialogRef = this.dialog.open(PrintViewerComponent,{
       height: '600px',

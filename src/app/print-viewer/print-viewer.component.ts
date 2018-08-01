@@ -25,6 +25,7 @@ export class PrintViewerComponent implements OnInit {
     this.unitName_title = this.printService._unitSupplier;
     this.unitName_subTitle = this.printService._unitConsumer;
     this.showWarningMessage = this.printService._showWarningMessage;
+    this.currentDate = moment(this.printService.currentDate).format('D MMMM YYYY');
 
     this.itemList = this.printService.getItems();
   }

@@ -56,10 +56,13 @@ export class InventoryFormComponent implements OnInit {
   ngOnInit() {
     this.unitName = this.authService.unitName;
 
+    this.currentDate = new Date();
+    this.selectedDate = new Date();
+
     this.restService.get('date').subscribe(d => {
-      this.currentDate = d;
-      this.selectedDate = d;
-    });
+      this.currentDate = new Date(d);
+      this.selectedDate = new Date(d);
+    }, err => console.error(err));
 
     if (this.inventoryModel === null || this.inventoryModel === undefined) {
       this.inventoryModel = new InventoryModel(this.unitName);
