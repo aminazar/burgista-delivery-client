@@ -1,12 +1,12 @@
 import {Component, OnInit, style, trigger, state, transition, animate, ViewChild} from '@angular/core';
-import {FormControl} from "@angular/forms";
+import {FormControl} from '@angular/forms';
 
-import {AuthService} from "../auth.service";
-import {RestService} from "../rest.service";
-import {InventoryModel} from "./inventory.model";
-import {Inventory} from "./inventory";
-import {setTimeout} from "timers";
-import {Product} from "../product-form/product";
+import {AuthService} from '../auth.service';
+import {RestService} from '../rest.service';
+import {InventoryModel} from './inventory.model';
+import {Inventory} from './inventory';
+import {setTimeout} from 'timers';
+import {Product} from '../product-form/product';
 import * as moment from 'moment';
 
 
@@ -16,9 +16,9 @@ import * as moment from 'moment';
   styleUrls: ['./inventory-form.component.css'],
   animations: [
     trigger('itemState', [
-      state('exist',   style({opacity: 1, transform: 'translateX(0) scale(1)'})),
-      state('delete',   style({opacity: 0, display: 'none', transform: 'translateX(0) scale(1)'})),
-      state('sent',   style({opacity: 0, display: 'none', transform: 'translateX(0) scale(1)'})),
+      state('exist', style({opacity: 1, transform: 'translateX(0) scale(1)'})),
+      state('delete', style({opacity: 0, display: 'none', transform: 'translateX(0) scale(1)'})),
+      state('sent', style({opacity: 0, display: 'none', transform: 'translateX(0) scale(1)'})),
       transition('exist => delete', [
         animate('1s ease-out', style({
           opacity: 0,
@@ -38,33 +38,37 @@ export class InventoryFormComponent implements OnInit {
   @ViewChild('unopenedPack') unopenedPack;
   @ViewChild('autoNameCode') autoNameCode;
 
-  unitName: string = '';
+  unitName = '';
   inventoryModel: InventoryModel;
   currentDate;
   selectedDate;
-  isSameDates: boolean = true;
-  submitShouldDisabled: boolean = true;
+  isSameDates = true;
+  submitShouldDisabled = true;
   products: Product[] = [];
   productName_Code: string[] = [];
   filteredNameCode: any;
   productNameCodeCtrl: FormControl;
-  waiting: boolean = false;
+  waiting = false;
 
-  constructor(private authService: AuthService, private restService: RestService) { }
+  constructor(private authService: AuthService, private restService: RestService) {
+  }
 
   ngOnInit() {
     this.unitName = this.authService.unitName;
 
-    this.currentDate = new Date();
-    this.selectedDate = new Date();
+    this.restService.get('date').subscribe(d => {
+      this.currentDate = d;
+      this.selectedDate = d;
+    });
 
-    if(this.inventoryModel === null || this.inventoryModel === undefined)
+    if (this.inventoryModel === null || this.inventoryModel === undefined) {
       this.inventoryModel = new InventoryModel(this.unitName);
+    }
 
-    //Fetch data
+    // Fetch data
     this.getInventoryData();
 
-    //Subscribe on autoComplete form
+    // Subscribe on autoComplete form
     this.productNameCodeCtrl = new FormControl();
     this.filteredNameCode = this.productNameCodeCtrl.valueChanges
       .startWith(null)
@@ -77,7 +81,7 @@ export class InventoryFormComponent implements OnInit {
           return el.toLowerCase() === data.toLowerCase();
         });
 
-        if(tempNameObj !== undefined && tempNameObj !== null){
+        if (tempNameObj !== undefined && tempNameObj !== null) {
           let tempInventoryItem = new Inventory();
           tempInventoryItem.id = null;
           tempInventoryItem.unopenedPack = (this.unopenedPack.nativeElement.value !== undefined && this.unopenedPack.nativeElement.value !== null && this.unopenedPack.nativeElement.value !== '') ? this.unopenedPack.nativeElement.value : 0;
@@ -110,8 +114,8 @@ export class InventoryFormComponent implements OnInit {
     return val ? this.productName_Code.filter((p) => new RegExp(val, 'gi').test(p)) : this.productName_Code;
   }
 
-  submitInventoryItem(inventoryItem: Inventory){
-    if(inventoryItem.id === null){            //Should insert
+  submitInventoryItem(inventoryItem: Inventory) {
+    if (inventoryItem.id === null) {            //Should insert
       this.restService.insert('stock', InventoryModel.toAnyObject(inventoryItem)).subscribe(
         (data) => {
           inventoryItem.state = 'sent';
@@ -129,7 +133,7 @@ export class InventoryFormComponent implements OnInit {
         }
       );
     }
-    else{                                     //Should update
+    else {                                     //Should update
       this.restService.update('stock', inventoryItem.id, InventoryModel.toAnyObject(inventoryItem)).subscribe(
         (data) => {
           inventoryItem.state = 'sent';
@@ -149,16 +153,16 @@ export class InventoryFormComponent implements OnInit {
     }
   }
 
-  submitInventories(){
+  submitInventories() {
     let newItems = [];
     let oldItems = [];
 
-    for(let invItem of this.inventoryModel._inventories){
+    for (let invItem of this.inventoryModel._inventories) {
       // this.submitInventoryItem(invItem);
-      if(invItem.id === null){    //Add to newItems
+      if (invItem.id === null) {    //Add to newItems
         newItems.push(InventoryModel.toAnyObject(invItem));
       }
-      else{                       //Add to oldItems
+      else {                       //Add to oldItems
         oldItems.push(InventoryModel.toAnyObject(invItem));
       }
     }
@@ -183,30 +187,30 @@ export class InventoryFormComponent implements OnInit {
         this.waiting = false;
         console.log(err);
       }
-    )
+    );
   }
 
-  removeInventoryItem(inventoryItem: Inventory){
+  removeInventoryItem(inventoryItem: Inventory) {
     inventoryItem.state = 'delete';
 
     setTimeout(() => {
-      this.inventoryModel._inventories = this.inventoryModel._inventories.filter((el) => {
-        return el.productName !== inventoryItem.productName;
-      });
+        this.inventoryModel._inventories = this.inventoryModel._inventories.filter((el) => {
+          return el.productName !== inventoryItem.productName;
+        });
 
-      this.productName_Code.push(inventoryItem.productCode + ' - ' + inventoryItem.productName);
-    }
-    ,1000);
+        this.productName_Code.push(inventoryItem.productCode + ' - ' + inventoryItem.productName);
+      }
+      , 1000);
   }
 
-  disableInventoryItem(inventoryItem: Inventory){
-    if(inventoryItem.unopenedPack === null || inventoryItem.unopenedPack < 0)
+  disableInventoryItem(inventoryItem: Inventory) {
+    if (inventoryItem.unopenedPack === null || inventoryItem.unopenedPack < 0)
       return true;
 
     return false;
   }
 
-  dateChanged(){
+  dateChanged() {
     this.compareDates();
 
     this.inventoryModel.clear();
@@ -216,30 +220,30 @@ export class InventoryFormComponent implements OnInit {
     this.getInventoryData();
   }
 
-  compareDates(){
-    if(this.currentDate.getDate() !== this.selectedDate.getDate())
+  compareDates() {
+    if (this.currentDate.getDate() !== this.selectedDate.getDate())
       this.isSameDates = false;
-    else if(this.currentDate.getMonth() !== this.selectedDate.getMonth())
+    else if (this.currentDate.getMonth() !== this.selectedDate.getMonth())
       this.isSameDates = false;
-    else if(this.currentDate.getFullYear() !== this.selectedDate.getFullYear())
+    else if (this.currentDate.getFullYear() !== this.selectedDate.getFullYear())
       this.isSameDates = false;
     else
       this.isSameDates = true;
   }
 
-  isCountingDatePast(countingDate){
+  isCountingDatePast(countingDate) {
     let tempDate = new Date(countingDate);
-    if(this.currentDate.getFullYear() > tempDate.getFullYear())
+    if (this.currentDate.getFullYear() > tempDate.getFullYear())
       return true;
-    else if(this.currentDate.getMonth() > tempDate.getMonth())
+    else if (this.currentDate.getMonth() > tempDate.getMonth())
       return true;
-    else if(this.currentDate.getDate() > tempDate.getDate())
+    else if (this.currentDate.getDate() > tempDate.getDate())
       return true;
     else
       return false;
   }
 
-  getInventoryData(){
+  getInventoryData() {
     let dateParam = moment(this.selectedDate).format('YYYYMMDD');
 
     this.restService.get('stock/' + dateParam).subscribe(
@@ -249,14 +253,14 @@ export class InventoryFormComponent implements OnInit {
         this.products = [];
 
         this.productName_Code = data.filter((el) => el.bsddid === null).sort((a, b) => {// Add to autoComplete list
-          if(a.product_name.toLowerCase() > b.product_name.toLowerCase())
+          if (a.product_name.toLowerCase() > b.product_name.toLowerCase())
             return 1;
-          else if(a.product_name.toLowerCase() < b.product_name.toLowerCase())
+          else if (a.product_name.toLowerCase() < b.product_name.toLowerCase())
             return -1;
-          else{
-            if(a.product_code.toLowerCase() > b.product_code.toLowerCase())
+          else {
+            if (a.product_code.toLowerCase() > b.product_code.toLowerCase())
               return 1;
-            else if(a.product_code.toLowerCase() < b.product_code.toLowerCase())
+            else if (a.product_code.toLowerCase() < b.product_code.toLowerCase())
               return -1;
             else
               return 0;
@@ -276,10 +280,10 @@ export class InventoryFormComponent implements OnInit {
           }
         );
 
-        for(let item of data){
+        for (let item of data) {
           this.checkDisability(item);
 
-          if(item.bsddid === null) {
+          if (item.bsddid === null) {
             let tempProduct = new Product();
             tempProduct.id = item.pid;
             tempProduct.code = item.product_code;
@@ -289,10 +293,10 @@ export class InventoryFormComponent implements OnInit {
             // this.productName_Code.push(item.product_code + ' - ' + item.product_name);
           }
           else {
-            if(item.counting_date === null){
+            if (item.counting_date === null) {
               console.log('Error in data fetched from server');
             }
-            else{
+            else {
               let tempInventory = new Inventory();
 
               tempInventory.id = item.bsddid;
@@ -301,12 +305,12 @@ export class InventoryFormComponent implements OnInit {
               tempInventory.productName = item.product_name;
               tempInventory.unopenedPack = item.product_count;
 
-              if(item.last_count === null)
+              if (item.last_count === null)
                 tempInventory.lastCount = null;
-              else{
+              else {
                 let lastCount = moment(item.last_count).format('YYYY-MM-DD');
 
-                if(lastCount === 'Invalid date')
+                if (lastCount === 'Invalid date')
                   tempInventory.lastCount = this.currentDate;
                 else
                   tempInventory.lastCount = new Date(lastCount);
@@ -322,9 +326,9 @@ export class InventoryFormComponent implements OnInit {
 
         //Sort data
         this.inventoryModel._inventories.sort(function (a, b) {
-          if((!a.shouldCountToday && a.shouldIncluded) && !(!b.shouldCountToday && b.shouldIncluded))
+          if ((!a.shouldCountToday && a.shouldIncluded) && !(!b.shouldCountToday && b.shouldIncluded))
             return -1;
-          else if(!(!a.shouldCountToday && a.shouldIncluded) && (!b.shouldCountToday && b.shouldIncluded))
+          else if (!(!a.shouldCountToday && a.shouldIncluded) && (!b.shouldCountToday && b.shouldIncluded))
             return 1;
           else if (a.productName.toLowerCase() > b.productName.toLowerCase())
             return 1;
@@ -345,18 +349,18 @@ export class InventoryFormComponent implements OnInit {
       (err) => {
         console.log(err.message);
       }
-    )
+    );
   }
 
-  checkDisability(item){
+  checkDisability(item) {
     //Check the value to be non negative
-    if(item.unopenedPack < 0)
+    if (item.unopenedPack < 0)
       item.unopenedPack = 0;
 
-    let noValue: boolean = false;
+    let noValue = false;
 
-    for(let invItem of this.inventoryModel._inventories){
-      if(this.disableInventoryItem(invItem)){
+    for (let invItem of this.inventoryModel._inventories) {
+      if (this.disableInventoryItem(invItem)) {
         noValue = true;
         break;
       }
@@ -365,7 +369,7 @@ export class InventoryFormComponent implements OnInit {
     this.submitShouldDisabled = noValue;
   }
 
-  showProductList(){
+  showProductList() {
     this.productNameCodeCtrl.setValue('');
   }
 }

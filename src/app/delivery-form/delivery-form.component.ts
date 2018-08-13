@@ -68,8 +68,15 @@ export class DeliveryFormComponent implements OnInit {
     this.overallDeliveryModel._shouldDisabled = true;
     this.unitName = this.authService.unitName;
     this.isKitchen = this.authService.isKitchen;
-    this.selectedDate = new Date();
-    this.currentDate = new Date();
+    this.restService.get('date').subscribe(d => {
+      this.currentDate = new Date(d);
+      this.selectedDate = new Date(d);
+    }, err => {
+      console.error(err);
+      this.currentDate = new Date();
+      this.selectedDate = new Date();
+    });
+
 
     this.receiversDeliveryModels = {All: this.overallDeliveryModel};
     let tempAllDelivery: Delivery = new Delivery();
