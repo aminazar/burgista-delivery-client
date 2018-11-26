@@ -200,7 +200,6 @@ export class OverrideFormComponent implements OnInit {
     this.restService.update('override', this.filteredProductModel._product.id + restUrl,
                             ProductModel.toAnyObjectOverride(tempProductModel[0].getDifferentValues(this.filteredProductModel._product))).subscribe(
       (data) => {
-        this.filteredProductModel._product = tempProductModel[0]._product;
         this.filteredProductModel._product.isOverridden = true;
 
         //Update productModels list

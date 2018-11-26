@@ -5,9 +5,9 @@
     {{freqsName[freqsConst.indexOf(options.freq)]}}{{options.interval>1?'s':''}}
   </md-hint>
 </md-input-container><br/>
-<md-button-toggle-group [(ngModel)]="options.freq" [vertical]="true" (ngModelChange)="onChange()">
-  <md-button-toggle *ngFor="let freq of freqs;let i = index;" [value]="freqsConst[i]">
-    {{freq}}
+<md-button-toggle-group [(ngModel)]="freq" [vertical]="true" (ngModelChange)="onChange()">
+  <md-button-toggle *ngFor="let f of freqs;let i = index;" [value]="freqsConst[i]">
+    {{f}}
   </md-button-toggle>
 </md-button-toggle-group>
 <span *ngIf="showMonthOptions">
@@ -39,7 +39,7 @@
                     (change)="weekposChange($event)">{{weekposName[i]}}</md-button-toggle>
 </md-button-toggle-group>
   </span>
-<md-button-toggle-group *ngIf="showWeekdays||monthlyInputMode==='week'" multiple [vertical]="true">
+<md-button-toggle-group *ngIf="showWeekdays" multiple [vertical]="true">
   <md-button-toggle *ngFor="let weekday of weekdays;let i = index;" [value]="weekdaysConst[i]"
                     [checked]="byweekday.indexOf(weekdaysConst[i])!==-1" (change)="byweekdayChange($event)">
     {{weekday}}

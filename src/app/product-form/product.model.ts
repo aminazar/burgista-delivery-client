@@ -5,7 +5,12 @@
 import { Product } from './product';
 import {hasProperties} from "codelyzer/util/astQuery";
 import {BehaviorSubject} from "rxjs";
-
+import {RRule} from 'rrule';
+const rrulePureString = function(str:string) {
+  const options = RRule.fromString(str).options;
+  options.dtstart = new Date('2018-01-01');
+  return RRule.optionsToString(options).replace(/\nRRULE:/g,';').split(';').filter(r => !['HOUR','MINUTE','SECOND'].map(s => r.startsWith('BY' + s)).reduce((x,y)=>x || y, false)).sort().join(';');
+};
 export class ProductModel {
   _product: Product;
   waiting : BehaviorSubject<any> = new BehaviorSubject({
@@ -38,19 +43,21 @@ export class ProductModel {
     let isDiff: boolean = false;
     let isNull: boolean = false;
 
-    for(let prop in product){
+    for(let prop in product) if (prop !== 'price') {
       if(prop === 'coefficients'){
         for(let day in product.coefficients){
           if(product.coefficients[day] === null)
             isNull = true;
-          if(this._product.coefficients[day] !== product.coefficients[day])
+          if(+this._product.coefficients[day] !== +product.coefficients[day])
             isDiff = true;
         }
       }
-      else{
+      else {
         if(product[prop] === null)
           isNull = true;
-        if(this._product[prop] !== product[prop])
+        if(prop === 'countingRecursion' && rrulePureString(this._product[prop]) !== rrulePureString(product[prop]))
+          isDiff = true;
+        if(prop !== 'countingRecursion' && this._product[prop] !== product[prop])
           isDiff = true;
       }
     }
