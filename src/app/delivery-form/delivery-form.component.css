@@ -12,3 +12,15 @@
 .normalColoring{
   color: black;
 }
+
+.waiting{
+  margin-top: 60px !important;
+  margin-bottom: 60px !important;
+  align-content: center !important;
+}
+
+.waitingMessage{
+  color: white;
+  font-weight: bold;
+  text-align: center;
+}

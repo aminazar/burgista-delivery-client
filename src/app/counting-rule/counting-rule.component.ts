@@ -12,7 +12,7 @@ export class CountingRuleComponent implements OnInit {
 
   @Input() //To have a trigger to redo validation after blanking the form after add
   set minQty(val) {
-    
+
     if (val === -12345678){
       this._mq = null;
       this.ngOnInit()
@@ -67,10 +67,11 @@ export class CountingRuleComponent implements OnInit {
       this.minQty = 0;
 
     this.minQtyChange.emit(this.minQty);
-    if (this.minQty!==0&&!this.minQty) {
-      this.sendError('The Min Qty should not be blank', 0);
-    }
-    else this.sendError('', 0);
+    // if (this.minQty !== 0 && !this.minQty) {
+    //   this.sendError('The Min Qty should not be blank', 0);
+    // }
+    // else this.sendError('', 0);
+    this.sendError('', 0);
     this.checkMinMax()
   }
 
@@ -79,25 +80,30 @@ export class CountingRuleComponent implements OnInit {
       this.maxQty = 0;
 
     this.maxQtyChange.emit(this.maxQty);
-    if (this.maxQty!==0&&!this.maxQty) {
-      this.sendError('The Max Qty should not be blank', 1);
-    }
-    else this.sendError('', 1);
+    // if (this.maxQty!==0&&!this.maxQty) {
+    //   this.sendError('The Max Qty should not be blank', 1);
+    // }
+    // else this.sendError('', 1);
+    this.sendError('', 1);
     this.checkMinMax()
   }
 
   recurChange(event) {
-    if(event.error)
-      this.sendError(`Recursion rule warning: ${event.error}`, 2)
-    else this.sendError('', 2);
     this.recursionRuleChange.emit(event.value);
+
+    if(event.error)
+      this.sendError(`Recursion rule warning: ${event.error}`, 2);
+    else
+      this.sendError('', 2);
   }
 
   checkMinMax() {
-    if (this.minQty > this.maxQty) {
-      this.sendError('The Min Qty should be less than or equal to Max Qty', 3);
+    if(this.minQty !== null && this.maxQty !== null) {
+      if (this.minQty > this.maxQty) {
+        this.sendError('The Min Qty should be less than or equal to Max Qty', 3);
+      }
+      else this.sendError('', 3);
     }
-    else this.sendError('', 3);
   }
 
   sendError(msg, index) {

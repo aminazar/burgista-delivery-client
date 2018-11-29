@@ -1,4 +1,4 @@
-<md-card style="background-color: #607D8B; border-radius: 7px; text-align: left; margin: 10px;">
+<md-card class="outerCard">
   <div class="flex-container"
        fxLayout="row" fxLayout.xs="column" fxLayout.sm="column"
        fxLayoutAlign="center center" fxLayoutAlign.xs="start start" fxLayoutAlign.sm="start start">
@@ -6,40 +6,64 @@
     <material-datepicker class="flex-item" fxFlex="30" [(date)]="selectedDate" (onSelect)="dateChanged()">
     </material-datepicker>
   </div>
-  <md-tab-group class="materialTab" [(selectedIndex)]="selectedIndex" (selectChange)="tabChanged()">
+  <md-tab-group *ngIf="dataIsReady" class="materialTab" [(selectedIndex)]="selectedIndex" (selectChange)="tabChanged()">
     <md-tab label="All" *ngIf="overallDeliveryModel._deliveries !== undefined">
       <md-card class="innerCard">
         <md-card-title>To Do: Delivery</md-card-title>
         <md-card-content>
-          <md-card>
+          <md-card style="overflow: auto;">
             <md-card-content>
-              <md-grid-list cols="6" rowHeight="50px">
-                <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
-                <md-grid-tile [colspan]="1" [rowspan]="1">Code</md-grid-tile>
-                <md-grid-tile [colspan]="1" [rowspan]="1">Product</md-grid-tile>
-                <md-grid-tile [colspan]="1" [rowspan]="1">Real Delivery</md-grid-tile>
-                <md-grid-tile [colspan]="1" [rowspan]="1">Min</md-grid-tile>
-                <md-grid-tile [colspan]="1" [rowspan]="1">Max</md-grid-tile>
-              </md-grid-list>
-              <md-grid-list cols="6" rowHeight="50px">
-                <div *ngFor="let delItem of overallDeliveryModel._deliveries">
-                  <md-grid-tile [colspan]="1" [rowspan]="1" *ngIf="delItem.id !== null"></md-grid-tile>
-                  <md-grid-tile [colspan]="1" [rowspan]="1" *ngIf="delItem.id === null">
-                    <md-chip-list>
-                      <md-chip color="primary" selected="true">Added</md-chip>
-                    </md-chip-list>
-                  </md-grid-tile>
-                  <md-grid-tile [colspan]="1" [rowspan]="1">{{delItem.productCode}}</md-grid-tile>
-                  <md-grid-tile [colspan]="1" [rowspan]="1">{{delItem.productName}}</md-grid-tile>
-                  <md-grid-tile [colspan]="1" [rowspan]="1">
-                    <md-input-container>
-                      <input mdInput type="number" disabled="disabled" placeholder="Real Delivery" [(ngModel)]="delItem.realDelivery"/>
-                    </md-input-container>
-                  </md-grid-tile>
-                  <md-grid-tile [colspan]="1" [rowspan]="1">{{delItem.min}}</md-grid-tile>
-                  <md-grid-tile [colspan]="1" [rowspan]="1">{{delItem.max}}</md-grid-tile>
-                </div>
-              </md-grid-list>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <td></td>
+                    <td>Code</td>
+                    <td>Product</td>
+                    <td>Real Delivery</td>
+                    <td>Min Delivery</td>
+                    <td>Max Delivery</td>
+                    <td>Min Required</td>
+                    <td>Max Stock Capacity</td>
+                    <td>Branches Stock</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let delItem of overallDeliveryModel._deliveries">
+                    <td *ngIf="delItem.id !== null"></td>
+                    <td *ngIf="delItem.id === null">
+                      <md-chip-list>
+                        <md-chip color="primary" selected="true">Added</md-chip>
+                      </md-chip-list>
+                    </td>
+                    <td>{{delItem.productCode}}</td>
+                    <td>{{delItem.productName}}</td>
+                    <td>{{delItem.realDelivery}}</td>
+                    <td *ngIf="delItem.minDelivery !== null">{{delItem.minDelivery}}</td>
+                    <td *ngIf="delItem.minDelivery === null"><i class="fa fa-question warnColoring" aria-hidden="true"></i></td>
+                    <td *ngIf="delItem.maxDelivery !== null">{{delItem.maxDelivery}}</td>
+                    <td *ngIf="delItem.maxDelivery === null"><i class="fa fa-question warnColoring" aria-hidden="true"></i></td>
+                    <td>{{delItem.min}}</td>
+                    <td>{{delItem.max}}</td>
+                    <td *ngIf="delItem.stock !== null">{{delItem.stock}}</td>
+                    <td *ngIf="delItem.stock === null"><i class="fa fa-question warnColoring" aria-hidden="true"></i></td>
+                </tr>
+                  <br/>
+                  <br/>
+                  <tr>
+                    <td></td>
+                    <td colspan="2">Sum</td>
+                    <td>{{receiversSumDeliveries['All'].realDelivery}}</td>
+                    <td *ngIf="receiversSumDeliveries['All'].minDelivery !== null">{{receiversSumDeliveries['All'].minDelivery}}</td>
+                    <td *ngIf="receiversSumDeliveries['All'].minDelivery === null"><i class="fa fa-question warnColoring" aria-hidden="true"></i></td>
+                    <td *ngIf="receiversSumDeliveries['All'].maxDelivery !== null">{{receiversSumDeliveries['All'].maxDelivery}}</td>
+                    <td *ngIf="receiversSumDeliveries['All'].maxDelivery === null"><i class="fa fa-question warnColoring" aria-hidden="true"></i></td>
+                    <td>{{receiversSumDeliveries['All'].min}}</td>
+                    <td>{{receiversSumDeliveries['All'].max}}</td>
+                    <td *ngIf="receiversSumDeliveries['All'].stock !== null">{{receiversSumDeliveries['All'].stock}}</td>
+                    <td *ngIf="receiversSumDeliveries['All'].stock === null"><i class="fa fa-question warnColoring" aria-hidden="true"></i></td>
+                  </tr>
+                </tbody>
+              </table>
             </md-card-content>
           </md-card>
         </md-card-content>
@@ -52,6 +76,10 @@
       </md-card>
     </md-tab>
     <md-tab *ngFor="let rcv of receivers" class="delayedTab">
+      <template md-tab-label>
+        <i *ngIf="rcv.warn === 'count'" class="fa fa-exclamation warnColoring" aria-hidden="true"></i>
+        {{rcv.name}}
+      </template>
       <template md-tab-label *ngIf="rcv.warn === 'login'">
         <i class="fa fa-exclamation warnColoring" aria-hidden="true"></i>
         <i class="fa fa-exclamation warnColoring" aria-hidden="true"></i> {{rcv.name}}
@@ -63,80 +91,148 @@
         {{rcv.name}}
       </template>
       <md-card class="innerCard"
-               *ngIf="receiversDeliveryModels[rcv.name] !== undefined && receiversDeliveryModels[rcv.name] !== null">
+               *ngIf="!isWaiting[rcv.name] && receiversDeliveryModels[rcv.name] !== undefined && receiversDeliveryModels[rcv.name] !== null">
         <md-card-title>To Do: Delivery</md-card-title>
         <md-card-content>
-          <md-card>
+          <md-card style="min-width: 600px !important; overflow-x: auto;">
             <md-card-content>
-              <md-grid-list cols="8" rowHeight="50px">
-                <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
-                <md-grid-tile class="deliveryItem" [colspan]="1" [rowspan]="1">Code</md-grid-tile>
-                <md-grid-tile class="deliveryItem" [colspan]="1" [rowspan]="1">Product</md-grid-tile>
-                <md-grid-tile class="deliveryItem" [colspan]="1" [rowspan]="1">RealDelivery</md-grid-tile>
-                <md-grid-tile [colspan]="1" [rowspan]="1">Min</md-grid-tile>
-                <md-grid-tile [colspan]="1" [rowspan]="1">Max</md-grid-tile>
-                <md-grid-tile [colspan]="1" [rowspan]="1">Stock</md-grid-tile>
-                <md-grid-tile [colspan]="1" [rowspan]="1">Stock Date</md-grid-tile>
-              </md-grid-list>
-              <md-grid-list cols="8" rowHeight="50px">
-                <div *ngFor="let delItem of receiversDeliveryModels[rcv.name]._deliveries">
-                  <md-grid-tile [colspan]="1" [rowspan]="1" *ngIf="delItem.id !== null && delItem.state !== 'added'"></md-grid-tile>
-                  <md-grid-tile [colspan]="1" [rowspan]="1" *ngIf="delItem.id === null && !receiversDeliveryModels[rcv.name]._isPrinted">
+              <table class="table">
+                <thead>
+                <tr>
+                  <td></td>
+                  <td>Code</td>
+                  <td>Product</td>
+                  <td>Real Delivery</td>
+                  <td>Min Delivery</td>
+                  <td>Max Delivery</td>
+                  <td>Min Required</td>
+                  <td>Max Stock Capacity</td>
+                  <td>Current Stock</td>
+                  <td>Stock Date</td>
+                </tr>
+                </thead>
+                <tbody style="height: 200px;">
+                <tr *ngFor="let delItem of receiversDeliveryModels[rcv.name]._deliveries">
+                  <td class="buttonItem" *ngIf="delItem.id !== null && delItem.state !== 'added'"></td>
+                  <td class="buttonItem" *ngIf="delItem.id === null">
                     <button md-mini-fab
                             (click)="removeDeliveryItem(delItem)">
                       <i class="fa fa-times" aria-hidden="true"></i>
                     </button>
-                  </md-grid-tile>
-                  <md-grid-tile [colspan]="1" [rowspan]="1" *ngIf="delItem.id !== null && delItem.state === 'added'">
+                  </td>
+                  <td class="buttonItem" *ngIf="delItem.id !== null && delItem.state === 'added'">
                     <md-chip-list>
                       <md-chip color="primary" selected="true">Added</md-chip>
                     </md-chip-list>
-                  </md-grid-tile>
-                  <md-grid-tile class="deliveryItem" [colspan]="1" [rowspan]="1"
-                                [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.productCode}}</md-grid-tile>
-                  <md-grid-tile class="deliveryItem" [colspan]="1" [rowspan]="1"
-                                [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.productName}}</md-grid-tile>
-                  <md-grid-tile class="deliveryItem" [colspan]="1" [rowspan]="1">
+                  </td>
+                  <td class="codeItem"
+                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                    {{delItem.productCode}}
+                  </td>
+                  <td class="nameItem "
+                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                    {{delItem.productName}}
+                  </td>
+                  <td class="inputItem">
                     <md-input-container>
                       <input mdInput type="number"
                              min="0"
-                             [ngClass]="[(delItem.min !== delItem.realDelivery && isToday) ? 'notEqualValues' : 'equalValues']"
-                             [(disabled)]="!isToday || overallDeliveryModel._isPrinted || receiversDeliveryModels[rcv.name]._shouldDisabled"
+                             [ngClass]="[(rcv.warn ||((delItem.minDelivery > delItem.realDelivery || delItem.maxDelivery < delItem.realDelivery ) && isToday)) ? 'notEqualValues' : 'equalValues']"
+                             [(disabled)]="!isToday"
                              placeholder="Real Delivery"
                              [ngModel]="delItem.realDelivery"
                              (change)="checkRealDeliveryValue($event, delItem)"/>
                     </md-input-container>
-                  </md-grid-tile>
-                  <md-grid-tile [colspan]="1" [rowspan]="1"
-                                [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.min}}</md-grid-tile>
-                  <md-grid-tile [colspan]="1" [rowspan]="1"
-                                [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.max}}</md-grid-tile>
-                  <md-grid-tile [colspan]="1" [rowspan]="1"
-                                [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.stock}}</md-grid-tile>
-                  <md-grid-tile [colspan]="1" [rowspan]="1"
-                                [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.stockDate | date: 'dd MMM yy'}}</md-grid-tile>
-                </div>
-              </md-grid-list>
-              <md-grid-list cols="8" rowHeight="50px"
-                            *ngIf="isToday && !overallDeliveryModel._isPrinted && !receiversDeliveryModels[rcv.name]._shouldDisabled && productsList[rcv.name] !== undefined && productsList[rcv.name].length > 0">
-                <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
-                <md-grid-tile class="deliveryItem" [colspan]="2" [rowspan]="1">
-                  <md-input-container>
-                    <input mdInput type="text" [(disabled)]="receiversDeliveryModels[rcv.name]._shouldDisabled"
-                           class="pnc" placeholder="Product name/code" [mdAutocomplete]="auto" [formControl]="productNameCodeCtrl" #autoNameCode/>
-                    <md-autocomplete #auto="mdAutocomplete">
-                      <md-option *ngFor="let nameCode of filteredNameCode | async" [value]="nameCode">
-                        {{nameCode}}
-                      </md-option>
-                    </md-autocomplete>
-                  </md-input-container>
-                </md-grid-tile>
-                <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
-                <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
-                <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
-                <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
-                <md-grid-tile [colspan]="1" [rowspan]="1"></md-grid-tile>
-              </md-grid-list>
+                  </td>
+                  <td class="column" *ngIf="delItem.stock !== null && delItem.id !== null"
+                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                    {{delItem.minDelivery}}
+                  </td>
+                  <td class="column" *ngIf="delItem.stock === null || delItem.id === null"
+                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                    <i class="fa fa-question warnColoring" aria-hidden="true"></i>
+                  </td>
+                  <td class="column" *ngIf="delItem.stock !== null && delItem.id !== null"
+                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                    {{delItem.maxDelivery}}
+                  </td>
+                  <td class="column" *ngIf="delItem.stock === null || delItem.id === null"
+                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                    <i class="fa fa-question warnColoring" aria-hidden="true"></i>
+                  </td>
+                  <td class="column"
+                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.min}}
+                  </td>
+                  <td class="column"
+                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.max}}
+                  </td>
+                  <td class="column" *ngIf="delItem.stock !== null && delItem.id !== null"
+                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                    {{delItem.stock}}
+                  </td>
+                  <td class="column" *ngIf="delItem.stock === null || delItem.id === null"
+                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                    <i class="fa fa-question warnColoring" aria-hidden="true"></i>
+                  </td>
+                  <td style="min-width: 80px !important;" class="column"
+                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                    {{delItem.stockDate}}
+                  </td>
+                </tr>
+                <br/>
+                <br/>
+                <tr>
+                  <td class="buttonItem"></td>
+                  <td class="nameItem" colspan="2">Sum</td>
+                  <td class="inputItem">{{receiversSumDeliveries[rcv.name].realDelivery}}</td>
+                  <td class="column" *ngIf="rcv.warn === 'no'">
+                    {{receiversSumDeliveries[rcv.name].minDelivery}}
+                  </td>
+                  <td class="column" *ngIf="rcv.warn === 'count' || rcv.warn === 'unknown'">
+                    <i class="fa fa-question warnColoring" aria-hidden="true"></i>
+                  </td>
+                  <td class="column" *ngIf="rcv.warn === 'no'">
+                    {{receiversSumDeliveries[rcv.name].maxDelivery}}
+                  </td>
+                  <td class="column" *ngIf="rcv.warn === 'count' || rcv.warn === 'unknown'">
+                    <i class="fa fa-question warnColoring" aria-hidden="true"></i>
+                  </td>
+                  <td class="column">{{receiversSumDeliveries[rcv.name].min}}</td>
+                  <td class="column">{{receiversSumDeliveries[rcv.name].max}}</td>
+                  <td class="column" *ngIf="rcv.warn === 'no'">
+                    {{receiversSumDeliveries[rcv.name].stock}}
+                  </td>
+                  <td class="column" *ngIf="rcv.warn === 'count' || rcv.warn === 'unknown'">
+                    <i class="fa fa-question warnColoring" aria-hidden="true"></i>
+                  </td>
+                  <td style="min-width: 80px !important;" class="column">-</td>
+                </tr>
+                <tr
+                  *ngIf="isToday && !receiversDeliveryModels[rcv.name]._shouldDisabled && productsList[rcv.name] !== undefined && productsList[rcv.name].length > 0">
+                  <td class="buttonItem"></td>
+                  <td class="codeItem" colspan="2">
+                    <md-input-container>
+                      <input mdInput type="text" [(disabled)]="receiversDeliveryModels[rcv.name]._shouldDisabled"
+                             class="pnc" placeholder="Product name/code" [mdAutocomplete]="auto"
+                             [formControl]="productNameCodeCtrl" (focus)="showProductList()"
+                             (blur)="clearInput($event)"/>
+                      <md-autocomplete #auto="mdAutocomplete">
+                        <md-option *ngFor="let nameCode of filteredNameCode | async" [value]="nameCode">
+                          {{nameCode}}
+                        </md-option>
+                      </md-autocomplete>
+                    </md-input-container>
+                  </td>
+                  <td class="nameItem"></td>
+                  <td class="inputItem"></td>
+                  <td class="column"></td>
+                  <td class="column"></td>
+                  <td class="column"></td>
+                  <td class="column"></td>
+                  <td style="min-width: 80px !important;" class="column"></td>
+                </tr>
+                </tbody>
+              </table>
             </md-card-content>
           </md-card>
         </md-card-content>
@@ -147,10 +243,25 @@
                   (click)="printDelivery(receiversDeliveryModels[rcv.name])">Print</button>
           <button md-raised-button class="ButtonStyle"
                   *ngIf="isToday"
-                  [(disabled)]="overallDeliveryModel._isPrinted || receiversDeliveryModels[rcv.name]._shouldDisabled"
                   (click)="submitDelivery(receiversDeliveryModels[rcv.name])">Submit</button>
         </md-card-content>
       </md-card>
     </md-tab>
   </md-tab-group>
+  <div *ngIf="!dataIsReady">
+    <div class="flex-container waiting" fxLayout="row" fxLayoutAlign="center center">
+      <div class="flex-item" fxFlex="80">
+        <div class="flex-container" fxLayout="column" fxLayoutAlign="center center">
+          <div class="flex-item" fxFlex="80">
+            <i style="color: white !important;" class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>
+            <span class="sr-only">Loading...</span>
+          </div>
+          <div class="flex-item" fxFlex="20">
+            <br/>
+            <span class="waitingMessage">Please wait until we fetch and process delivery data</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </md-card>

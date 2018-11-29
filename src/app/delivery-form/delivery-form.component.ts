@@ -38,9 +38,12 @@ import {BehaviorSubject} from "rxjs";
   ],
 })
 export class DeliveryFormComponent implements OnInit {
-  @ViewChild('autoNameCode') autoNameCode;
+  // @ViewChild('autoNameCode') autoNameCode;
 
+  dataIsReady: boolean = false;
+  isWaiting: any = {};
   unitName: string;
+  isKitchen: boolean;
   receiverName: string = 'All';
   selectedDate: Date;
   currentDate: Date;
@@ -48,6 +51,7 @@ export class DeliveryFormComponent implements OnInit {
   selectedIndex: number = 0;
   receivers: any[] = [];
   overallDeliveryModel: DeliveryModel;
+  receiversSumDeliveries: any = {};
   receiversDeliveryModels: any = {};
   productName_Code: any = {};
   // productsList: Product[] = [];
@@ -63,14 +67,30 @@ export class DeliveryFormComponent implements OnInit {
 
     this.overallDeliveryModel._shouldDisabled = true;
     this.unitName = this.authService.unitName;
-    this.selectedDate = new Date();
+    this.isKitchen = this.authService.isKitchen;
     this.currentDate = new Date();
+    this.selectedDate = new Date();
+    this.restService.get('date').subscribe(d => {
+      this.currentDate = new Date(d);
+      this.selectedDate = new Date(d);
+    }, err => {
+      console.error(err);
+    });
+
 
     this.receiversDeliveryModels = {All: this.overallDeliveryModel};
+    let tempAllDelivery: Delivery = new Delivery();
+    tempAllDelivery.realDelivery = 0;
+    tempAllDelivery.min = 0;
+    tempAllDelivery.max = 0;
+    tempAllDelivery.minDelivery = 0;
+    tempAllDelivery.maxDelivery = 0;
+    tempAllDelivery.stock = 0;
+    this.receiversSumDeliveries = {All: tempAllDelivery};
     this.receivers = [];
 
     //Get receivers (branches)
-    this.restService.get('unit?isBranch=true').subscribe(
+    this.restService.get('unit?isBranch=true&isKitchen=' + this.isKitchen).subscribe(
       (data) => {
         for(let item of data){
           let obj = {
@@ -80,6 +100,7 @@ export class DeliveryFormComponent implements OnInit {
           };
 
           this.receivers.push(obj);
+          this.isWaiting[obj.name] = false;
         }
 
         //Get product items from server for each receiver (branch)
@@ -114,21 +135,39 @@ export class DeliveryFormComponent implements OnInit {
           tempDelivery.min = foundProduct.minQty;
           tempDelivery.max = foundProduct.maxQty;
           tempDelivery.realDelivery = null;
-          tempDelivery.stock = null;
-          tempDelivery.stockDate = this.currentDate;
+          tempDelivery.stock = 0;
+          tempDelivery.minDelivery = (tempDelivery.min - tempDelivery.stock) < 0 ? 0 : (tempDelivery.min - tempDelivery.stock);
+          tempDelivery.maxDelivery = tempDelivery.max - tempDelivery.stock;
+          tempDelivery.stockDate = moment(tempDelivery.stockDate).format('dd MMM YY');
 
           this.receiversDeliveryModels[this.receiverName].add(tempDelivery);
+          this.calSumRow(this.receiverName, tempDelivery, 'add');
+          this.calSumRow('All', tempDelivery, 'add');
 
-          this.autoNameCode.nativeElement.value = null;
+          // this.autoNameCode.nativeElement.value = null;
 
           this.productName_Code[this.receiverName] = this.productName_Code[this.receiverName].filter((el) => {
             return el.toLowerCase() !== tempNameObj.toLowerCase();
           });
 
           //Add this data to overallDeliveryModel
-          this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'min', tempDelivery.min);
-          this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'max', tempDelivery.max);
-          this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'realDelivery', tempDelivery.realDelivery);
+          if(this.overallDeliveryModel.getByCode(tempDelivery.productCode) === undefined) {
+            this.overallDeliveryModel.add(tempDelivery);
+            this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'min', 0);
+            this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'max', 0);
+            this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'realDelivery', 0);
+            this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'minDelivery', 0);
+            this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'maxDelivery', 0);
+            this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'stock', 0);
+          }
+          else {
+            this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'min', tempDelivery.min);
+            this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'max', tempDelivery.max);
+            this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'realDelivery', tempDelivery.realDelivery);
+            this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'minDelivery', tempDelivery.minDelivery);
+            this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'maxDelivery', tempDelivery.maxDelivery);
+            this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'stock', tempDelivery.stock);
+          }
 
           //Change deliverModel._isSubmitted to false
           this.receiversDeliveryModels[this.receiverName]._isSubmitted = false;
@@ -161,11 +200,92 @@ export class DeliveryFormComponent implements OnInit {
     }
     else{
       //Update overallDeliveryModel
+      this.updateOverallDelivery(item.productCode, item, 'sub', 'realDelivery', item.realDelivery);
+      this.updateOverallDelivery(item.productCode, item, 'sub', 'minDelivery', item.minDelivery);
+      this.updateOverallDelivery(item.productCode, item, 'sub', 'maxDelivery', item.maxDelivery);
+      this.updateOverallDelivery(item.productCode, item, 'sub', 'stock', item.stock);
       this.updateOverallDelivery(item.productCode, item, 'sub', 'min', item.min);
       this.updateOverallDelivery(item.productCode, item, 'sub', 'max', item.max);
-      this.updateOverallDelivery(item.productCode, item, 'sub', 'realDelivery', item.realDelivery);
 
       this.receiversDeliveryModels[this.receiverName].deleteByCode(item.productCode);
+
+      let ids = [];
+      let minDelivery = 0;
+      let maxDelivery = 0;
+      let stock = 0;
+      for(let rcv of this.receivers){
+        let tempItem = this.receiversDeliveryModels[rcv.name]._deliveries.find(
+          (el) => el.productCode.toLowerCase() === item.productCode.toLowerCase()
+        );
+
+        if(tempItem !== undefined) {
+          ids.push(tempItem.id);
+          minDelivery += tempItem.minDelivery;
+          maxDelivery += tempItem.maxDelivery;
+          stock += tempItem.stock;
+        }
+      }
+
+      let nullId = ids.find((el) => el === null);
+      if(nullId === undefined){
+        //Update the overallDeliveryModels
+
+        let matchItem = this.overallDeliveryModel._deliveries.find(
+          (el) => el.productCode.toLowerCase() === item.productCode.toLowerCase()
+        );
+
+        if(matchItem !== undefined){
+          matchItem.minDelivery = minDelivery;
+          matchItem.maxDelivery = maxDelivery;
+          matchItem.stock = stock;
+
+          // let rcv = this.receivers.find((el) => el.name.toLowerCase() === this.receiverName.toLowerCase());
+          //
+          // if(rcv.warn === 'unknown')
+          //   rcv.warn = 'no';
+
+          // this.calSumRow('All', item, 'sub');
+        }
+      }
+
+      let rcv = this.receivers.find((el) => el.name.toLowerCase() === this.receiverName.toLowerCase());
+      if(this.receiversDeliveryModels[this.receiverName]._deliveries.find((el) => el.id === null) === undefined){
+        if(this.receiversDeliveryModels[this.receiverName]._deliveries.find((el) => el.stock === null) === undefined)
+          rcv.warn = 'no';
+        else
+          rcv.warn = 'count';
+      }
+      else
+        rcv.warn = 'unknown';
+
+      this.calSumRow(this.receiverName, item, 'sub');
+
+      //Update the sum row for all tab
+      if(this.overallDeliveryModel._deliveries.length > 0){
+        this.receiversSumDeliveries['All'].realDelivery = this.overallDeliveryModel._deliveries
+          .map((el) => el.realDelivery)
+          .reduce((a, b) => a + b);
+        this.receiversSumDeliveries['All'].min = this.overallDeliveryModel._deliveries
+          .map((el) => el.min)
+          .reduce((a, b) => a + b);
+        this.receiversSumDeliveries['All'].max = this.overallDeliveryModel._deliveries
+          .map((el) => el.max)
+          .reduce((a, b) => a + b);
+
+        if(this.overallDeliveryModel._deliveries.find((el) => el.stock === null) === undefined){
+          this.receiversSumDeliveries['All'].minDelivery = this.overallDeliveryModel._deliveries
+            .map((el) => el.minDelivery)
+            .reduce((a, b) => a + b);
+
+          this.receiversSumDeliveries['All'].maxDelivery = this.overallDeliveryModel._deliveries
+            .map((el) => el.maxDelivery)
+            .reduce((a, b) => a + b);
+
+          this.receiversSumDeliveries['All'].stock = this.overallDeliveryModel._deliveries
+            .map((el) => el.stock)
+            .reduce((a, b) => a + b);
+        }
+      }
 
       //Add code and name to productName_Code (for specific receiver)
       this.productName_Code[this.receiverName].push(item.productCode + ' - ' + item.productName);
@@ -175,11 +295,11 @@ export class DeliveryFormComponent implements OnInit {
   }
 
   filterProducts(val: string) {
-    return val ? this.productName_Code[this.receiverName].filter((p) => new RegExp(val, 'gi').test(p)) : this.productName_Code[this.receiverName];
+    return val ? this.productName_Code[this.receiverName].filter((p) => new RegExp(val.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'gi').test(p)) : this.productName_Code[this.receiverName];
   }
 
   checkRealDeliveryValue(event, deliveryItem: Delivery){
-    let value = parseInt(event.srcElement.value);
+    let value = (event.srcElement.value === '') ? 0 : parseInt(event.srcElement.value);
 
     if(value < 0){
       event.srcElement.value = 0;
@@ -187,13 +307,19 @@ export class DeliveryFormComponent implements OnInit {
       return;
     }
 
-    if(value < deliveryItem.min)
+    if(value < deliveryItem.minDelivery)
       this.msgService.warn("The 'Real Delivery' value is less than 'Min' value");
-    else if(value > deliveryItem.min)
-      this.msgService.warn("The 'Real Delivery' value is greater than 'Min' value");
+    else if(value > deliveryItem.maxDelivery)
+      this.msgService.warn("The 'Real Delivery' value is greater than 'Max Delivery' value");
 
     //Should update realDelivery on overallDeliveryModel
     this.updateOverallDelivery(deliveryItem.productCode, deliveryItem, 'add', 'realDelivery', (value - deliveryItem.realDelivery));
+
+    //Update sum row
+    this.receiversSumDeliveries[this.receiverName].realDelivery += (value - deliveryItem.realDelivery);
+    this.receiversSumDeliveries['All'].realDelivery += (value - deliveryItem.realDelivery);
+
+
     deliveryItem.realDelivery = value;
 
     //Change deliveryModel._isSubmitted to false
@@ -208,10 +334,10 @@ export class DeliveryFormComponent implements OnInit {
   }
 
   updateOverallDelivery(code: string, delivery: Delivery, action, whichItem, changedValue: number){
-    if(this.overallDeliveryModel.getByCode(code) === undefined){          //Should add a product
-      this.overallDeliveryModel.add(delivery);
-    }
-    else{                                                                //Should update a product
+    // if(this.overallDeliveryModel.getByCode(code) === undefined){          //Should add a product
+    //   this.overallDeliveryModel.add(delivery);
+    // }
+    // else{                                                                //Should update a product
       switch (whichItem){
         case 'min': this.overallDeliveryModel.updateDeliveryProperty(action, code, 'min', changedValue);
           break;
@@ -219,8 +345,29 @@ export class DeliveryFormComponent implements OnInit {
           break;
         case 'realDelivery': this.overallDeliveryModel.updateDeliveryProperty(action, code, 'realDelivery', changedValue);
           break;
+        case 'minDelivery': {
+          if(delivery.stock === null || delivery.id === null)
+            changedValue = null;
+
+          this.overallDeliveryModel.updateDeliveryProperty(action, code, 'minDelivery', changedValue);
+        }
+          break;
+        case 'maxDelivery': {
+          if(delivery.stock === null || delivery.id === null)
+            changedValue = null;
+
+          this.overallDeliveryModel.updateDeliveryProperty(action, code, 'maxDelivery', changedValue);
+        }
+          break;
+        case 'stock': {
+          if(delivery.stock === null || delivery.id === null)
+            changedValue = null;
+
+          this.overallDeliveryModel.updateDeliveryProperty(action, code, 'stock', changedValue);
+        }
+          break;
       }
-    }
+    // }
 
     //Check if in 'All' tab this product only has 0 value for 'min' and 'max' should be removed
     if(this.overallDeliveryModel.getByCode(code).min === 0 && this.overallDeliveryModel.getByCode(code).max === 0)
@@ -244,15 +391,11 @@ export class DeliveryFormComponent implements OnInit {
     })
   }
 
-  countToday(stockDate: Date){
+  countToday(stockDate: string){
     if(stockDate === null)
-      return true;
+      return false;
 
-    if(stockDate.getFullYear() !== this.currentDate.getFullYear())
-      return false;
-    else if(stockDate.getMonth() !== this.currentDate.getMonth())
-      return false;
-    else if(stockDate.getDate() !== this.currentDate.getDate())
+    if(moment(stockDate).format('YYMMDD')!== moment(this.currentDate).format('YYMMDD'))
       return false;
     else
       return true;
@@ -283,11 +426,11 @@ export class DeliveryFormComponent implements OnInit {
   submitDelivery(deliveryModel: DeliveryModel){
     for(let delItem of deliveryModel._deliveries){
       if(delItem.realDelivery === null){
-        this.msgService.warn("The product '" + delItem.productName + "' has no 'realDelivery' value");
+        this.msgService.warn("Delivery data are submitted, but delivery value of '" + delItem.productName + "' was blank.");
         return;
       }
       else if(delItem.realDelivery === 0){
-        this.msgService.warn("The 'realDelivery' value of " + delItem.productName + " is zero");
+        this.msgService.warn("Delivery data are submitted, but delivery value of '" + delItem.productName + "' was zero");
       }
 
       deliveryModel._isSubmitted = true;
@@ -301,6 +444,7 @@ export class DeliveryFormComponent implements OnInit {
           (data) => {
             delItem.state = 'added';
             delItem.id = data;
+            this.msgService.message('Delivery data are submitted');
           },
           (err) => {
             deliveryModel._isSubmitted = false;
@@ -332,6 +476,8 @@ export class DeliveryFormComponent implements OnInit {
     this.printService._receivers = this.receivers.map(rcv => rcv.name);
     this.printService._deliveryModels = this.receiversDeliveryModels;
     this.printService._deliveryModels['All'] = this.overallDeliveryModel;
+    this.printService._showWarningMessage = !this.receiversDeliveryModels[this.receiverName]._isPrinted;
+    this.printService.currentDate = this.currentDate;
 
     let dialogRef = this.dialog.open(PrintViewerComponent,{
       height: '600px',
@@ -404,12 +550,26 @@ export class DeliveryFormComponent implements OnInit {
     for(let rcv of this.receivers){
       rcv.warn = 'no';
 
+      //Turn on waiting (Show spinner)
+      this.isWaiting[rcv.name] = true;
+      this.waiting();
+
       this.restService.get('delivery/' + dateParam + '/' + rcv.id).subscribe(
         (data) => {
-          console.log(data);
+          // console.log(data);
+          this.isWaiting[rcv.name] = false;
+          this.waiting();
           this.productsList[rcv.name] = [];
 
           this.receiversDeliveryModels[rcv.name] = new DeliveryModel(rcv.name);
+          this.receiversSumDeliveries[rcv.name] = new Delivery();
+          this.receiversSumDeliveries[rcv.name].min = 0;
+          this.receiversSumDeliveries[rcv.name].max = 0;
+          this.receiversSumDeliveries[rcv.name].minDelivery = 0;
+          this.receiversSumDeliveries[rcv.name].maxDelivery = 0;
+          this.receiversSumDeliveries[rcv.name].realDelivery = 0;
+          this.receiversSumDeliveries[rcv.name].stock = 0;
+
 
           for(let item of data){
             if(item.id === null){        //Add to productList and productName_Code list
@@ -430,32 +590,50 @@ export class DeliveryFormComponent implements OnInit {
             }
             else{                               //Add to deliveryList
               //check stock value
-              if(typeof item.stock !== 'number')
+              if(item.stock === null || (typeof item.stock !== 'number'))
                 rcv.warn = 'count';
+              // if(typeof item.stock !== 'number')
+              //   rcv.warn = 'count';
 
               //this.receiversDeliveryModels[rcv.name]._isPrinted = item.isPrinted;
-
               let tempDelivery = new Delivery();
               tempDelivery.id = item.id;
               tempDelivery.productCode = item.productCode;
               tempDelivery.productName = item.productName;
-              tempDelivery.realDelivery = item.realDelivery;
+              if(item.stock === null && item.realDelivery === null)
+                tempDelivery.realDelivery = null;
+              else if(item.realDelivery ===null)
+                tempDelivery.realDelivery = (item.max - item.stock) < 0 ? 0 : (item.max - item.stock);
+              else
+                tempDelivery.realDelivery = item.realDelivery;
+              tempDelivery.minDelivery = (item.min - item.stock) < 0 ? 0 : (item.min - item.stock);
+              tempDelivery.maxDelivery = item.max - item.stock >= 0 ? item.max - item.stock : 0;
               tempDelivery.min = item.min;
               tempDelivery.max = item.max;
               tempDelivery.stock = item.stock;
               tempDelivery.isPrinted = item.isPrinted;
               if(item.stockDate === null)
-                tempDelivery.stockDate = this.selectedDate;
+                tempDelivery.stockDate = null;
               else
-                tempDelivery.stockDate = moment(item.stockDete).toDate();
+                tempDelivery.stockDate = moment(item.stockDate).format('DD MMM YY');
               tempDelivery.state = 'exist';
 
               this.receiversDeliveryModels[rcv.name].add(tempDelivery);
+              this.calSumRow(rcv.name, tempDelivery, 'add');
+              this.calSumRow('All', tempDelivery, 'add');
 
               //Update overall list
-              this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'min', tempDelivery.min);
-              this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'max', tempDelivery.max);
-              this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'realDelivery', tempDelivery.realDelivery);
+              if(this.overallDeliveryModel.getByCode(item.productCode) === undefined){          //Should add a product
+                this.overallDeliveryModel.add(tempDelivery);
+              }
+              else{
+                this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'min', tempDelivery.min);
+                this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'max', tempDelivery.max);
+                this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'realDelivery', tempDelivery.realDelivery);
+                this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'minDelivery', tempDelivery.minDelivery);
+                this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'maxDelivery', tempDelivery.maxDelivery);
+                this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'stock', tempDelivery.stock);
+              }
             }
           }
 
@@ -464,8 +642,11 @@ export class DeliveryFormComponent implements OnInit {
                                                                                                     .reduce((a, b) => a && b);
           else{
             this.receiversDeliveryModels[rcv.name]._isSubmitted = true;
-            rcv.warn = 'login';
+            // rcv.warn = 'login';
           }
+
+          if(this.receiversDeliveryModels[rcv.name]._isPrinted)
+            this.receiversDeliveryModels[rcv.name]._isSubmitted = true;
 
           //Sort data
           this.receiversDeliveryModels[rcv.name]._deliveries.sort((a, b) => {
@@ -488,9 +669,75 @@ export class DeliveryFormComponent implements OnInit {
           })
         },
         (err) => {
+          this.isWaiting[rcv.name] = false;
+          this.waiting();
           console.log(err.message);
         }
       )
     }
+  }
+
+  showProductList(){
+    this.productNameCodeCtrl.setValue('');
+  }
+
+  clearInput($event){
+    setTimeout(function () {
+      $event.target.value = '';
+    }, 50);
+  }
+
+  calSumRow(rcvName: string, delivery: Delivery, operation: string){
+    if(operation === 'add'){
+      if((delivery.stock === null || delivery.id === null)){
+        if(rcvName !== 'All') {
+          let rcv = this.receivers.find((el) => el.name.toLowerCase() === rcvName.toLowerCase());
+          if (rcv.warn === 'no')
+            rcv.warn = 'unknown';
+        }
+        else{
+          this.receiversSumDeliveries['All'].minDelivery = null;
+          this.receiversSumDeliveries['All'].maxDelivery = null;
+          this.receiversSumDeliveries['All'].stock = null;
+        }
+      }
+
+      this.receiversSumDeliveries[rcvName].min += delivery.min;
+      this.receiversSumDeliveries[rcvName].max += delivery.max;
+      // if(delivery.stock === null || delivery.id === null)
+      //   this.receiversSumDeliveries[rcvName].minDelivery = null;
+      // else
+      if(this.receiversSumDeliveries[rcvName].minDelivery !== null)
+        this.receiversSumDeliveries[rcvName].minDelivery += delivery.minDelivery;
+      // if(delivery.stock === null || delivery.id === null)
+      //   this.receiversSumDeliveries[rcvName].maxDelivery = null;
+      // else
+      if(this.receiversSumDeliveries[rcvName].maxDelivery !== null)
+        this.receiversSumDeliveries[rcvName].maxDelivery += delivery.maxDelivery;
+      this.receiversSumDeliveries[rcvName].realDelivery += delivery.realDelivery;
+      // if(delivery.stock === null || delivery.id === null)
+      //   this.receiversSumDeliveries[rcvName].stock = null;
+      // else
+      if(this.receiversSumDeliveries[rcvName].stock !== null)
+        this.receiversSumDeliveries[rcvName].stock += delivery.stock;
+    }
+    else{
+      this.receiversSumDeliveries[rcvName].min -= delivery.min;
+      this.receiversSumDeliveries[rcvName].max -= delivery.max;
+      this.receiversSumDeliveries[rcvName].minDelivery -= delivery.minDelivery;
+      this.receiversSumDeliveries[rcvName].maxDelivery -= delivery.maxDelivery;
+      this.receiversSumDeliveries[rcvName].realDelivery -= delivery.realDelivery;
+      this.receiversSumDeliveries[rcvName].stock -= (delivery.stock === null) ? 0 : delivery.stock;
+    }
+  }
+
+  waiting(){
+    let wait: boolean = false;
+
+    for(let rcv of this.receivers){
+      wait = wait || this.isWaiting[rcv.name];
+    }
+
+    this.dataIsReady = !wait;
   }
 }

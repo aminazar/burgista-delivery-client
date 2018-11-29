@@ -3,8 +3,9 @@
   <div *ngIf="!isAdmin">
     <md-card [ngClass]="[(isFiltered && filteredProductModel._product.isOverridden) ? 'innerCardOverride' : 'innerCard']">
       <md-card-content>
-        <md-input-container>
-          <input mdInput focus type="text" class="pnc" placeholder="Product name/code" [mdAutocomplete]="auto" [formControl]="productModelCtrl" #autoNameCode/>
+        <md-input-container style="width: 100%;">
+          <input mdInput focus type="text" class="pnc" placeholder="Product name/code"
+                 [mdAutocomplete]="auto" [formControl]="productModelCtrl" #autoNameCode />
           <md-autocomplete #auto="mdAutocomplete">
             <md-option *ngFor="let nameCode of filteredNameCode | async" [value]="nameCode">
               {{nameCode}}
@@ -27,8 +28,10 @@
     <md-tab *ngFor="let branch of branchList" label="{{branch.name}}">
       <md-card [ngClass]="[(isFiltered && filteredProductModel._product.isOverridden) ? 'innerCardOverride' : 'innerCard']">
         <md-card-content>
-          <md-input-container>
-            <input mdInput type="text" class="pnc" placeholder="Product name/code" [mdAutocomplete]="auto" [formControl]="productModelCtrl"/>
+          <md-input-container style="width: 100%;">
+            <input mdInput type="text" class="pnc" placeholder="Product name/code"
+                   [mdAutocomplete]="auto" [formControl]="productModelCtrl"
+                   (focus)="showProductList($event)" #autoNameCode/>
             <md-autocomplete #auto="mdAutocomplete">
               <md-option *ngFor="let nameCode of filteredNameCode | async" [value]="nameCode">
                 {{nameCode}}

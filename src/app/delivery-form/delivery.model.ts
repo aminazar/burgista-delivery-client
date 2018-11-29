@@ -70,19 +70,19 @@ export class DeliveryModel{
 
   updateDeliveryProperty(action: string, code: string, whichItem: string, value: any): boolean{
     try{
-      switch (action){
-        case "add":{
-          this._deliveries.find((el) => {
-            return el.productCode.toLowerCase() === code.toLowerCase();
-          })[whichItem] += value;
+      let foundedDelivery = this._deliveries.find((el) => {
+        return el.productCode.toLowerCase() === code.toLowerCase();
+      });
+
+      if((value === null || foundedDelivery[whichItem] === null) && (whichItem !== 'realDelivery' && whichItem !== 'min' && whichItem !== 'max'))
+        foundedDelivery[whichItem] = null;
+      else{
+        switch (action){
+          case "add": foundedDelivery[whichItem] += value;
+            break;
+          case "sub": foundedDelivery[whichItem] -= value;
+            break;
         }
-        break;
-        case "sub": {
-          this._deliveries.find((el) => {
-            return el.productCode.toLowerCase() === code.toLowerCase();
-          })[whichItem] -= value;
-        }
-        break;
       }
 
       return true;

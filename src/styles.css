@@ -9,12 +9,36 @@ a:hover{text-decoration: none;text-weight:bold;}
   background-color: #607D8B !important; border-radius: 7px; text-align: left; margin: 10px;
 }
 .innerCard{
-background-color:antiquewhite !important; padding: 10px;
+  background-color:antiquewhite !important; padding: 10px;
 }
-
 .innerCardOverride{
   background-color:white !important; padding: 10px;
 }
+
+@media screen and (max-device-width: 600px) {
+  .outerCard {
+    padding: 3px !important;
+    margin: 1px !important;
+    width: 100% !important;
+  }
+
+  .innerCard {
+    padding: 3px !important;
+    width: 100% !important;
+  }
+  .innerCardOverride {
+    padding:3px !important;
+  }
+  .mat-card {
+    padding: 3px !important;
+    margin: 3px !important;
+  }
+  .mat-card-actions:last-child{
+    margin: 0px !important;
+    padding: 5px !important;
+  }
+}
+
 
 .FormTitleStyle{
   margin-top: 15px;
@@ -56,10 +80,59 @@ background-color:antiquewhite !important; padding: 10px;
 
 .deliveryItem > figure {
   justify-content: inherit !important;
+  /*overflow: inherit !important;*/
 }
 
 .deliveryItem{
-  /*width: 100px !important;*/
+  /*margin-right: 5px !important;*/
+  /*min-width: 10% !important;*/
+  /*margin: 5px !important;*/
+}
+
+.column{
+  /*box-sizing: border-box !important;*/
+  /*width: 100% !important;*/
+  min-width: 50px !important;
+}
+
+.buttonItem{
+  min-width: 20px !important;
+}
+
+.codeItem{
+  min-width: 60px !important;
+}
+
+.nameItem{
+  min-width: 100px !important;
+}
+
+.inputItem{
+  min-width: 60px !important;
+}
+
+.dateItem{
+  margin-left: 10px !important;
+}
+
+.dateItem > figure{
+  padding-left: 10px !important;
+}
+
+.inventoryItem > figure {
+  float: left !important;
+  margin-right: 40px !important;
+}
+
+.buttonColumn > figure {
+  max-width: 50px !important;
+  float: left !important;
+}
+
+.buttonColumn{
+  width: 50px !important;
+  margin-right: 0px !important;
+  padding: 0px !important;
 }
 
 .delayedTab{
@@ -127,4 +200,17 @@ background-color:antiquewhite !important; padding: 10px;
 
 .highlight{
   background-color: #adadad !important;
+}
+
+tbody {
+  display:block;
+  overflow:auto;
+}
+thead, tbody tr {
+  display:table;
+  width:100%;
+  table-layout:fixed;
+}
+thead {
+  width: calc( 100% - 1em )
 }

@@ -1,4 +1,4 @@
-import {Component, OnInit, isDevMode, ViewChild} from '@angular/core';
+import {Component, OnInit, isDevMode, ViewChild, ElementRef} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
 import {FormControl} from "@angular/forms";
 
@@ -7,6 +7,8 @@ import {ProductModel} from "./product.model";
 import {ActionEnum} from "../unit-form/actionEnum";
 import {RestService} from "../rest.service";
 import {MessageService} from "../message.service";
+import {isNullOrUndefined} from "util";
+import {constructDependencies} from "@angular/core/src/di/reflective_provider";
 
 @Component({
   selector: 'app-product-form',
@@ -19,32 +21,33 @@ export class ProductFormComponent implements OnInit {
   productModels: ProductModel[] = [];
   filteredProductModel: ProductModel;
   filteredNameCode: any;
+  filteredName: any;
+  filteredCode: any;
   isFiltered: boolean = false;
-  productModelCtrl: FormControl;
+  productModelCtrlName: FormControl;
+  productModelCtrlCode: FormControl;
   productName_Code: string[] = [];
   productNames: string[] = [];
   productCodes: string[] = [];
   selectedIndex: number = 0;
+  nameChose: boolean = false;
+  codeChose: boolean = false;
 
-  @ViewChild('autoNameCode') autoNameCode;
+  @ViewChild('autoNameInput') autoNameInput;
 
-  constructor(private restService: RestService, private messageService: MessageService) {
+  constructor(private restService: RestService, private messageService: MessageService, private elementRef: ElementRef) {
   }
 
   ngOnInit() {
     this.restService.get('product').subscribe(
       (data) => {
         this.productModels = [];
-
         for (let productObj of data) {
           let tempProduct = ProductModel.fromAnyObject(productObj);
 
           let tempProductModel = new ProductModel(tempProduct);
 
           this.productModels.push(tempProductModel);
-
-          // this.productName_Code.unshift(tempProduct.name);
-          // this.productName_Code.push(tempProduct.code);
 
           if (!this.productNames.find((n) => n === tempProduct.name))
             this.productNames.push(tempProduct.name);
@@ -53,43 +56,50 @@ export class ProductFormComponent implements OnInit {
             this.productCodes.push(tempProduct.code);
         }
 
-        this.productNames.sort();
-        this.productCodes.sort();
-
-        this.productName_Code = [];
-        this.productName_Code = this.productName_Code.concat(this.productNames);
-        this.productName_Code = this.productName_Code.concat(this.productCodes);
-        // this.sortProductModelList();
-
+        this.refreshProductsDropDown();
       },
       (err) => {
         console.log(err.message);
       }
     );
 
-    this.productModelCtrl = new FormControl();
-    this.filteredNameCode = this.productModelCtrl.valueChanges
+    this.productModelCtrlName = new FormControl();
+    this.productModelCtrlCode = new FormControl();
+
+    this.filteredName = this.productModelCtrlName.valueChanges
       .startWith(null)
-      .map((name_code) => this.filterProducts(name_code));
+      .map((name) => this.filterProducts(name, 'name'));
+    this.filteredCode = this.productModelCtrlCode.valueChanges
+      .startWith(null)
+      .map((code) => this.filterProducts(code, 'code'));
 
     let oneItemInList: boolean = false;
 
-    this.filteredNameCode.subscribe(
+    this.filteredName.subscribe(
       (data) => {
         if (data.length === 1) {
-          this.isFiltered = false;
+          if(!oneItemInList) {
+            this.codeChose = false;
+            this.nameChose = false;
+          }
 
+          this.isFiltered = false;
           // if(this.filteredProductModel == null)
           //   this.filteredProductModel = new ProductModel(this.getProduct(data));
           // else
           //   this.filteredProductModel.setProduct(this.getProduct(data));
 
-          this.filteredProductModel = this.getProduct(data);
+          this.filteredProductModel = this.getProduct(data, 'name');
+          this.nameChose = true;
+          oneItemInList = true;
+
+          if(!this.codeChose)
+            this.productModelCtrlCode.setValue(this.filteredProductModel._product.code);
 
           this.isFiltered = true;
-          oneItemInList = true;
         }
         else{
+          this.nameChose = false;
           this.isFiltered = false;
           oneItemInList = false;
         }
@@ -99,19 +109,55 @@ export class ProductFormComponent implements OnInit {
       }
     );
 
-    this.productModelCtrl.valueChanges.subscribe(
+    this.filteredCode.subscribe(
+        (data) => {
+          if (data.length === 1) {
+            if(!oneItemInList) {
+              this.codeChose = false;
+              this.nameChose = false;
+            }
+
+            this.isFiltered = false;
+            // if(this.filteredProductModel == null)
+            //   this.filteredProductModel = new ProductModel(this.getProduct(data));
+            // else
+            //   this.filteredProductModel.setProduct(this.getProduct(data));
+
+            this.filteredProductModel = this.getProduct(data, 'code');
+            console.log(this.filteredProductModel);
+            this.codeChose = true;
+            oneItemInList = true;
+
+            if(!this.nameChose)
+              this.productModelCtrlName.setValue(this.filteredProductModel._product.name);
+
+            this.isFiltered = true;
+          }
+          else{
+            this.codeChose = false;
+            this.isFiltered = false;
+            oneItemInList = false;
+          }
+        },
+        (err) => {
+          console.log(err.message);
+        }
+    );
+
+    this.productModelCtrlName.valueChanges.subscribe(
       (data) => {
         if(!oneItemInList) {
           let fullMatch = this.productModels.find((el) => {
-            return (el._product.name.toLowerCase() == this.productModelCtrl.value.toLowerCase())
-              || (el._product.code.toLowerCase() == this.productModelCtrl.value.toLowerCase());
+            return (el._product.name.toLowerCase() == this.productModelCtrlName.value.toLowerCase());
           });
 
           if (fullMatch !== null && fullMatch !== undefined) {
             this.isFiltered = false;
 
             this.filteredProductModel = fullMatch;
-
+            this.nameChose = true;
+            if(!this.codeChose)
+              this.productModelCtrlCode.setValue(this.filteredProductModel._product.code);
             // if (this.filteredProductModel == null)
             //   this.filteredProductModel = fullMatch;
             // else
@@ -119,14 +165,56 @@ export class ProductFormComponent implements OnInit {
 
             this.isFiltered = true;
           }
-          else
+          else {
             this.isFiltered = false;
+            this.nameChose = false;
+          }
         }
       },
       (err) => {
         console.log(err.message);
       }
     );
+
+    this.productModelCtrlCode.valueChanges.subscribe(
+        (data) => {
+          if(!oneItemInList) {
+            let fullMatch = this.productModels.find((el) => {
+              return (el._product.code.toLowerCase() == this.productModelCtrlCode.value.toLowerCase());
+            });
+
+            if (fullMatch !== null && fullMatch !== undefined) {
+              this.isFiltered = false;
+
+              this.filteredProductModel = fullMatch;
+              this.codeChose = true;
+              if(!this.nameChose)
+                this.productModelCtrlName.setValue(this.filteredProductModel._product.name);
+              // if (this.filteredProductModel == null)
+              //   this.filteredProductModel = fullMatch;
+              // else
+              //   this.filteredProductModel =fullMatch._product);
+
+              this.isFiltered = true;
+            }
+            else {
+              this.isFiltered = false;
+              this.codeChose = false;
+            }
+          }
+        },
+        (err) => {
+          console.log(err.message);
+        }
+    );
+  }
+
+  private refreshProductsDropDown() {
+    this.productName_Code = [];
+    // this.productNames.forEach((el, ind) => this.productName_Code.push(`[${this.productCodes[ind]}] ${el}`));
+
+    this.productNames.forEach((el) => this.productName_Code.push(el));
+    this.productCodes.forEach((el) => this.productName_Code.push(el));
   }
 
   doClickedAction(value) {
@@ -184,15 +272,7 @@ export class ProductFormComponent implements OnInit {
         this.productNames.push(tempProductModel._product.name);
         this.productCodes.push(tempProductModel._product.code);
 
-        this.productNames.sort();
-        this.productCodes.sort();
-
-        this.productName_Code = [];
-        this.productName_Code = this.productName_Code.concat(this.productNames);
-        this.productName_Code = this.productName_Code.concat(this.productCodes);
-
-        //Sort productModels
-        // this.sortProductModelList();
+        this.refreshProductsDropDown();
 
         this.disableEnable(product.id, ActionEnum.add, false);
 
@@ -230,13 +310,11 @@ export class ProductFormComponent implements OnInit {
           return el !== deletedProductModel[0]._product.code;
         });
 
-        this.productName_Code = [];
-        this.productName_Code = this.productName_Code.concat(this.productNames);
-        this.productName_Code = this.productName_Code.concat(this.productCodes);
+        this.refreshProductsDropDown();
 
         this.isFiltered = false;
         this.filteredProductModel = null;
-        this.productModelCtrl.setValue('');
+        this.productModelCtrlName.setValue('');
 
         this.messageService.message(`Product is deleted.`);
         //ToDo: adding prop message
@@ -294,12 +372,7 @@ export class ProductFormComponent implements OnInit {
         let tempCodeIndex = this.productCodes.findIndex((el) => el === lastCode);
         this.productCodes[tempCodeIndex] = product.code;
 
-        this.productName_Code = [];
-        this.productNames.sort();
-        this.productCodes.sort();
-        this.productName_Code = this.productName_Code.concat(this.productNames);
-        this.productName_Code = this.productName_Code.concat(this.productCodes);
-
+        this.refreshProductsDropDown();
 
         this.disableEnable(productId, ActionEnum.update, false);
         this.messageService.message(`'${name}' is updated in products.`);
@@ -341,22 +414,77 @@ export class ProductFormComponent implements OnInit {
       tempProductModel.waiting.next(tempWaitingObj);
   }
 
-  filterProducts(val: string) {
-    return val ? this.productName_Code.filter((p) => new RegExp(val, 'gi').test(p)) : this.productName_Code;
+  filterProducts(val: string, filterKind) {
+    let res = [];
+
+    if(filterKind === 'name'){
+      res = val ? this.productNames.filter((p) => new RegExp(val.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'gi').test(p)) : this.productNames;
+      if(res.length > 0){
+        // console.log('Names:', res);
+        // console.log(this.filteredCode);
+        this.filteredCode.source = this.getProductCode(res);
+        // console.log('Get Codes:', this.getProductCode(res));
+      }
+    }
+    else if(filterKind === 'code'){
+      res = val ? this.productCodes.filter((p) => new RegExp(val.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'gi').test(p)) : this.productCodes;
+      if(res.length > 0) {
+        // console.log('Codes:', res);
+        this.filteredName.source = this.getProductName(res);
+        // console.log('Get Names:', this.getProductName(res));
+      }
+    }
+
+    return res;
   }
 
-  getProduct(nameCode: string) {
+  getProductName(list){
+    let result = [];
+
+    list.forEach((el) => {
+      result.push(this.productModels.find((pm) => pm._product.code == el)._product.name);
+    });
+
+    return result;
+  }
+
+  getProductCode(list){
+    let result = [];
+
+    list.forEach((el) => {
+      result.push(this.productModels.find((pm) => pm._product.name == el)._product.code);
+    });
+
+    return result;
+  }
+
+  getProduct(nameCode: string, selectorKind) {
     let tempProductModel: ProductModel;
 
-    tempProductModel = this.productModels.find((p) => {
-      return p._product.name.toLowerCase() == nameCode[0].toLowerCase();
-    });
+    if(selectorKind === 'name')
+      tempProductModel = this.productModels[this.productName_Code.findIndex(nc=>nameCode[0]===nc)];
+    else if(selectorKind === 'code')
+      tempProductModel = this.productModels[this.productName_Code.findIndex(nc=>nameCode[0]===nc) - this.productNames.length];
 
-    if (tempProductModel !== null && tempProductModel !== undefined)
-      return tempProductModel;
+    return tempProductModel;
+  }
 
-    return this.productModels.find((p) => {
-      return p._product.code.toLowerCase() == nameCode[0].toLowerCase();
-    });
+  showProductList($event, filterKind){
+    if(filterKind === 'name'){
+      if(this.productModelCtrlName.value === null){
+        this.productModelCtrlName.setValue('');
+      }
+      else{
+        $event.target.select();
+      }
+    }
+    else if(filterKind === 'code'){
+      if(this.productModelCtrlCode.value === null) {
+        this.productModelCtrlCode.setValue('');
+      }
+      else{
+        $event.target.select();
+      }
+    }
   }
 }

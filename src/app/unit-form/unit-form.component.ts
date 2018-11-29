@@ -35,6 +35,7 @@ export class UnitFormComponent implements OnInit {
           unit.username = unitData.username;
           unit.password = '';
           unit.is_branch = unitData.is_branch;
+          unit.is_kitchen = unitData.is_kitchen;
 
           let unitModel = new UnitModel(unit);
 

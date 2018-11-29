@@ -11,6 +11,8 @@ export class AuthService {
   public user = '';
   public userType = '';
   public unitName = '';
+  public isKitchen: boolean;
+  public unit_id : number;
   auth$ = this.authStream.asObservable();
   originBeforeLogin = '/';
 
@@ -50,16 +52,31 @@ export class AuthService {
     this.user = data.user;
     this.unitName = data.name;
     this.userType = data.userType;
+    this.isKitchen = data.isKitchen;
+    this.unit_id = data.uid;
     this.authStream.next(true);
 
-    let url = this.originBeforeLogin;
+    let url: string = this.originBeforeLogin;
+
     if(url !== null && url !== '/'){
-      if(this.userType === 'branch' && url === 'delivery')
-        this.router.navigate(['inventory']);
-      else if(this.userType === 'prep' && url === 'inventory')
-        this.router.navigate(['delivery']);
-      else
-        this.router.navigate([url]);
+      if(this.userType === 'branch'){
+        if(url.indexOf('inventory') !== -1 || url.indexOf('override') !== -1)
+          this.router.navigate([url]);
+        else
+          this.router.navigate(['inventory']);
+      }
+      else if(this.userType === 'prep'){
+        if(url.indexOf('delivery') !== -1)
+          this.router.navigate([url]);
+        else
+          this.router.navigate(['delivery']);
+      }
+      else if(this.userType === 'admin'){
+        if(url.indexOf('units') !== -1 || url.indexOf('products') !== -1 || url.indexOf('override') !== -1 || url.indexOf('reports') !== -1)
+          this.router.navigate([url]);
+        else
+          this.router.navigate(['']);
+      }
     }
     else{
       if(this.userType === 'branch')

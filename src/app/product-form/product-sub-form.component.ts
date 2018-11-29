@@ -77,6 +77,7 @@ export class ProductSubFormComponent implements OnInit {
             this.product.prep_unit_id = null;
             this.product.minQty = -12345678;
             this.product.maxQty = null;
+            this.product.price = null;
 
             for (let day in this.product.coefficients) {
               this.product.coefficients[day] = 1;
@@ -116,12 +117,12 @@ export class ProductSubFormComponent implements OnInit {
       this.product.countingRecursion = '';
       this.product.minQty = null;
       this.product.maxQty = null;
+      this.product.price = null;
 
       for (let day in this.product.coefficients) {
         this.product.coefficients[day] = 1;
       }
-    }
-    else {
+    } else {
       this.productModel.waiting.subscribe(
         (data) => {
           this._isUpdating = data.updating;
@@ -142,6 +143,7 @@ export class ProductSubFormComponent implements OnInit {
       this.product.prep_unit_id = this.tempProductModel._product.prep_unit_id;
       this.product.maxQty = this.tempProductModel._product.maxQty;
       this.product.minQty = this.tempProductModel._product.minQty;
+      this.product.price = this.tempProductModel._product.price;
 
       for (let day in this.tempProductModel._product.coefficients) {
         this.product.coefficients[day] = this.tempProductModel._product.coefficients[day];
@@ -210,13 +212,14 @@ export class ProductSubFormComponent implements OnInit {
   }
 
   shouldDisableUpdateBtn(): boolean {
-    if (this._isUpdating === true)
+    if (this._isUpdating === true) {
       return true;
-    else {
-      if (this.productModel.isDifferent(this.product) === true)
+    } else {
+      if (this.productModel.isDifferent(this.product) === true) {
         return !this.isCorrectFormData();
-      else
+      } else {
         return true;
+      }
     }
   }
 
