@@ -158,7 +158,6 @@ export class OverrideFormComponent implements OnInit {
   private refreshDropDown() {
     this.productName_Code = [];
     this.productNames.forEach((el, ind) => this.productName_Code.push(`[${this.productCodes[ind]}] ${el}`));
-    console.log(this.productName_Code);
     this.productModelCtrl.reset();
   }
 
