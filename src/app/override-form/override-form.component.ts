@@ -36,7 +36,8 @@ export class OverrideFormComponent implements OnInit {
   selectedProduct: string = '';
   ae = ActionEnum;
 
-  constructor(private restService: RestService, private authService: AuthService, private messageService: MessageService) {
+  constructor(private restService: RestService, private authService: AuthService, private messageService: MessageService,
+              private msg: MessageService) {
   }
 
   ngOnInit() {
@@ -96,8 +97,6 @@ export class OverrideFormComponent implements OnInit {
 
     this.filteredNameCode.subscribe(
       (data) => {
-        console.log('####');
-        console.log(data);
         if (data.length === 1) {
           if (this.filteredProductModel == null) {
             this.filteredProductModel = new ProductModel(this.getProduct(data));
@@ -153,7 +152,6 @@ export class OverrideFormComponent implements OnInit {
   private refreshDropDown() {
     this.productName_Code = [];
     this.productNames.forEach((el, ind) => this.productName_Code.push(`[${this.productCodes[ind]}] ${el}`));
-    console.log(this.productName_Code);
     this.productModelCtrl.reset();
   }
 
@@ -201,6 +199,8 @@ export class OverrideFormComponent implements OnInit {
 
         (isAdd) ? this.setWaiting(ActionEnum.add, false) : this.setWaiting(ActionEnum.update, false);
         this.checkDisabilityStatus();
+
+        this.messageService.message(`Counting rule for '${tempProductModel[0]._product.name}' has been overridden in '${this.branchList[this.selectedIndex].name}'.`);
       },
       (err) => {
         console.log(err.message);
@@ -296,9 +296,10 @@ export class OverrideFormComponent implements OnInit {
   changedTab(){
     this.filteredProductModel = null;
     this.isFiltered = false;
-    console.log('tab changed');
+    const sp = this.selectedProduct
     this.loadBranchProducts(()=>{
-      if(this.selectedProduct !== null && this.selectedProduct !== ''){
+      if(sp !== null && sp !== ''){
+        this.selectedProduct = sp;
         this.productModelCtrl.setValue(this.selectedProduct);
         this.productModelCtrl.markAsTouched();
       }
