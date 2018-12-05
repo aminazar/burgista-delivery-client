@@ -16,7 +16,9 @@ import {Product} from "../product-form/product";
 export class OverrideFormComponent implements OnInit {
   @ViewChild('autoNameCode') autoNameCode;
 
-  isAdmin: boolean = false;
+  is_kitchen = true;
+  branchData;
+  isAdmin = false;
   productModels: ProductModel[] = [];
   filteredProductModel: ProductModel;
   filteredNameCode: any;
@@ -43,16 +45,8 @@ export class OverrideFormComponent implements OnInit {
     if (this.isAdmin) { // Fetch all branches and products (with/without overridden values)
       this.restService.get('unit?isBranch=true').subscribe(
         (data) => {
-          this.branchList = [];
-
-          for (let branch of data) {
-            let tempObj = {
-              id: branch.uid,
-              name: branch.name
-            };
-
-            this.branchList.push(tempObj);
-          }
+          this.branchData = data.map(r => {return {id: r.uid, name: r.name, is_kitchen: r.is_kitchen};});
+          this.branchList = this.branchData.filter(r => r.is_kitchen === this.is_kitchen);
 
           this.loadBranchProducts();
         },
@@ -385,5 +379,9 @@ export class OverrideFormComponent implements OnInit {
     else{
       $event.target.select();
     }
+  }
+
+  changeFilter() {
+    this.branchList = this.branchData.filter(r => r.is_kitchen === this.is_kitchen)
   }
 }
