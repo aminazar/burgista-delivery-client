@@ -47,7 +47,7 @@ export class OverrideFormComponent implements OnInit {
       this.restService.get('unit?isBranch=true').subscribe(
         (data) => {
           this.branchData = data.map(r => {return {id: r.uid, name: r.name, is_kitchen: r.is_kitchen};});
-          this.branchList = this.branchData.filter(r => r.is_kitchen === this.is_kitchen);
+          this.getBranchList();
 
           this.loadBranchProducts();
         },
@@ -296,7 +296,7 @@ export class OverrideFormComponent implements OnInit {
   changedTab(){
     this.filteredProductModel = null;
     this.isFiltered = false;
-    const sp = this.selectedProduct
+    const sp = this.selectedProduct;
     this.loadBranchProducts(()=>{
       if(sp !== null && sp !== ''){
         this.selectedProduct = sp;
@@ -383,6 +383,14 @@ export class OverrideFormComponent implements OnInit {
   }
 
   changeFilter() {
-    this.branchList = this.branchData.filter(r => r.is_kitchen === this.is_kitchen)
+    this.selectedProduct = null;
+    this.getBranchList();
+    this.changedTab();
+  }
+
+  private getBranchList() {
+    this.branchList = this.branchData
+      .filter(r => r.is_kitchen === this.is_kitchen)
+      .sort((x, y) => x.name < y.name ? -1 : x.name > y.name ? 1 : 0);
   }
 }

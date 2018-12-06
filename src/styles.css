@@ -1,4 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
+body {
+  font-family: Roboto, sans-serif !important;
+}
 .fill-remaining-space {
   flex: 1 1 auto;
 }
@@ -62,6 +65,7 @@ a:hover{text-decoration: none;text-weight:bold;}
 
 .mat-tab-label{
   background: antiquewhite;
+  min-width: unset !important;
 }
 
 .mat-tab-label:focus{
@@ -72,7 +76,7 @@ a:hover{text-decoration: none;text-weight:bold;}
   opacity:1 !important;
 }
 .mat-radio-focused{
-  background-color: antiquewhite;
+  color: darkslategrey;
 }
 .mat-button-toggle:hover{
   background-color: antiquewhite;
@@ -214,3 +218,13 @@ thead, tbody tr {
 thead {
   width: calc( 100% - 1em )
 }
+md-toolbar {
+  height: 30px !important;
+  min-height: 30px !important;
+  font-weight: 100 !important;
+}
+md-toolbar-row {
+  height: 30px !important;
+}
+
+.mat-tab-label {}

@@ -38,7 +38,6 @@ export class AppComponent implements OnInit {
     this.messageService.block$.subscribe(
       bl => {
         this.blocked = bl;
-        console.log('blocked', bl)
       }
     )
   }
