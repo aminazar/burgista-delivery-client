@@ -10,9 +10,9 @@ import {MdSnackBar} from "@angular/material";
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  title = 'app works!';
   private showError = false;
   private error: string;
+  blocked = false;
 
   constructor(private loggedInGuard: LoggedInGuard, private messageService: MessageService, public snackBar: MdSnackBar) {
   }
@@ -33,6 +33,12 @@ export class AppComponent implements OnInit {
     this.messageService.warn$.subscribe(
       msg => {
         this.snackBar.open(msg, 'x', {duration: 3000, extraClasses: ['warnBar']});
+      }
+    );
+    this.messageService.block$.subscribe(
+      bl => {
+        this.blocked = bl;
+        console.log('blocked', bl)
       }
     )
   }

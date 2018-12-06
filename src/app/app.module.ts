@@ -31,7 +31,8 @@ import { PrintViewerComponent } from './print-viewer/print-viewer.component';
 import {PrintService} from "./print.service";
 import {WindowRef} from "./WindowRef";
 import { ReportsComponent } from './reports/reports.component';
-
+import {BlockUIModule} from 'primeng/primeng';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -58,8 +59,10 @@ import { ReportsComponent } from './reports/reports.component';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     FormsModule,
     HttpModule,
+    BlockUIModule,
     MaterialModule.forRoot(),
     FlexLayoutModule,
     ReactiveFormsModule,

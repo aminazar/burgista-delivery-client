@@ -1,5 +1,5 @@
 /* tslint:disable:no-unused-variable */
-import {async, ComponentFixture, TestBed, fakeAsync, tick, async} from '@angular/core/testing';
+import {ComponentFixture, TestBed, fakeAsync, tick, async} from '@angular/core/testing';
 import {By, BrowserModule} from '@angular/platform-browser';
 import {DebugElement} from '@angular/core';
 import {FormsModule} from "@angular/forms";

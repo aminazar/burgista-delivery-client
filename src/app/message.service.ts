@@ -10,6 +10,11 @@ export class MessageService {
   msg$:Observable<string> = this.msgStream.asObservable();
   private warningStream = new Subject<string>();
   warn$:Observable<string> = this.warningStream.asObservable();
+  block$ = new Subject<boolean>();
+
+  block(bl = true) {
+    this.block$.next(bl);
+  }
 
   error(err:Response){
     err = this.changeToUnderstandableMessage(err);

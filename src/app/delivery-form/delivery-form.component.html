@@ -76,20 +76,20 @@
       </md-card>
     </md-tab>
     <md-tab *ngFor="let rcv of receivers" class="delayedTab">
-      <template md-tab-label>
+      <ng-template md-tab-label>
         <i *ngIf="rcv.warn === 'count'" class="fa fa-exclamation warnColoring" aria-hidden="true"></i>
         {{rcv.name}}
-      </template>
-      <template md-tab-label *ngIf="rcv.warn === 'login'">
+      </ng-template>
+      <ng-template md-tab-label *ngIf="rcv.warn === 'login'">
         <i class="fa fa-exclamation warnColoring" aria-hidden="true"></i>
         <i class="fa fa-exclamation warnColoring" aria-hidden="true"></i> {{rcv.name}}
-      </template>
-      <template md-tab-label *ngIf="rcv.warn === 'count'">
+      </ng-template>
+      <ng-template md-tab-label *ngIf="rcv.warn === 'count'">
         <i class="fa fa-exclamation warnColoring" aria-hidden="true"></i> {{rcv.name}}
-      </template>
-      <template md-tab-label *ngIf="rcv.warn === 'no'">
+      </ng-template>
+      <ng-template md-tab-label *ngIf="rcv.warn === 'no'">
         {{rcv.name}}
-      </template>
+      </ng-template>
       <md-card class="innerCard"
                *ngIf="!isWaiting[rcv.name] && receiversDeliveryModels[rcv.name] !== undefined && receiversDeliveryModels[rcv.name] !== null">
         <md-card-title>To Do: Delivery</md-card-title>

@@ -1,3 +1,9 @@
+<p-blockUI [blocked]="blocked">
+  <div style="position:absolute;top:25%;left:40%;text-align: center;width:20%;height:200px">
+    <i class="fa fa-circle-o-notch fa-spin fa-5x" style="position:absolute;top:25%;left:50%"></i>
+  </div>
+</p-blockUI>
+
 <app-navbar></app-navbar>
 <div *ngIf="showError" style="width:100%;background:darkred;color:white"><i class="fa fa-close" style="padding:5px" (click)="closeError()"></i> {{error}}</div>
 <div class="flex-container" style="overflow: auto;"
@@ -7,3 +13,4 @@
   <div class="flex-item" fxFlex="80"><router-outlet></router-outlet></div>
   <!--<div class="flex-item" fxFlex="33"></div>-->
 </div>
+
