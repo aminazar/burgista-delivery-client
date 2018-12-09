@@ -30,10 +30,8 @@ export class PrintService {
 
   private eachUnitItems(): any[] {
     let result: any[] = [];
-    let counter: number = 0;
 
     for (let item of this._deliveryModels[this._unitConsumer].deliveries) {
-      counter++;
 
       let obj = {};
 
@@ -52,10 +50,9 @@ export class PrintService {
 
   private overallItems(): any[] {
     let result: any[] = [];
-    let counter: number = 0;
+
 
     for (let item of this._deliveryModels['All'].deliveries) {
-      counter++;
       let obj:any = {};
 
       obj['productCode'] = item.productCode;

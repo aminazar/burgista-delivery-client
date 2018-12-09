@@ -17,7 +17,7 @@ export class DeliveryModel{
   }
 
   get deliveries() : Delivery[] {
-    return this.filter ? this._deliveries.filter(r => r.realDelivery !== 0) : this._deliveries;
+    return (this.filter ? this._deliveries.filter(r => r.realDelivery !== 0) : this._deliveries).sort((x, y) => x.productName < y.productName ? -1 : x.productName > y.productName ? 1 : 0);
   }
   add(delivery: Delivery){
     let tempDelivery = new Delivery();
