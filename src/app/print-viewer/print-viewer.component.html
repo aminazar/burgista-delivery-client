@@ -14,18 +14,20 @@
       <td>Real Delivery</td>
       <td>Current Stock</td>
       <td>Stock After Delivery</td>
-      <td>Stock surplus/deficit</td>
+      <td>Min Delivery</td>
+      <td>Days to Next Counting</td>
     </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let item of itemList">
-      <td class="box">{{item.rowNum}}</td>
-      <td class="box">{{item.productCode}}</td>
-      <td class="box">{{item.productName}}</td>
-      <td class="box">{{item.realDelivery}}</td>
-      <td class="box">{{item.currentStock===null ? 'NA' : item.currentStock}}</td>
-      <td class="box">{{item.stockAfterDelivery}}</td>
-      <td class="box">{{item.stockSurplusDeficit}}</td>
+      <tr *ngFor="let item of itemList;let i=index">
+      <td class="box" [style.background]="i%2 ? 'silver' : 'unset'">{{i + 1}}</td>
+      <td class="box" [style.background]="i%2 ? 'silver' : 'unset'">{{item.productCode}}</td>
+      <td class="box" [style.background]="i%2 ? 'silver' : 'unset'">{{item.productName}}</td>
+      <td class="box" [style.background]="i%2 ? 'silver' : 'unset'">{{item.realDelivery}}</td>
+      <td class="box" [style.background]="i%2 ? 'silver' : 'unset'">{{item.currentStock===null ? 'NA' : item.currentStock}}</td>
+      <td class="box" [style.background]="i%2 ? 'silver' : 'unset'">{{item.stockAfterDelivery}}</td>
+      <td class="box" [style.background]="i%2 ? 'silver' : 'unset'">{{item.minDelivery}}</td>
+      <td class="box" [style.background]="i%2 ? 'silver' : 'unset'">{{item.daysToNext}}</td>
     </tr>
     </tbody>
   </table>
@@ -39,17 +41,15 @@
         <td>Product Name</td>
         <td>Total Delivery</td>
         <td *ngFor="let rcvName of receivers">{{rcvName}}</td>
-        <td>Total Stock surplus/deficit</td>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let item of itemList">
-        <td class="box">{{item.rowNum}}</td>
-        <td class="box">{{item.productCode}}</td>
-        <td class="box">{{item.productName}}</td>
-        <td class="box">{{item.totalDelivery}}</td>
-        <td class="box" *ngFor="let rcvName of receivers">{{item[rcvName]}}</td>
-        <td class="box">{{item.totalStockSurplusDeficit}}</td>
+      <tr *ngFor="let item of itemList;let i = index">
+        <td class="box" [style.background]="i%2 ? 'silver' : 'unset'">{{i + 1}}</td>
+        <td class="box" [style.background]="i%2 ? 'silver' : 'unset'">{{item.productCode}}</td>
+        <td class="box" [style.background]="i%2 ? 'silver' : 'unset'">{{item.productName}}</td>
+        <td class="box" [style.background]="i%2 ? 'silver' : 'unset'">{{item.totalDelivery}}</td>
+        <td class="box" [style.background]="i%2 ? 'silver' : 'unset'" *ngFor="let rcvName of receivers">{{item[rcvName]}}</td>
       </tr>
     </tbody>
   </table>

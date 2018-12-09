@@ -12,6 +12,7 @@ export class Delivery{
   max: number;
   stock: number;
   stockDate: string;
+  untilNextCountingDay: number;
   state: string = 'exist';
   isPrinted: boolean = false;
 }

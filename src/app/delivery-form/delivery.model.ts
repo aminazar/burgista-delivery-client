@@ -9,11 +9,16 @@ export class DeliveryModel{
   _shouldDisabled: boolean = false;
   _isSubmitted: boolean = false;
   _isPrinted: boolean = false;
+  filter = false;
 
-  constructor(unitName: string){
+  constructor(unitName: string, filter){
     this._unitName = unitName;
+    this.filter = filter;
   }
 
+  get deliveries() : Delivery[] {
+    return this.filter ? this._deliveries.filter(r => r.realDelivery !== 0) : this._deliveries;
+  }
   add(delivery: Delivery){
     let tempDelivery = new Delivery();
 
@@ -103,5 +108,13 @@ export class DeliveryModel{
       resObj['product_id'] = product_id;
 
     return resObj;
+  }
+
+  afterSubmit() { // Make all nulls zero
+    this._deliveries.forEach(d => {
+      if (d.realDelivery === null) {
+        d.realDelivery = 0;
+      }
+    })
   }
 }

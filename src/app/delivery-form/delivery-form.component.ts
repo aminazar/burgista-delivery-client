@@ -40,6 +40,9 @@ import {BehaviorSubject} from "rxjs";
 export class DeliveryFormComponent implements OnInit {
   // @ViewChild('autoNameCode') autoNameCode;
 
+  showZeroDelivery = false;
+  filteredDeliveries = [];
+  filteredBranchDeliveries = {};
   dataIsReady: boolean = false;
   isWaiting: any = {};
   unitName: string;
@@ -58,12 +61,13 @@ export class DeliveryFormComponent implements OnInit {
   productsList: any = {};
   filteredNameCode: any;
   productNameCodeCtrl: FormControl;
+  thereIsProactiveItem = false;
 
   constructor(private authService: AuthService, private restService: RestService, private  msgService: MessageService, public dialog: MdDialog, private printService: PrintService) { }
 
   ngOnInit() {
     if(this.overallDeliveryModel === null || this.overallDeliveryModel === undefined)
-      this.overallDeliveryModel = new DeliveryModel('All');
+      this.overallDeliveryModel = new DeliveryModel('All', !this.showZeroDelivery);
 
     this.overallDeliveryModel._shouldDisabled = true;
     this.unitName = this.authService.unitName;
@@ -141,6 +145,7 @@ export class DeliveryFormComponent implements OnInit {
           tempDelivery.stockDate = moment(tempDelivery.stockDate).format('dd MMM YY');
 
           this.receiversDeliveryModels[this.receiverName].add(tempDelivery);
+          this.thereIsProactiveItem = !!this.overallDeliveryModel._deliveries.find(r => r.id === null);
           this.calSumRow(this.receiverName, tempDelivery, 'add');
           this.calSumRow('All', tempDelivery, 'add');
 
@@ -153,6 +158,7 @@ export class DeliveryFormComponent implements OnInit {
           //Add this data to overallDeliveryModel
           if(this.overallDeliveryModel.getByCode(tempDelivery.productCode) === undefined) {
             this.overallDeliveryModel.add(tempDelivery);
+            this.thereIsProactiveItem = !!this.overallDeliveryModel._deliveries.find(r => r.id === null);
             this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'min', 0);
             this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'max', 0);
             this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'realDelivery', 0);
@@ -168,7 +174,8 @@ export class DeliveryFormComponent implements OnInit {
             this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'maxDelivery', tempDelivery.maxDelivery);
             this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'stock', tempDelivery.stock);
           }
-
+          this.overallDeliveryModel.filter = !this.showZeroDelivery;
+          this.filteredDeliveries = this.overallDeliveryModel.deliveries;
           //Change deliverModel._isSubmitted to false
           this.receiversDeliveryModels[this.receiverName]._isSubmitted = false;
         }
@@ -324,6 +331,7 @@ export class DeliveryFormComponent implements OnInit {
 
     //Change deliveryModel._isSubmitted to false
     this.receiversDeliveryModels[this.receiverName]._isSubmitted = false;
+    this.changeFilter();
   }
 
   tabChanged(){
@@ -375,7 +383,7 @@ export class DeliveryFormComponent implements OnInit {
 
 
     //Sort overallDeliveryModel._deliveries
-    this.overallDeliveryModel._deliveries.sort((a, b) => {
+    this.overallDeliveryModel.deliveries.sort((a, b) => {
       if(a.productName.toLowerCase() > b.productName.toLowerCase())
         return 1;
       else if(a.productName.toLowerCase() < b.productName.toLowerCase())
@@ -388,7 +396,7 @@ export class DeliveryFormComponent implements OnInit {
         else
           return 0;
       }
-    })
+    });
   }
 
   countToday(stockDate: string){
@@ -424,7 +432,8 @@ export class DeliveryFormComponent implements OnInit {
   }
 
   submitDelivery(deliveryModel: DeliveryModel){
-    for(let delItem of deliveryModel._deliveries){
+    deliveryModel.afterSubmit();
+    for(let delItem of deliveryModel.deliveries){
       if(delItem.realDelivery === null){
         this.msgService.warn("Delivery data are submitted, but delivery value of '" + delItem.productName + "' was blank.");
         return;
@@ -492,14 +501,14 @@ export class DeliveryFormComponent implements OnInit {
             let noFailure: boolean = true;
 
             let counter = 0;
-            for(let item of deliveryModel._deliveries){
+            for(let item of deliveryModel.deliveries){
               item.isPrinted = true;
               this.restService.update('delivery', item.id, DeliveryModel.toAnyObject(item, item.isPrinted, null)).subscribe(
                 (data) => {
-                  deliveryModel._isPrinted = deliveryModel._deliveries.map(d => d.isPrinted).reduce((a, b) => a && b);
+                  deliveryModel._isPrinted = deliveryModel.deliveries.map(d => d.isPrinted).reduce((a, b) => a && b);
 
                   counter++;
-                  if(counter >= deliveryModel._deliveries.length)
+                  if(counter >= deliveryModel.deliveries.length)
                     doneAllItems.next(true);
                 },
                 (err) => {
@@ -508,7 +517,7 @@ export class DeliveryFormComponent implements OnInit {
                   noFailure = false;
 
                   counter++;
-                  if(counter >= deliveryModel._deliveries.length)
+                  if(counter >= deliveryModel.deliveries.length)
                     doneAllItems.next(true);
                 }
               )
@@ -537,7 +546,7 @@ export class DeliveryFormComponent implements OnInit {
     let overallCanPrinted = true;
 
     for(let rcv of this.receivers){
-      if(!this.receiversDeliveryModels[rcv.name]._isPrinted && this.receiversDeliveryModels[rcv.name]._deliveries.length > 0)
+      if(!this.receiversDeliveryModels[rcv.name]._isPrinted && this.receiversDeliveryModels[rcv.name].deliveries.length > 0)
         overallCanPrinted = false;
     }
 
@@ -561,7 +570,8 @@ export class DeliveryFormComponent implements OnInit {
           this.waiting();
           this.productsList[rcv.name] = [];
 
-          this.receiversDeliveryModels[rcv.name] = new DeliveryModel(rcv.name);
+          this.receiversDeliveryModels[rcv.name] = new DeliveryModel(rcv.name, !this.showZeroDelivery);
+          this.filteredBranchDeliveries[rcv.name] = [];
           this.receiversSumDeliveries[rcv.name] = new Delivery();
           this.receiversSumDeliveries[rcv.name].min = 0;
           this.receiversSumDeliveries[rcv.name].max = 0;
@@ -617,14 +627,17 @@ export class DeliveryFormComponent implements OnInit {
               else
                 tempDelivery.stockDate = moment(item.stockDate).format('DD MMM YY');
               tempDelivery.state = 'exist';
+              tempDelivery.untilNextCountingDay = item.untilNextCountingDay;
 
               this.receiversDeliveryModels[rcv.name].add(tempDelivery);
+              this.thereIsProactiveItem = !!this.overallDeliveryModel.deliveries.find(r => r.id === null);
               this.calSumRow(rcv.name, tempDelivery, 'add');
               this.calSumRow('All', tempDelivery, 'add');
 
               //Update overall list
               if(this.overallDeliveryModel.getByCode(item.productCode) === undefined){          //Should add a product
                 this.overallDeliveryModel.add(tempDelivery);
+                this.thereIsProactiveItem = !!this.overallDeliveryModel.deliveries.find(r => r.id === null);
               }
               else{
                 this.updateOverallDelivery(item.productCode, tempDelivery, 'add', 'min', tempDelivery.min);
@@ -637,8 +650,8 @@ export class DeliveryFormComponent implements OnInit {
             }
           }
 
-          if(this.receiversDeliveryModels[rcv.name]._deliveries.length > 0)
-            this.receiversDeliveryModels[rcv.name]._isPrinted = this.receiversDeliveryModels[rcv.name]._deliveries.map(d => d.isPrinted)
+          if(this.receiversDeliveryModels[rcv.name].deliveries.length > 0)
+            this.receiversDeliveryModels[rcv.name]._isPrinted = this.receiversDeliveryModels[rcv.name].deliveries.map(d => d.isPrinted)
                                                                                                     .reduce((a, b) => a && b);
           else{
             this.receiversDeliveryModels[rcv.name]._isSubmitted = true;
@@ -649,7 +662,7 @@ export class DeliveryFormComponent implements OnInit {
             this.receiversDeliveryModels[rcv.name]._isSubmitted = true;
 
           //Sort data
-          this.receiversDeliveryModels[rcv.name]._deliveries.sort((a, b) => {
+          this.receiversDeliveryModels[rcv.name].deliveries.sort((a, b) => {
             if(!this.countToday(a.stockDate) && this.countToday(b.stockDate))
               return -1;
             else if(this.countToday(a.stockDate) && !this.countToday(b.stockDate))
@@ -666,7 +679,9 @@ export class DeliveryFormComponent implements OnInit {
               else
                 return 0;
             }
-          })
+          });
+          this.filteredBranchDeliveries[rcv.name] = this.receiversDeliveryModels[rcv.name].deliveries;
+          this.filteredDeliveries = this.overallDeliveryModel.deliveries;
         },
         (err) => {
           this.isWaiting[rcv.name] = false;
@@ -739,5 +754,15 @@ export class DeliveryFormComponent implements OnInit {
     }
 
     this.dataIsReady = !wait;
+  }
+
+  changeFilter() {
+    this.overallDeliveryModel.filter = !this.showZeroDelivery;
+
+    this.filteredDeliveries = this.overallDeliveryModel.deliveries;
+    for(const name in this.receiversDeliveryModels) if(this.receiversDeliveryModels.hasOwnProperty(name)) {
+      this.receiversDeliveryModels[name].filter = !this.showZeroDelivery;
+      this.filteredBranchDeliveries[name] =  this.receiversDeliveryModels[name].deliveries;
+    }
   }
 }

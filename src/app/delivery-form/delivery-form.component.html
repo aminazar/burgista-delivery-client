@@ -6,6 +6,15 @@
     <material-datepicker class="flex-item" fxFlex="30" [(date)]="selectedDate" (onSelect)="dateChanged()">
     </material-datepicker>
   </div>
+  <div>
+    <md-card class="mat-card" style="width:295px; margin-bottom:10px;padding:5px; border-radius:25px;">
+      <label for="show-zero-delivery" style="padding:0 10px">Zero deliveries:</label>
+      <md-radio-group [(ngModel)]="showZeroDelivery" (change)="changeFilter()" id="show-zero-delivery">
+        <md-radio-button style="padding: 0 10px;" [value]="false">Hide</md-radio-button>
+        <md-radio-button style="padding: 0 10px;" [value]="true">Show</md-radio-button>
+      </md-radio-group>
+    </md-card>
+  </div>
   <md-tab-group *ngIf="dataIsReady" class="materialTab" [(selectedIndex)]="selectedIndex" (selectChange)="tabChanged()">
     <md-tab label="All" *ngIf="overallDeliveryModel._deliveries !== undefined">
       <md-card class="innerCard">
@@ -16,21 +25,21 @@
               <table class="table">
                 <thead>
                   <tr>
-                    <td></td>
-                    <td>Code</td>
-                    <td>Product</td>
-                    <td>Real Delivery</td>
-                    <td>Min Delivery</td>
-                    <td>Max Delivery</td>
-                    <td>Min Required</td>
-                    <td>Max Stock Capacity</td>
-                    <td>Branches Stock</td>
+                    <th [style.width]="thereIsProactiveItem ? 'unset' : '20px'">#</th>
+                    <th>Code</th>
+                    <th>Product</th>
+                    <th>Real Delivery</th>
+                    <th>Min Delivery</th>
+                    <th>Max Delivery</th>
+                    <th>Min Required</th>
+                    <th>Max Stock</th>
+                    <th>Branches Stock</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let delItem of overallDeliveryModel._deliveries">
-                    <td *ngIf="delItem.id !== null"></td>
-                    <td *ngIf="delItem.id === null">
+                  <tr *ngFor="let delItem of filteredDeliveries;let i = index">
+                    <td *ngIf="delItem.id !== null" style="width:20px">{{i + 1}}</td>
+                    <td *ngIf="delItem.id === null" style="width: unset">
                       <md-chip-list>
                         <md-chip color="primary" selected="true">Added</md-chip>
                       </md-chip-list>
@@ -47,10 +56,8 @@
                     <td *ngIf="delItem.stock !== null">{{delItem.stock}}</td>
                     <td *ngIf="delItem.stock === null"><i class="fa fa-question warnColoring" aria-hidden="true"></i></td>
                 </tr>
-                  <br/>
-                  <br/>
                   <tr>
-                    <td></td>
+                    <td [style.width]="thereIsProactiveItem ? 'unset' : '20px' "></td>
                     <td colspan="2">Sum</td>
                     <td>{{receiversSumDeliveries['All'].realDelivery}}</td>
                     <td *ngIf="receiversSumDeliveries['All'].minDelivery !== null">{{receiversSumDeliveries['All'].minDelivery}}</td>
@@ -99,21 +106,22 @@
               <table class="table">
                 <thead>
                 <tr>
-                  <td></td>
-                  <td>Code</td>
-                  <td>Product</td>
-                  <td>Real Delivery</td>
-                  <td>Min Delivery</td>
-                  <td>Max Delivery</td>
-                  <td>Min Required</td>
-                  <td>Max Stock Capacity</td>
-                  <td>Current Stock</td>
-                  <td>Stock Date</td>
+                  <th>#</th>
+                  <th>Code</th>
+                  <th>Product</th>
+                  <th>Real Delivery</th>
+                  <th>Min Delivery</th>
+                  <th>Max Delivery</th>
+                  <th>Min Required</th>
+                  <th>Max Stock</th>
+                  <th>Current Stock</th>
+                  <th>Stock Date</th>
+                  <th>Days to Next Counting</th>
                 </tr>
                 </thead>
                 <tbody style="height: 200px;">
-                <tr *ngFor="let delItem of receiversDeliveryModels[rcv.name]._deliveries">
-                  <td class="buttonItem" *ngIf="delItem.id !== null && delItem.state !== 'added'"></td>
+                <tr *ngFor="let delItem of filteredBranchDeliveries[rcv.name];let i = index">
+                  <td class="buttonItem" *ngIf="delItem.id !== null && delItem.state !== 'added'">{{i+1}}</td>
                   <td class="buttonItem" *ngIf="delItem.id === null">
                     <button md-mini-fab
                             (click)="removeDeliveryItem(delItem)">
@@ -178,9 +186,9 @@
                       [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
                     {{delItem.stockDate}}
                   </td>
+                  <td *ngIf="delItem.untilNextCountingDay!==null" class="column" [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.untilNextCountingDay}}</td>
+                  <td *ngIf="delItem.untilNextCountingDay===null" class="column"><i class="fa fa-question warnColoring" aria-hidden="true"></i></td>
                 </tr>
-                <br/>
-                <br/>
                 <tr>
                   <td class="buttonItem"></td>
                   <td class="nameItem" colspan="2">Sum</td>
@@ -206,6 +214,7 @@
                     <i class="fa fa-question warnColoring" aria-hidden="true"></i>
                   </td>
                   <td style="min-width: 80px !important;" class="column">-</td>
+                  <td>-</td>
                 </tr>
                 <tr
                   *ngIf="isToday && !receiversDeliveryModels[rcv.name]._shouldDisabled && productsList[rcv.name] !== undefined && productsList[rcv.name].length > 0">

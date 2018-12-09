@@ -2,12 +2,12 @@
  * Created by Ali on 3/8/2017.
  */
 import {Injectable, AfterViewInit} from "@angular/core";
-import { WindowRef } from './WindowRef';
+import {WindowRef} from './WindowRef';
 import {MessageService} from "./message.service";
 import * as moment from 'moment';
 
 @Injectable()
-export class PrintService{
+export class PrintService {
   _unitSupplier: string = '';
   _unitConsumer: string = '';
   _isOverallPrint: boolean = false;
@@ -15,75 +15,73 @@ export class PrintService{
   _deliveryModels: any = {};
   _showWarningMessage: boolean = true;
   currentDate: Date = new Date();
-  _window:any;
+  _window: any;
 
-  constructor(private messageService:MessageService, private winRef: WindowRef) {
+  constructor(private messageService: MessageService, private winRef: WindowRef) {
     this._window = winRef.nativeWindow;
   }
 
-  getItems(): any[]{
-    if(this._isOverallPrint)
+  getItems(): any[] {
+    if (this._isOverallPrint)
       return this.overallItems();
     else
       return this.eachUnitItems();
   }
 
-  private eachUnitItems(): any[]{
+  private eachUnitItems(): any[] {
     let result: any[] = [];
     let counter: number = 0;
 
-    for(let item of this._deliveryModels[this._unitConsumer]._deliveries){
+    for (let item of this._deliveryModels[this._unitConsumer].deliveries) {
       counter++;
 
       let obj = {};
 
-      obj['rowNum'] = counter;
       obj['productCode'] = item.productCode;
       obj['productName'] = item.productName;
       obj['realDelivery'] = item.realDelivery;
       obj['currentStock'] = item.stock;
       obj['stockAfterDelivery'] = item.realDelivery + item.stock;
-      obj['stockSurplusDeficit'] = item.realDelivery + item.stock - item.max;
+      obj['minDelivery'] = item.minDelivery;
+      obj['daysToNext'] = item.untilNextCountingDay;
 
       result.push(obj);
     }
-
-    console.log('Counter:' + counter);
-    console.log('Result:' + result);
     return result;
   }
 
-  private overallItems(): any[]{
+  private overallItems(): any[] {
     let result: any[] = [];
     let counter: number = 0;
 
-    for(let item of this._deliveryModels['All']._deliveries){
+    for (let item of this._deliveryModels['All'].deliveries) {
       counter++;
-      let obj = {};
+      let obj:any = {};
 
-      obj['rowNum'] = counter;
       obj['productCode'] = item.productCode;
       obj['productName'] = item.productName;
 
       let totalDelivery = 0;
       let totalStockSurplusDeficit = 0;
+      let totalMinDelivery = 0;
 
-      for(let rcvName of this._receivers){
-        let tempProduct = this._deliveryModels[rcvName]._deliveries.find((el) => {
+      for (let rcvName of this._receivers) {
+        let tempProduct = this._deliveryModels[rcvName].deliveries.find((el) => {
           return el.productCode.toLowerCase() === item.productCode.toLowerCase();
         });
 
-        if(tempProduct === undefined)
+        if (tempProduct === undefined)
           obj[rcvName] = '-';
         else {
           obj[rcvName] = tempProduct.realDelivery;
           totalDelivery += tempProduct.realDelivery;
+          totalMinDelivery += tempProduct.minDelivery;
           totalStockSurplusDeficit += (tempProduct.realDelivery - tempProduct.minDelivery);
         }
       }
 
       obj['totalDelivery'] = totalDelivery;
-      obj['totalStockSurplusDeficit'] = totalStockSurplusDeficit;
+      obj['totalMinDelivery'] = totalMinDelivery;
 
       result.push(obj);
     }
@@ -91,7 +89,7 @@ export class PrintService{
     return result;
   }
 
-  printData(){
+  printData() {
     let printContents: string = '';
 
     //Set Title
@@ -108,112 +106,92 @@ export class PrintService{
 
     let contentTable = '';
 
-    if(this._isOverallPrint){
+    if (this._isOverallPrint) {
       contentTable = `<table class="table">
                       <thead>
                       <tr>
-                      <td>#</td>
-                      <td>Product Code</td>
-                      <td>Product Name</td>
-                      <td>Total Delivery</td>`;
+                      <th>#</th>
+                      <th>Product Code</th>
+                      <th>Product Name</th>
+                      <th>Total Delivery</th>
+                      <th>Total Min Delivery</th>`;
 
-      for(let rcvName of this._receivers){
-        contentTable += '<td>' + rcvName + '</td>';
+      for (let rcvName of this._receivers) {
+        contentTable += '<th>' + rcvName + '</th>';
       }
 
-      contentTable += '<td>Total Stock surplus/deficit</td>'
-                   + '</tr>'
-                   + '</thead>'
-                   + '<tbody>';
+      contentTable += `
+        </tr>
+        </thead>
+        <tbody class="data">`;
     }
-    else{
-      contentTable = '<table class="table">'
-                   + '<thead>'
-                   + '<tr>'
-                   + '<td>#</td>'
-                   + '<td>Product Code</td>'
-                   + '<td>Product Name</td>'
-                   + '<td>Real Delivery</td>'
-                   + '<td>Current Stock</td>'
-                   + '<td>Stock After Delivery</td>'
-                   + '<td>Stock surplus/deficit</td>'
-                   + '</tr>'
-                   + '</thead>'
-                   + '<tbody>';
+    else {
+      contentTable = `<table class="table">
+        <thead>
+        <tr>
+        <th>#</th>
+        <th>Product Code</th>
+        <th>Product Name</th>
+        <th>Real Delivery</th>
+        <th>Current Stock</th>
+        <th>Stock After Delivery</th>
+        <th>Min Delivery</th>
+        <th>Days to Next Count</th>
+        </tr>
+        </thead>
+        <tbody class="data">`;
     }
-
-
 
     let innerContentTable = '';
+    let rowNum = 0;
+    if (this._isOverallPrint) {
+      for (let item of this.getItems()) {
+        rowNum++;
+        const cl = rowNum % 2 ? '' : ' class="highlight"';
+        innerContentTable += `
+<tr>
+  <td${cl}>${rowNum}</td>
+  <td${cl}>${item.productCode}</td>
+  <td${cl} style="min-width: 250px">${item.productName}</td>
+  <td${cl}>${item.totalDelivery}</td>
+  <td${cl}>${item.totalMinDelivery}</td>`;
+        for (let rcvName of this._receivers)
+          innerContentTable += `
+  <td${cl}>${item[rcvName]}</td>`;
 
-    if(this._isOverallPrint){
-      for(let item of this.getItems()){
-        if(item.rowNum % 2 == 1){
-          innerContentTable += '<tr>'
-                            + '<td>' + item.rowNum + '</td>'
-                            + '<td>' + item.productCode + '</td>'
-                            + '<td>' + item.productName + '</td>'
-                            + '<td>' + item.totalDelivery + '</td>';
-
-          for(let rcvName of this._receivers)
-            innerContentTable += '<td>' + item[rcvName] + '</td>';
-
-          innerContentTable += '<td>' + item.totalStockSurplusDeficit + '</td>'
-                            + '</tr>';
-        }
-        else{
-          innerContentTable += '<tr>'
-                            + '<td class="highlight">' + item.rowNum + '</td>'
-                            + '<td class="highlight">' + item.productCode + '</td>'
-                            + '<td class="highlight">' + item.productName + '</td>'
-                            + '<td class="highlight">' + item.totalDelivery + '</td>';
-
-          for(let rcvName of this._receivers)
-            innerContentTable += '<td class="highlight">' + item[rcvName] + '</td>';
-
-          innerContentTable += '<td class="highlight">' + item.totalStockSurplusDeficit + '</td>'
-                            + '</tr>';
-        }
+        innerContentTable += `
+</tr>`;
       }
-    }
-    else{
-      for(let item of this.getItems()){
-        if(item.rowNum % 2 == 1){
-          innerContentTable += `<tr>
-                                <td>${item.rowNum}</td>
-                                <td>${item.productCode}</td>
-                                <td>${item.productName}</td>
-                                <td>${item.realDelivery}</td>
-                                <td>${item.currentStock === null ? 'N/A' : item.currentStock}</td>
-                                <td>${item.currentStock === null ? 'N/A' :item.stockAfterDelivery}</td>
-                                <td>${item.currentStock === null ? 'N/A' :item.stockSurplusDeficit}</td>
-                                </tr>`;
-        }
-        else {
-          innerContentTable += `<tr>
-                                <td class="highlight">${item.rowNum}</td>
-                                <td class="highlight">${item.productCode}</td>
-                                <td class="highlight">${item.productName}</td>
-                                <td class="highlight">${item.realDelivery}</td>
-                                <td class="highlight">${item.currentStock === null ? 'N/A' : item.currentStock}</td>
-                                <td class="highlight">${item.currentStock === null ? 'N/A' :item.stockAfterDelivery}</td>
-                                <td class="highlight">${item.currentStock === null ? 'N/A' :item.stockSurplusDeficit}</td>
-                                </tr>`;
-        }
+    } else {
+      for (let item of this.getItems()) {
+        rowNum++;
+        const cl = rowNum % 2 ? '' : ' class="highlight"';
+
+        innerContentTable += `
+<tr>
+  <td${cl}>${rowNum}</td>
+  <td${cl}>${item.productCode}</td>
+  <td${cl} style="min-width: 250px">${item.productName}</td>
+  <td${cl}>${item.realDelivery}</td>
+  <td${cl}>${item.currentStock === null ? 'N/A' : item.currentStock}</td>
+  <td${cl}>${item.currentStock === null ? 'N/A' : item.stockAfterDelivery}</td>
+  <td${cl}>${item.minDelivery === null ? 'N/A' : item.minDelivery}</td>
+  <td${cl}>${item.daysToNext === null ? 'N/A' : item.daysToNext}</td>
+</tr>`;
       }
     }
 
     contentTable += innerContentTable
-                  + '</tbody>'
-                  + '</table>';
+      + '</tbody>'
+      + '</table>';
 
     printContents += '<div>' + header + '</div>';
     printContents += '<div>' + contentTable + '</div>';
 
     let popup = this._window.open('', '_blank',
       'width=1000,height=600,scrollbars=no,menubar=no,toolbar=no,'
-      +'location=no,status=no,titlebar=no');
-    if(!popup) {
+      + 'location=no,status=no,titlebar=no');
+    if (!popup) {
       this.messageService.warn('Print pop-up is blocked by browser. Enable pop-ups from this page.')
     }
     else {
@@ -221,7 +199,7 @@ export class PrintService{
       popup.document.write('<!DOCTYPE><html><head>'
         + '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"  media="screen, print" />'
         + '<style type="text/css" media="print, screen">'
-        + '@page{margin: 2mm;  /* this affects the margin in the printer settings */} html{color: black;margin: 5px;  /* this affects the margin on the html before sending to printer */} body{margin: 2mm 5mm 2mm 5mm; /* margin you want for the content */-webkit-print-color-adjust: exact;} .title{font-size: 2em;font-weight: normal;}.subtitle{font-size: 2em;font-weight: bold;}.highlight{background-color: #adadad !important;}.normal{background-color: white !important;}.table .highlight{background-color: #adadad !important;}'
+        + '@page{margin: 2mm;  /* this affects the margin in the printer settings */} html{color: black;margin: 5px;  /* this affects the margin on the html before sending to printer */} body{margin: 2mm 5mm 2mm 5mm; /* margin you want for the content */-webkit-print-color-adjust: exact;} .title{font-size: 1.5em;font-weight: normal;}.subtitle{font-size: 2em}.highlight{background-color: #eeeeee !important;}.normal{background-color: white !important;}.table .highlight{background-color: #eeeeee !important;}table{font-size:75%}td{padding:2px !important;}.data td{border:1px solid #adadad !important;}'
         + '</style>'
         + '</head><body onload="window.print()"><div class="container">'
         + printContents + '</div></body></html>');
@@ -230,7 +208,12 @@ export class PrintService{
     }
   }
 
-  private getMonthName(monthNo: number){
+  private
+
+  getMonthName(monthNo
+                 :
+                 number
+  ) {
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
     return months[monthNo + 1];
