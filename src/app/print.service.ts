@@ -173,7 +173,7 @@ export class PrintService {
   <td${cl}>${item.currentStock === null ? 'N/A' : item.currentStock}</td>
   <td${cl}>${item.currentStock === null ? 'N/A' : item.stockAfterDelivery}</td>
   <td${cl}>${item.minDelivery === null ? 'N/A' : item.minDelivery}</td>
-  <td${cl}>${item.daysToNext === null ? 'N/A' : item.daysToNext}</td>
+  <td${cl}>${!item.daysToNext ? 'N/A' : item.daysToNext}</td>
 </tr>`;
       }
     }

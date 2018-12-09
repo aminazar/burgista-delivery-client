@@ -174,9 +174,7 @@ export class DeliveryFormComponent implements OnInit {
             this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'maxDelivery', tempDelivery.maxDelivery);
             this.updateOverallDelivery(tempDelivery.productCode, tempDelivery, 'add', 'stock', tempDelivery.stock);
           }
-          this.overallDeliveryModel.filter = !this.showZeroDelivery;
-          this.filteredDeliveries = this.overallDeliveryModel.deliveries;
-          //Change deliverModel._isSubmitted to false
+          this.changeFilter();
           this.receiversDeliveryModels[this.receiverName]._isSubmitted = false;
         }
       },
@@ -296,7 +294,7 @@ export class DeliveryFormComponent implements OnInit {
 
       //Add code and name to productName_Code (for specific receiver)
       this.productName_Code[this.receiverName].push(item.productCode + ' - ' + item.productName);
-
+      this.changeFilter();
       this.receiversDeliveryModels[this.receiverName]._isSubmitted = false;
     }
   }
