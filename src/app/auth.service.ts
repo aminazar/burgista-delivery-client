@@ -35,6 +35,7 @@ export class AuthService {
   logIn(username, password) {
     this.restService.update('login', null, {username: username, password: password})
       .subscribe(res => {
+          setTimeout(() => this.logOff(), 60 * 60 * 1000);
           this.afterLogin(res);
           // this.router.navigate([url !== null ? url : '/']);
           this.messageService.message(`${this.user} logged in.`);
