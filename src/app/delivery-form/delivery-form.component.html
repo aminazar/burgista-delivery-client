@@ -115,7 +115,8 @@
                   <th>Min Required</th>
                   <th>Max Stock</th>
                   <th>Current Stock</th>
-                  <th>Stock Date</th>
+                  <th>Last Count</th>
+                  <th>Last Count Date</th>
                   <th>Days to Next Counting</th>
                 </tr>
                 </thead>
@@ -181,6 +182,10 @@
                   <td class="column" *ngIf="delItem.stock === null || delItem.id === null"
                       [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
                     <i class="fa fa-question warnColoring" aria-hidden="true"></i>
+                  </td>
+                  <td class="column"
+                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                    {{delItem.oldCount}}
                   </td>
                   <td style="min-width: 80px !important;" class="column"
                       [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">

@@ -624,6 +624,7 @@ export class DeliveryFormComponent implements OnInit {
                 tempDelivery.stockDate = null;
               else
                 tempDelivery.stockDate = moment(item.stockDate).format('DD MMM YY');
+              tempDelivery.oldCount = item.oldCount;
               tempDelivery.state = 'exist';
               tempDelivery.untilNextCountingDay = item.untilNextCountingDay;
 

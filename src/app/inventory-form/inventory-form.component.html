@@ -35,20 +35,20 @@
                              (ngModelChange)="checkDisability(invItem)"
                              [disabled]="!isSameDates"
                              min="0"
-                             [ngClass]="[(!invItem.shouldCountToday && invItem.shouldIncluded) ? 'warnColoring' : 'normalColoring']"/>
+                             [ngClass]="[(this.isSameDates && !invItem.shouldCountToday && invItem.shouldIncluded) ? 'warnColoring' : 'normalColoring']"/>
                     </md-input-container>
                   </td>
                   <td class="codeItem col-xs-3"
-                                [ngClass]="[(!invItem.shouldCountToday && invItem.shouldIncluded) ? 'warnColoring' : 'normalColoring']">
+                                [ngClass]="[(this.isSameDates && !invItem.shouldCountToday && invItem.shouldIncluded) ? 'warnColoring' : 'normalColoring']">
                     {{invItem.productCode}}
                   </td>
                   <td class="nameItem col-xs-3"
-                                [ngClass]="[(!invItem.shouldCountToday && invItem.shouldIncluded) ? 'warnColoring' : 'normalColoring']">
+                                [ngClass]="[(this.isSameDates && !invItem.shouldCountToday && invItem.shouldIncluded) ? 'warnColoring' : 'normalColoring']">
                     {{invItem.productName}}
                   </td>
                   <td class="column col-xs-2"
                                 *ngIf="invItem.lastCount !== null"
-                                [ngClass]="[(!invItem.shouldCountToday && invItem.shouldIncluded) ? 'warnColoring' : 'normalColoring']">
+                                [ngClass]="[(this.isSameDates && !invItem.shouldCountToday && invItem.shouldIncluded) ? 'warnColoring' : 'normalColoring']">
                     {{invItem.lastCount | date: 'd MMM yy'}}
                   </td>
                   <td style="min-width: 80px !important;" class="column col-xs-2"

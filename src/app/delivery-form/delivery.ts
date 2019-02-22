@@ -15,4 +15,5 @@ export class Delivery{
   untilNextCountingDay: number;
   state: string = 'exist';
   isPrinted: boolean = false;
+  oldCount = 0;
 }
