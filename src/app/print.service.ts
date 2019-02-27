@@ -93,7 +93,7 @@ export class PrintService {
     let dateFormatted = moment(this.currentDate).format('ddd D MMM YYYY');
     let header = `<table width="100%">
                   <tr>
-                  <td width="70%" style="float: left; text-align: left; vertical-align: top"><label class="title">Burgista Bros - ${this._unitSupplier}</label></td>
+                  <td width="70%" style="float: left; text-align: left; vertical-align: top"><label class="title">Siirgista Bros - ${this._unitSupplier}</label></td>
                   <td width="30%" style="float: right; text-align: right; vertical-align: top"><label class="title">${dateFormatted}</label></td>
                   </tr>
                   <tr>

@@ -38,6 +38,7 @@ export class InventoryFormComponent implements OnInit {
   @ViewChild('unopenedPack') unopenedPack;
   @ViewChild('autoNameCode') autoNameCode;
 
+  noButton = true;
   unitName = '';
   inventoryModel: InventoryModel;
   currentDate;
@@ -347,6 +348,7 @@ export class InventoryFormComponent implements OnInit {
           }
         });
 
+        this.noButton = this.inventoryModel._inventories.map(r => r.shouldIncluded).reduce((x, y) => x && y, true);
         // console.log(data);
       },
       (err) => {

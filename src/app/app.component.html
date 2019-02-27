@@ -6,11 +6,11 @@
 
 <app-navbar></app-navbar>
 <div *ngIf="showError" style="width:100%;background:darkred;color:white"><i class="fa fa-close" style="padding:5px" (click)="closeError()"></i> {{error}}</div>
-<div class="flex-container" style="overflow: auto;"
+<div class="flex-container"
      fxLayout="row" fxLayout.xs="column"
      fxLayoutAlign="center center" fxLayoutAlign.xs="start start">
-  <!--<div class="flex-item" fxFlex="33"></div>-->
-  <div class="flex-item" fxFlex="80"><router-outlet></router-outlet></div>
-  <!--<div class="flex-item" fxFlex="33"></div>-->
+  <div class="flex-item" fxFlex="10" fxFlex.lg="0" fxFlex.md="0" fxFlex.sm="0" fxFlex.xs="0"></div>
+  <div class="flex-item" fxFlex="90" fxFlex.lg="100" fxFlex.md="100" fxFlex.sm="100" fxFlex.xs="100" id="main"><router-outlet></router-outlet></div>
+  <div class="flex-item" fxFlex="10" fxFlex.lg="0" fxFlex.md="0" fxFlex.sm="0" fxFlex.xs="0"></div>
 </div>
 

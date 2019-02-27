@@ -1,11 +1,6 @@
 <md-card class="outerCard">
-  <div class="flex-container"
-       fxLayout="row" fxLayout.xs="column" fxLayout.sm="column"
-       fxLayoutAlign="center center" fxLayoutAlign.xs="start start" fxLayoutAlign.sm="start start">
-    <md-card-title class="flex-item cardTitle" fxFlex="70">{{unitName}} Delivery</md-card-title>
-    <material-datepicker class="flex-item" fxFlex="30" [(date)]="selectedDate" (onSelect)="dateChanged()">
-    </material-datepicker>
-  </div>
+    <md-card-title class="cardTitle">{{unitName}} Delivery</md-card-title>
+
   <div>
     <md-card class="mat-card" style="width:295px; margin-bottom:10px;padding:5px; border-radius:25px;">
       <label for="show-zero-delivery" style="padding:0 10px">Zero deliveries:</label>
@@ -15,6 +10,8 @@
       </md-radio-group>
     </md-card>
   </div>
+  <material-datepicker [(date)]="selectedDate" (onSelect)="dateChanged()">
+  </material-datepicker>
   <md-tab-group *ngIf="dataIsReady" class="materialTab" [(selectedIndex)]="selectedIndex" (selectChange)="tabChanged()">
     <md-tab label="All" *ngIf="overallDeliveryModel._deliveries !== undefined">
       <md-card class="innerCard">
@@ -22,10 +19,10 @@
         <md-card-content>
           <md-card style="overflow: auto;">
             <md-card-content>
-              <table class="table">
-                <thead>
+              <table class="table table-striped">
+                <thead style="width: 100%">
                   <tr>
-                    <th [style.width]="thereIsProactiveItem ? 'unset' : '20px'">#</th>
+                    <th [style.width]="thereIsProactiveItem ? 'unset' : '30px'">#</th>
                     <th>Code</th>
                     <th>Product</th>
                     <th>Real Delivery</th>
@@ -38,14 +35,14 @@
                 </thead>
                 <tbody>
                   <tr *ngFor="let delItem of filteredDeliveries;let i = index">
-                    <td *ngIf="delItem.id !== null" style="width:20px">{{i + 1}}</td>
+                    <td *ngIf="delItem.id !== null" [style.width]="thereIsProactiveItem ? 'unset' : '30px'" class="number">{{i + 1}}</td>
                     <td *ngIf="delItem.id === null" style="width: unset">
                       <md-chip-list>
                         <md-chip color="primary" selected="true">Added</md-chip>
                       </md-chip-list>
                     </td>
                     <td>{{delItem.productCode}}</td>
-                    <td>{{delItem.productName}}</td>
+                    <td class="name">{{delItem.productName}}</td>
                     <td>{{delItem.realDelivery}}</td>
                     <td *ngIf="delItem.minDelivery !== null">{{delItem.minDelivery}}</td>
                     <td *ngIf="delItem.minDelivery === null"><i class="fa fa-question warnColoring" aria-hidden="true"></i></td>
@@ -103,10 +100,10 @@
         <md-card-content>
           <md-card style="min-width: 600px !important; overflow-x: auto;">
             <md-card-content>
-              <table class="table">
-                <thead>
+              <table class="table table-striped">
+                <thead style="width: 100%">
                 <tr>
-                  <th>#</th>
+                  <th style="width: 30px">#</th>
                   <th>Code</th>
                   <th>Product</th>
                   <th>Real Delivery</th>
@@ -120,10 +117,10 @@
                   <th>Days to Next Counting</th>
                 </tr>
                 </thead>
-                <tbody style="height: 200px;">
-                <tr *ngFor="let delItem of filteredBranchDeliveries[rcv.name];let i = index">
-                  <td class="buttonItem" *ngIf="delItem.id !== null && delItem.state !== 'added'">{{i+1}}</td>
-                  <td class="buttonItem" *ngIf="delItem.id === null">
+                <tbody>
+                <tr *ngFor="let delItem of filteredBranchDeliveries[rcv.name];let i = index" [ngClass]="[delItem.realDelivery ? countToday(delItem.stockDate) ? 'normalColoring' : 'warnColoring' : 'zeroColoring']">
+                  <td  style="width: 40px" class="buttonItem" *ngIf="delItem.id !== null && delItem.state !== 'added'" class="number">{{i+1}}</td>
+                  <td style="width: 40px" class="buttonItem" *ngIf="delItem.id === null">
                     <button md-mini-fab
                             (click)="removeDeliveryItem(delItem)">
                       <i class="fa fa-times" aria-hidden="true"></i>
@@ -134,11 +131,10 @@
                       <md-chip color="primary" selected="true">Added</md-chip>
                     </md-chip-list>
                   </td>
-                  <td class="codeItem"
-                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                  <td class="codeItem">
                     {{delItem.productCode}}
                   </td>
-                  <td class="nameItem "
+                  <td class="nameItem name"
                       [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
                     {{delItem.productName}}
                   </td>
@@ -153,45 +149,35 @@
                              (change)="checkRealDeliveryValue($event, delItem)"/>
                     </md-input-container>
                   </td>
-                  <td class="column" *ngIf="delItem.stock !== null && delItem.id !== null"
-                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                  <td class="column" *ngIf="delItem.stock !== null && delItem.id !== null">
                     {{delItem.minDelivery}}
                   </td>
-                  <td class="column" *ngIf="delItem.stock === null || delItem.id === null"
-                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                  <td class="column" *ngIf="delItem.stock === null || delItem.id === null">
                     <i class="fa fa-question warnColoring" aria-hidden="true"></i>
                   </td>
-                  <td class="column" *ngIf="delItem.stock !== null && delItem.id !== null"
-                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                  <td class="column" *ngIf="delItem.stock !== null && delItem.id !== null">
                     {{delItem.maxDelivery}}
                   </td>
-                  <td class="column" *ngIf="delItem.stock === null || delItem.id === null"
-                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                  <td class="column" *ngIf="delItem.stock === null || delItem.id === null">
                     <i class="fa fa-question warnColoring" aria-hidden="true"></i>
                   </td>
-                  <td class="column"
-                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.min}}
+                  <td class="column">{{delItem.min}}
                   </td>
-                  <td class="column"
-                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.max}}
+                  <td class="column">{{delItem.max}}
                   </td>
-                  <td class="column" *ngIf="delItem.stock !== null && delItem.id !== null"
-                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                  <td class="column" *ngIf="delItem.stock !== null && delItem.id !== null">
                     {{delItem.stock}}
                   </td>
-                  <td class="column" *ngIf="delItem.stock === null || delItem.id === null"
-                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                  <td class="column" *ngIf="delItem.stock === null || delItem.id === null">
                     <i class="fa fa-question warnColoring" aria-hidden="true"></i>
                   </td>
-                  <td class="column"
-                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                  <td class="column">
                     {{delItem.oldCount}}
                   </td>
-                  <td style="min-width: 80px !important;" class="column"
-                      [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">
+                  <td style="min-width: 80px !important;" class="column">
                     {{delItem.stockDate}}
                   </td>
-                  <td *ngIf="delItem.untilNextCountingDay!==null" class="column" [ngClass]="[(countToday(delItem.stockDate)) ? 'normalColoring' : 'warnColoring']">{{delItem.untilNextCountingDay}}</td>
+                  <td *ngIf="delItem.untilNextCountingDay!==null" class="column">{{delItem.untilNextCountingDay}}</td>
                   <td *ngIf="delItem.untilNextCountingDay===null" class="column"><i class="fa fa-question warnColoring" aria-hidden="true"></i></td>
                 </tr>
                 <tr>

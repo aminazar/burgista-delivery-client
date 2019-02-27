@@ -5,3 +5,42 @@
 .normalColoring{
   color: black;
 }
+
+.counted {
+  background: #6d8b5f85;
+}
+.counted td {
+  border-color: #faebd6;
+}
+.number {
+  width:30px;
+  vertical-align: middle;
+  font-weight: 600;
+  color: gray;
+  text-align: center;
+  background: #f8f8f8 !important;
+}
+
+th {
+  vertical-align: middle;
+  font-weight: 600;
+  color: gray;
+  text-align: center;
+  background: rgba(240,240,240,.6);
+}
+
+td {
+  vertical-align: middle !important;
+  padding: 1px !important;
+  font-weight: 300;
+  font-size: 100%;
+  color: black;
+  text-align: center;
+  background: rgba(240,240,240,.6);
+}
+.name {
+  text-align: left;
+}
+input {
+  text-align: center;
+}

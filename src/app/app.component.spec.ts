@@ -27,7 +27,7 @@ import {MonthdayComponent} from "./rrule/monthday.component";
 import {MockBackend} from "@angular/http/testing";
 import {APP_BASE_HREF} from "@angular/common";
 
-describe('App: Burgista Internal Delivery', () => {
+describe('App: Siirgista Internal Delivery', () => {
   let app : AppComponent;
   let fixture : ComponentFixture<AppComponent>;
   let mockBackend: MockBackend, restService: RestService, authService: AuthService, router: any;
