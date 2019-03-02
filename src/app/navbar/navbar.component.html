@@ -1,11 +1,11 @@
-<md-toolbar color="primary" style="font-weight:200;font-size:100%">
+<md-toolbar color="primary" style="font-weight:200;font-size:100%; overflow: hidden;max-width:100vw">
   <span><a style="font-size:120%" class="toolbar" [routerLink]="['']">Siirgista Internal Delivery</a></span>
   <span class="fill-remaining-space"></span>
   <span *ngIf="!auth"><a  class="toolbar" [routerLink]="['login']"><span class="fa fa-sign-in"></span> Login</a></span>
   <span *ngIf="auth"><a  class="toolbar" (click)="logout()">{{user}} <i class="fa fa-sign-out"></i> Logout</a></span>
   <span *ngIf="auth" style="margin-left:20px">{{remainedTime}}</span>
 </md-toolbar>
-<nav *ngIf="auth" md-tab-nav-bar>
+<nav *ngIf="auth" class="hidden-mobile" md-tab-nav-bar>
   <a md-tab-link *ngIf="isAdmin" [routerLink]="['units']" routerLinkActive #unitsLink="routerLinkActive" [active]="unitsLink.isActive">Units</a>
   <a md-tab-link *ngIf="isAdmin" [routerLink]="['products']" routerLinkActive #productsLink="routerLinkActive" [active]="productsLink.isActive">Products</a>
   <a md-tab-link *ngIf="isAdmin" [routerLink]="['override']" routerLinkActive #overrideLink="routerLinkActive" [active]="overrideLink.isActive">Override Rules</a>

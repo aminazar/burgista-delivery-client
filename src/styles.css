@@ -2,6 +2,11 @@
 body {
   font-family: Roboto, sans-serif !important;
 }
+
+body {
+  font-size: 16px;
+}
+
 .fill-remaining-space {
   flex: 1 1 auto;
 }
@@ -229,7 +234,7 @@ md-toolbar-row {
 
 .mat-tab-label {}
 
-@media(max-width:600px){
+@media (max-width:600px) and (orientation: portrait){
   .mat-card-title {
     margin-bottom: 6px !important;
     font-size: 16px !important;
@@ -248,19 +253,44 @@ md-toolbar-row {
   }
 
   .mat-toolbar {
-    padding: 2px !important;
+    padding: 5px !important;
   }
 
-  .scrollable {
-    height: calc(100vh - 365px);
-  }
   .mat-tab-link {
     height: 38px !important;
     line-height: 30px !important;
   }
+
+  .hidden-mobile {
+    height: 0 !important;
+    width: 0 !important;
+    visibility: hidden !important;
+    overflow: hidden !important;
+    display: none !important;
+  }
+  .table-responsive {
+    margin: 0 !important;
+  }
+  .table-responsive td {
+    font-size: 70% !important;
+  }
+
+  .toolbar {
+    font-weight: 100;
+    font-size: 65%;
+  }
+  .table-responsive th {
+    font-size: 65%;
+  }
+  input[type='text'],
+  input[type='number'],
+  textarea {
+    font-size: 16px;
+    max-width:30px;
+  }
 }
 
-@media(min-width: 600px) {
+@media screen and (min-width: 600px) {
   .scrollable {
     height: calc(100vh - 580px);
   }

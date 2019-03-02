@@ -1,9 +1,9 @@
 <md-card style="background-color: #607D8B; border-radius: 7px; text-align: left; margin: 10px;">
-  <md-card-title class="cardTitle">{{unitName}} Inventory</md-card-title>
+  <md-card-title class="cardTitle hidden-mobile">{{unitName}} Inventory</md-card-title>
   <md-card class="innerCard">
 
-      <md-card-title>To Do: Inventory Takings</md-card-title>
-    <md-card-header>      <material-datepicker [(date)]="selectedDate" (onSelect)="dateChanged()">
+      <md-card-title class="hidden-mobile">To Do: Inventory Takings</md-card-title>
+    <md-card-header class="hidden-mobile">      <material-datepicker [(date)]="selectedDate" (onSelect)="dateChanged()">
     </material-datepicker></md-card-header>
     <md-card-content>
       <md-card style="overflow: auto;">
@@ -13,10 +13,10 @@
               <tr>
                 <th style="width:30px">#</th>
                 <th [ngStyle]="{'width.px': noButton ? 0 : 24}">&nbsp;</th>
-                <th>Unopened Packs</th>
-                <th>Code</th>
                 <th class="name">Product</th>
-                <th>Last Count</th>
+                <th>Code</th>
+                <th>Unopened Packs</th>
+                <th  class="hidden-mobile">Last Count</th>
               </tr>
             </thead>
             <tbody class="scrollable" *ngIf="inventoryModel !== null && inventoryModel !== undefined && inventoryModel._inventories.length > 0">
@@ -27,21 +27,21 @@
                   <td *ngIf="!invItem.shouldIncluded">
                     <button md-mini-fab (click)="removeInventoryItem(invItem)"><i class="fa fa-times" aria-hidden="true"></i></button>
                   </td>
-                  <td>
-                    <md-input-container>
-                      <input mdInput type="number" [(ngModel)]="invItem.unopenedPack" placeholder="Unopened Packs"
-                             (ngModelChange)="checkDisability(invItem)"
-                             [disabled]="!isSameDates"
-                             min="0"/>
-                    </md-input-container>
-                  </td>
+                <td class="name">
+                  {{invItem.productName}}
+                </td>
                   <td>
                     {{invItem.productCode}}
                   </td>
-                  <td class="name">
-                    {{invItem.productName}}
-                  </td>
-                  <td *ngIf="invItem.lastCount !== null"
+                <td>
+                  <md-input-container>
+                    <input mdInput type="number" [(ngModel)]="invItem.unopenedPack" placeholder="Packs"
+                           (ngModelChange)="checkDisability(invItem)"
+                           [disabled]="!isSameDates"
+                           min="0"/>
+                  </md-input-container>
+                </td>
+                  <td *ngIf="invItem.lastCount !== null" class="hidden-mobile"
                                 [ngClass]="[(this.isSameDates && !invItem.shouldCountToday && invItem.shouldIncluded) ? 'warnColoring' : 'normalColoring']">
                     {{invItem.lastCount | date: 'd MMM yy'}}
                   </td>
