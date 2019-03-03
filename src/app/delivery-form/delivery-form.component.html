@@ -2,7 +2,7 @@
     <md-card-title class="cardTitle">{{unitName}} Delivery</md-card-title>
 
   <div>
-    <md-card class="mat-card" style="width:295px; margin-bottom:10px;padding:5px; border-radius:25px;">
+    <md-card class="mat-card" style="width:320px; margin-bottom:10px;padding:5px; border-radius:25px;">
       <label for="show-zero-delivery" style="padding:0 10px">Zero deliveries:</label>
       <md-radio-group [(ngModel)]="showZeroDelivery" (change)="changeFilter()" id="show-zero-delivery">
         <md-radio-button style="padding: 0 10px;" [value]="false">Hide</md-radio-button>
@@ -54,8 +54,8 @@
                     <td *ngIf="delItem.stock === null"><i class="fa fa-question warnColoring" aria-hidden="true"></i></td>
                 </tr>
                   <tr>
-                    <td [style.width]="thereIsProactiveItem ? 'unset' : '20px' "></td>
-                    <td colspan="2">Sum</td>
+                    <td [style.width]="thereIsProactiveItem ? 'unset' : '30px'" class="number"></td>
+                    <td class="sum" colspan="2">Sum</td>
                     <td>{{receiversSumDeliveries['All'].realDelivery}}</td>
                     <td *ngIf="receiversSumDeliveries['All'].minDelivery !== null">{{receiversSumDeliveries['All'].minDelivery}}</td>
                     <td *ngIf="receiversSumDeliveries['All'].minDelivery === null"><i class="fa fa-question warnColoring" aria-hidden="true"></i></td>
@@ -181,8 +181,8 @@
                   <td *ngIf="delItem.untilNextCountingDay===null" class="column"><i class="fa fa-question warnColoring" aria-hidden="true"></i></td>
                 </tr>
                 <tr>
-                  <td class="buttonItem"></td>
-                  <td class="nameItem" colspan="2">Sum</td>
+                  <td [style.width]="thereIsProactiveItem ? 'unset' : '30px'" class="number"></td>
+                  <td class="sum" colspan="3">Sum</td>
                   <td class="inputItem">{{receiversSumDeliveries[rcv.name].realDelivery}}</td>
                   <td class="column" *ngIf="rcv.warn === 'no'">
                     {{receiversSumDeliveries[rcv.name].minDelivery}}

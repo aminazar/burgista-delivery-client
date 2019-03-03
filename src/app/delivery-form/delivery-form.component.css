@@ -59,3 +59,7 @@ input {
 .name {
   text-align: left;
 }
+.sum {
+  font-weight: 600;
+  text-align: right;
+}
