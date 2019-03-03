@@ -87,6 +87,10 @@ a:hover{text-decoration: none;text-weight:bold;}
   background-color: antiquewhite;
 }
 
+.mat-mini-fab {
+  margin: 10px !important;
+}
+
 .deliveryItem > figure {
   justify-content: inherit !important;
   /*overflow: inherit !important;*/
@@ -256,6 +260,10 @@ md-toolbar-row {
     padding: 5px !important;
   }
 
+  .mat-toolbar-row {
+    height: 20px !important;
+    line-height: 30px !important;
+  }
   .mat-tab-link {
     height: 38px !important;
     line-height: 30px !important;
@@ -292,6 +300,6 @@ md-toolbar-row {
 
 @media screen and (min-width: 600px) {
   .scrollable {
-    height: calc(100vh - 580px);
+    height: calc(100vh - 610px);
   }
 }
