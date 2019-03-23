@@ -3,6 +3,7 @@
  */
 export class Delivery{
   id: number;
+  uid: number;
   productCode: string;
   productName: string;
   realDelivery: number = 0;

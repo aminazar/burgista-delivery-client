@@ -67,7 +67,7 @@ export class DeliveryFormComponent implements OnInit {
 
   ngOnInit() {
     if(this.overallDeliveryModel === null || this.overallDeliveryModel === undefined)
-      this.overallDeliveryModel = new DeliveryModel('All', !this.showZeroDelivery);
+      this.overallDeliveryModel = new DeliveryModel('All', null, !this.showZeroDelivery);
 
     this.overallDeliveryModel._shouldDisabled = true;
     this.unitName = this.authService.unitName;
@@ -128,11 +128,12 @@ export class DeliveryFormComponent implements OnInit {
         });
 
         if(tempNameObj !== undefined && tempNameObj !== null){
-          let p_code = tempNameObj.substr(0, tempNameObj.indexOf('-') - 1);
-          let p_name = tempNameObj.substr(tempNameObj.indexOf('-') + 2);
+          let p_code = tempNameObj.substr(0, tempNameObj.indexOf(' - '));
+          let p_name = tempNameObj.substr(tempNameObj.indexOf(' - ') + 3);
 
           let tempDelivery = new Delivery();
           tempDelivery.id = null;
+          tempDelivery.uid = this.receiversDeliveryModels[this.receiverName].uid;
           tempDelivery.productCode = p_code;
           tempDelivery.productName = p_name;
           let foundProduct: Product = this.productsList[this.receiverName].find((el) => el.code.toLowerCase() === p_code.toLowerCase());
@@ -142,7 +143,7 @@ export class DeliveryFormComponent implements OnInit {
           tempDelivery.stock = 0;
           tempDelivery.minDelivery = (tempDelivery.min - tempDelivery.stock) < 0 ? 0 : (tempDelivery.min - tempDelivery.stock);
           tempDelivery.maxDelivery = tempDelivery.max - tempDelivery.stock;
-          tempDelivery.stockDate = moment(tempDelivery.stockDate).format('dd MMM YY');
+          tempDelivery.stockDate = moment(tempDelivery.stockDate).format('DD MMM YY');
 
           this.receiversDeliveryModels[this.receiverName].add(tempDelivery);
           this.thereIsProactiveItem = !!this.overallDeliveryModel._deliveries.find(r => r.id === null);
@@ -568,7 +569,7 @@ export class DeliveryFormComponent implements OnInit {
           this.waiting();
           this.productsList[rcv.name] = [];
 
-          this.receiversDeliveryModels[rcv.name] = new DeliveryModel(rcv.name, !this.showZeroDelivery);
+          this.receiversDeliveryModels[rcv.name] = new DeliveryModel(rcv.name, +rcv.id, !this.showZeroDelivery);
           this.filteredBranchDeliveries[rcv.name] = [];
           this.receiversSumDeliveries[rcv.name] = new Delivery();
           this.receiversSumDeliveries[rcv.name].min = 0;
@@ -606,6 +607,7 @@ export class DeliveryFormComponent implements OnInit {
               //this.receiversDeliveryModels[rcv.name]._isPrinted = item.isPrinted;
               let tempDelivery = new Delivery();
               tempDelivery.id = item.id;
+              tempDelivery.uid = +item.uid;
               tempDelivery.productCode = item.productCode;
               tempDelivery.productName = item.productName;
               if(item.stock === null && item.realDelivery === null)
