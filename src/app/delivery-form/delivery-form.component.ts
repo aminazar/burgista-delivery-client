@@ -480,6 +480,7 @@ export class DeliveryFormComponent implements OnInit {
     //Set data for print
     this.printService._isOverallPrint = isAllTab;
     this.printService._unitSupplier = this.unitName;
+    this.printService.uid = this.receiversDeliveryModels[this.receiverName].uid;
     this.printService._unitConsumer = (isAllTab) ? 'Aggregated' : this.receiverName;
     this.printService._receivers = this.receivers.map(rcv => rcv.name);
     this.printService._deliveryModels = this.receiversDeliveryModels;
