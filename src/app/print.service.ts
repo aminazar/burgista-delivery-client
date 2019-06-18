@@ -16,6 +16,7 @@ export class PrintService {
   _showWarningMessage: boolean = true;
   currentDate: Date = new Date();
   _window: any;
+  uid: number = null;
 
   constructor(private messageService: MessageService, private winRef: WindowRef) {
     this._window = winRef.nativeWindow;
@@ -34,16 +35,19 @@ export class PrintService {
     for (let item of this._deliveryModels[this._unitConsumer].deliveries) {
 
       let obj = {};
+      if (this.uid && item.uid !== this.uid) {
+        console.warn('delivery print leakage!', item);
+      } else {
+        obj['productCode'] = item.productCode;
+        obj['productName'] = item.productName;
+        obj['realDelivery'] = item.realDelivery;
+        obj['currentStock'] = item.stock;
+        obj['stockAfterDelivery'] = item.realDelivery + item.stock;
+        obj['minDelivery'] = item.minDelivery;
+        obj['daysToNext'] = item.untilNextCountingDay;
 
-      obj['productCode'] = item.productCode;
-      obj['productName'] = item.productName;
-      obj['realDelivery'] = item.realDelivery;
-      obj['currentStock'] = item.stock;
-      obj['stockAfterDelivery'] = item.realDelivery + item.stock;
-      obj['minDelivery'] = item.minDelivery;
-      obj['daysToNext'] = item.untilNextCountingDay;
-
-      result.push(obj);
+        result.push(obj);
+      }
     }
     return result;
   }

@@ -89,8 +89,8 @@ export class InventoryFormComponent implements OnInit {
           let tempInventoryItem = new Inventory();
           tempInventoryItem.id = null;
           tempInventoryItem.unopenedPack = (this.unopenedPack.nativeElement.value !== undefined && this.unopenedPack.nativeElement.value !== null && this.unopenedPack.nativeElement.value !== '') ? this.unopenedPack.nativeElement.value : 0;
-          tempInventoryItem.productCode = data.substr(0, data.indexOf('-') - 1);
-          tempInventoryItem.productName = data.substr(data.indexOf('-') + 2);
+          tempInventoryItem.productCode = data.substr(0, data.indexOf(' '));
+          tempInventoryItem.productName = data.substr(data.indexOf(' ') + 3);
           tempInventoryItem.productId = this.products.find((el) => el.code === tempInventoryItem.productCode).id;
           tempInventoryItem.lastCount = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), this.currentDate.getDate());
           tempInventoryItem.state = 'exist';

@@ -6,13 +6,15 @@ import {Delivery} from "./delivery";
 export class DeliveryModel{
   _deliveries: Delivery[] = [];
   _unitName: string = '';
+  uid: number = null;
   _shouldDisabled: boolean = false;
   _isSubmitted: boolean = false;
   _isPrinted: boolean = false;
   filter = false;
 
-  constructor(unitName: string, filter){
+  constructor(unitName: string, uid, filter){
     this._unitName = unitName;
+    this.uid = uid;
     this.filter = filter;
   }
 
@@ -20,13 +22,16 @@ export class DeliveryModel{
     return (this.filter ? this._deliveries.filter(r => r.realDelivery !== 0) : this._deliveries).sort((x, y) => !x.id ? 1 : !y.id ? -1 : x.productName < y.productName ? -1 : x.productName > y.productName ? 1 : 0);
   }
   add(delivery: Delivery){
-    let tempDelivery = new Delivery();
+    if (this.uid && delivery.id &&  delivery.uid !== this.uid) {
+      console.warn('Delivery leakage!\n', {uid: this.uid, delivery});
+    } else {
+      let tempDelivery = new Delivery();
+      for (let prop in delivery) {
+        tempDelivery[prop] = delivery[prop];
+      }
 
-    for(let prop in delivery){
-      tempDelivery[prop] = delivery[prop];
+      this._deliveries.push(tempDelivery);
     }
-
-    this._deliveries.push(tempDelivery);
   }
 
   get(id: number): Delivery{
