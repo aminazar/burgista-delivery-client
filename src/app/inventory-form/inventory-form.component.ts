@@ -256,32 +256,27 @@ export class InventoryFormComponent implements OnInit {
         this.inventoryModel.clear();
         this.products = [];
 
-        this.productName_Code = data.filter((el) => el.bsddid === null).sort((a, b) => {// Add to autoComplete list
-          if (a.product_name.toLowerCase() > b.product_name.toLowerCase())
-            return 1;
-          else if (a.product_name.toLowerCase() < b.product_name.toLowerCase())
-            return -1;
-          else {
-            if (a.product_code.toLowerCase() > b.product_code.toLowerCase())
-              return 1;
-            else if (a.product_code.toLowerCase() < b.product_code.toLowerCase())
-              return -1;
-            else
-              return 0;
-          }
-        }).map(r => `${r.product_code} - ${r.product_name}`);
+        // this.productName_Code = data.filter((el) => el.bsddid === null).sort((a, b) => {// Add to autoComplete list
+        //   if (a.product_name.toLowerCase() > b.product_name.toLowerCase())
+        //     return 1;
+        //   else if (a.product_name.toLowerCase() < b.product_name.toLowerCase())
+        //     return -1;
+        //   else {
+        //     if (a.product_code.toLowerCase() > b.product_code.toLowerCase())
+        //       return 1;
+        //     else if (a.product_code.toLowerCase() < b.product_code.toLowerCase())
+        //       return -1;
+        //     else
+        //       return 0;
+        //   }
+        // }).map(r => `${r.product_code} - ${r.product_name}`);
 
         // removing non-relevant products from auto-complete list
         this.restService.get('override?uid=' + this.authService.unit_id).subscribe(
-          products => {
-            let nameCodeCouples = products.map(product => `${product.code} - ${product.name}`);
-            this.productName_Code = this.productName_Code.filter(item => {
-              return nameCodeCouples.includes(item);
-            });
-          },
-          error => {
-            console.log(error.message);
-          }
+          products =>
+            this.productName_Code = products.filter(p => data.map(dp => dp.pid).includes(p.pid)).map(product => `${product.code} - ${product.name}`),
+          error => console.log(error.message)
+
         );
 
         for (let item of data) {
