@@ -55,18 +55,18 @@
             <tr *ngIf="isSameDates">
               <td class="buttonItem">&nbsp;</td>
               <td class="inputItem">
-                <md-input-container>
-                  <input mdInput type="number" placeholder="Unopened Packs" #unopenedPack/>
-                </md-input-container>
-              </td>
-              <td class="inputItem" colspan="2">
-                <md-input-container>
-                  <input mdInput type="text" class="pnc" placeholder="Product name/code" [mdAutocomplete]="auto" [formControl]="productNameCodeCtrl" #autoNameCode (focus)="showProductList()"/>
+                <md-input-container style="min-width:400px">
+                  <input mdInput type="text" class="pnc" placeholder="Product name / code" [mdAutocomplete]="auto" [formControl]="productNameCodeCtrl" #autoNameCode (focus)="showProductList()"/>
                   <md-autocomplete #auto="mdAutocomplete">
                     <md-option *ngFor="let nameCode of filteredNameCode | async" [value]="nameCode">
                       {{nameCode}}
                     </md-option>
                   </md-autocomplete>
+                </md-input-container>
+              </td>
+              <td class="inputItem" colspan="2">
+                <md-input-container>
+                  <input mdInput type="number" placeholder="Unopened Packs" #unopenedPack/>
                 </md-input-container>
               </td>
               <td style="min-width: 80px !important;" class="column">
